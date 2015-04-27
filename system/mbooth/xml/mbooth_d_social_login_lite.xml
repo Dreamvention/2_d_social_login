@@ -1,0 +1,76 @@
+<extension>
+    <id>d_social_login_lite</id>
+    <name>Social Login</name>
+    <description>Social login is a module that addes the ability to create an account in the webshop with a scoial network account and then login in by simply clicking a button. No need to remeber the password. It has Facebook, Paypal, Google+, Twitter, Linkeding, Vknontakte, Windows live, Tumblr and more</description>
+    <type>module</type>
+    <description>Adds social login buttons to opencart</description>
+    <version>3.0.2</version>
+	<opencart_version>2.0.0.0,2.0.1.0,2.0.1.1,2.0.2.0</opencart_version>
+    <mbooth_version>2.3</mbooth_version>
+    <author>Dreamvention</author>
+    <files>
+	<!-- xml -->
+		<file>system/mbooth/xml/mbooth_d_social_login_lite.xml</file>
+	<!-- admin -->
+		<file>admin/controller/module/d_social_login.php</file>
+		<file>admin/language/english/module/d_social_login.php</file>		
+		<file>admin/view/template/module/d_social_login.tpl</file>
+	<!-- catalog -->
+		<file>catalog/controller/module/d_social_login.php</file>
+		<file>catalog/language/english/module/d_social_login.php</file>
+		<file>catalog/language/russian/module/d_social_login.php</file>
+		<file>catalog/view/theme/default/template/module/d_social_login.tpl</file>
+		<file>catalog/view/theme/default/template/d_social_login/email.tpl</file>
+	<!-- vqmod -->
+
+	<!-- system -->	
+		<file>system/config/d_social_login_lite.php</file>
+	</files>
+	<dirs>
+		<dir>admin/view/image/d_social_login</dir>
+		<dir>image/data/d_social_login</dir>
+		<dir>catalog/view/javascript/d_social_login</dir>
+		<dir>catalog/model/d_social_login</dir>
+		<dir>catalog/view/theme/default/stylesheet/d_social_login</dir>
+	</dirs>
+	<required>
+		<require>shopunity</require>
+	</required>
+	<updates>
+		<update version="3.0.2">
+		1. bug fixes for lite version
+		</update>
+		<update version="3.0.1">
+		1. bug fixes
+		</update>
+		<update version="3.0">
+		1. Supports opencart 2.0. 
+		</update>
+		<update version="2.4">
+		1. Will clear the session data after login. 
+		</update>
+		<update version="2.3">
+		1. Added scopes editing to social apps. 
+		</update>
+		<update version="2.2">
+		1. Added customer groups. 
+		</update>
+		<update version="2.1">
+		1. Removed full access request from facebook and other social networks. asking only for email and name.<br/>
+		2. If customer rejects, he will be redirected to login page.
+		</update>
+		<update version="2.0">
+		1. changed the flow process to solve the folder permission conflict. please reset the app data to work with the new flow. More information in the new instructions tab. 
+		</update>
+		<update version="1.2">
+		1. added Paypal, Instagram and Tumblr sign in buttons<br/>
+		2. added Company name, company id and tax id fields<br/>
+		3. added compatibility for seo urls
+		</update>
+		<update version="1.1">
+		1. fixed a bug with colorpicker<br/>
+		2. Fixes a Linkedin name bug
+		</update>
+		<update version="1.0"></update>
+	</updates>
+</extension>

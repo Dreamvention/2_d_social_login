@@ -1,0 +1,72 @@
+@charset "UTF-8";
+
+@font-face {
+  font-family: "d-social-login";
+  src:url("fonts/d-social-login.eot");
+  src:url("fonts/d-social-login.eot?#iefix") format("embedded-opentype"),
+    url("fonts/d-social-login.woff") format("woff"),
+    url("fonts/d-social-login.ttf") format("truetype"),
+    url("fonts/d-social-login.svg#d-social-login") format("svg");
+  font-weight: normal;
+  font-style: normal;
+
+}
+
+#d_social_login [class^="dsl-icon-"]:before,
+#d_social_login [class*=" dsl-icon-"]:before {
+  font-family: "d-social-login" !important;
+  font-style: normal !important;
+  font-weight: normal !important;
+  font-variant: normal !important;
+  text-transform: none !important;
+  speak: none;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.dsl-icon-facebook:before {
+  content: "b";
+}
+.dsl-icon-linkedin:before {
+  content: "a";
+}
+.dsl-icon-yahoo:before {
+  content: "c";
+}
+.dsl-icon-twitter:before {
+  content: "d";
+}
+.dsl-icon-google:before {
+  content: "e";
+}
+.dsl-icon-mailru:before {
+  content: "i";
+}
+.dsl-icon-vkontakte:before {
+  content: "j";
+}
+.dsl-icon-live:before {
+  content: "g";
+}
+.dsl-icon-yandex:before {
+  content: "h";
+}
+.dsl-icon-pinterest:before {
+  content: "f";
+}
+.dsl-icon-odnoklassniki:before {
+  content: "k";
+}
+.dsl-icon-vimeo:before {
+  content: "o";
+}
+.dsl-icon-tumblr:before {
+  content: "m";
+}
+.dsl-icon-instagram:before {
+  content: "l";
+}
+.dsl-icon-paypal:before {
+  content: "n";
+}
