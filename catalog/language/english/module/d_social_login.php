@@ -3,6 +3,7 @@
 $_['heading_title']    = 'Account';
 
 // Text
+$_['text_sign_in_with']    = 'Sign in';
 $_['text_sign_in_with_google']    = 'Sign in';
 $_['text_sign_in_with_facebook']    = 'Sign in';
 $_['text_sign_in_with_twitter']    = 'Sign in';
@@ -15,6 +16,8 @@ $_['text_sign_in_with_mailru']    = 'Sign in';
 $_['text_sign_in_with_paypal']    = 'Sign in';
 $_['text_sign_in_with_instagram']    = 'Sign in';
 $_['text_sign_in_with_tumblr']    = 'Sign in';
+$_['text_sign_in_with_yahoo']    = 'Sign in';
+$_['text_sign_in_with_foursquare']    = 'Sign in';
 
 $_['button_sign_in']    = 'Sign in with';
 $_['button_sign_in_mail']    = 'Sign in';

@@ -1,43 +1,32 @@
 <?php
+/*
+ *	location: catalog/controller/module/d_social_login.php
+ */
+
 class ControllerModuleDSocialLogin extends Controller {
-		
-	public function index($setting) {
-		//echo $setting;
-		if(empty($setting) ){
-			$setting = $this->config->get( 'd_social_login_module');
-			$setting = $setting['setting'];
-		}
-		//echo "<pre>"; print_r($setting ); echo "</pre>"; 
-		if( empty( $setting ) )
-		{
-			$setting['size'] = 'icon';
-			$setting['status'] = '1';
-		}
+	private $route = 'module/d_social_login';
+	private $id = 'd_social_login';
+	private $setting = array();
+	private $redirect = '';
 
-		$this->session->data['d_social_login'] = $setting;
+	public function index() {
 
-	
-		$server = (isset($_SERVER['HTTPS'])) ? HTTPS_SERVER : HTTP_SERVER;
+		$this->setup();
 
-		if(!isset($setting['base_url_index'])){ $setting['base_url_index'] = false; }
-
-		if($setting['base_url_index']){
-			$setting['base_url'] = $this->url->link('module/d_social_login/hybridauth', '', 'SSL');
-		}else{
-			$setting['base_url'] = $server.'catalog/model/d_social_login/hybridauth.php';
-		}
-		
-		$setting['debug_file'] = DIR_SYSTEM . "logs/d_social_login.txt";
-		$this->language->load('module/d_social_login');
-		$this->document->addStyle('catalog/view/theme/default/stylesheet/d_social_login/styles.css');
+		$this->language->load($this->route);
+		$this->load->model($this->route);
+       
+        $this->document->addStyle('catalog/view/theme/default/stylesheet/d_social_login/styles.css');
 		$this->document->addScript('catalog/view/javascript/d_social_login/spin.min.js');
-			
-      	$data['heading_title'] = $this->language->get('heading_title');
+        
+        $setting = $this->config->get('d_social_login_setting');
+
+        $data['heading_title'] = $this->language->get('heading_title');
       	$data['button_sign_in'] = $this->language->get('button_sign_in');
       	$data['size'] = $setting['size'];
       	$data['islogged'] = $this->customer->isLogged();
+
       	$providers = $setting['providers'];
-      	
       	$sort_order = array(); 
 		foreach ($providers as $key => $value) {
 			if(isset($value['sort_order'])){
@@ -45,426 +34,328 @@ class ControllerModuleDSocialLogin extends Controller {
 			}
     	}
 		array_multisort($sort_order, SORT_ASC, $providers);
-
       	$data['providers'] = $providers; 
       	foreach($providers as $key => $val) {
       		$data['providers'][$key]['heading'] = $this->language->get('text_sign_in_with_'.$val['id']);
       	}
+      	$data['error'] = false;
+      	if(isset($this->session->data['d_social_login_error'])){
+      		$data['error'] = $this->session->data['d_social_login_error'];
+      		unset($this->session->data['d_social_login_error']);
+      	}
 
-		
-
-		unset($this->session->data['HA::CONFIG']);
+      	$this->session->data['redirect'] = ($setting['return_page_url']) ? $setting['return_page_url'] : $this->getCurrentUrl();
+      	
+      	//facebook fix
+      	unset($this->session->data['HA::CONFIG']);
 		unset($this->session->data['HA::STORE']);
 
-		$this->session->data['d_social_login']['return_url'] = $this->getCurrentUrl();
-
-		
-		if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/module/d_social_login.tpl')) {
+        if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/module/d_social_login.tpl')) {
 			return $this->load->view($this->config->get('config_template') . '/template/module/d_social_login.tpl', $data);
 		} else {
 			return $this->load->view('default/template/module/d_social_login.tpl', $data);
 		}
-	}
-
-	public function hybridauth(){
-
-		$this->load->model('d_social_login/hybridauth_model');
-		return $this->model_d_social_login_hybridauth_model->process();
 
 	}
 
-	public function provider_login(){
-	
-		$setting = $this->session->data['d_social_login'];
+	public function login(){
 
-		$server = (isset($_SERVER['HTTPS'])) ? HTTPS_SERVER : HTTP_SERVER;
+		$this->setup();
 
-		if(!isset($setting['base_url_index'])){ $setting['base_url_index'] = false; }
+		require_once(DIR_SYSTEM . 'library/Hybrid/Auth.php');
+		$this->language->load($this->route);
+		$this->load->model($this->route);
 
-		if($setting['base_url_index']){
-			$setting['base_url'] = $this->url->link('module/d_social_login/hybridauth', '', 'SSL');
-		}else{
-			$setting['base_url'] = $server.'catalog/model/d_social_login/hybridauth.php';
-		}
-		$setting['debug_file'] = DIR_SYSTEM . "logs/d_social_login.txt";
-		if(isset($this->request->get['provider'])){
-			$this->session->data['provider'] = $this->request->get['provider'];
-		}
-			$profile = array();
-			require_once( DIR_APPLICATION."model/d_social_login/Hybrid/Auth.php" );
-
-			 try{
-
-			  	 $hybridauth = new Hybrid_Auth( $setting );
-
-			  	 $provider = $hybridauth->authenticate( $this->session->data['provider']);  
-			 
-			  	//get the user profile 
-			  	 $profile = $provider->getUserProfile();
-			  
-			 	 $this->register($this->session->data['provider'], (array)$profile);
-
-			  	 $provider->logout(); 
-			  }
-			  catch( Exception $e ){  
-
-			  	switch( $e->getCode() ){ 
-			  	  case 0 : $json['error'] =  "Unspecified error."; break;
-			  	  case 1 : $json['error'] = "Hybriauth configuration error."; break;
-			  	  case 2 : $json['error'] = "Provider not properly configured."; break;
-			  	  case 3 : $json['error'] = "Unknown or disabled provider."; break;
-			  	  case 4 : $json['error'] = "Missing provider application credentials."; break;
-			  	  case 5 : $json['error'] = "Authentification failed. " 
-			  	              . "The user has canceled the authentication or the provider refused the connection."; 
-			  	           break;
-			  	  case 6 : $json['error'] = "User profile request failed. Most likely the user is not connected "
-			  	              . "to the provider and he should authenticate again."; 
-			  	           $provider->logout(); 
-			  	           
-			  	  case 7 : $json['error'] = "User not connected to the provider."; 
-			  	           $provider->logout();
-			  	  case 8 : $json['error'] = "Provider does not support this feature."; break;
-			  	}
-			  
-			  	//echo "Ooophs, we got an error: " . $e->getMessage();
-			  	$this->session->data['success'] = $json['error']." Ooophs, we got an error: " . $e->getMessage();
-			  	$this->response->redirect(urldecode($this->url->link('account/login', '')));
-			  }
-			
+		$this->setting = $this->config->get('d_social_login_setting');
 		
-	}
-/*
+		$this->setting['base_url']   = HTTP_SERVER . 'd_social_login.php';
+        $this->setting['debug_file'] = DIR_LOGS . $this->setting['debug_file'];
+        $this->setting['debug_mode'] = (bool) $this->setting['debug_mode'];
 
-identifier
-photoURL
-firstName
-lastName
-email
-phone
-country
-city
-region
-zip
-birthDay
-birthMonth
-birthYear
+        if (isset($this->request->get['provider'])) {
+            $this->setting['provider'] = $this->request->get['provider'];
+        } else {
 
-*/
-	public function register($provider,$profile){
-		$setting = $this->session->data['d_social_login'];
-		$fields = $setting['fields'];
-		
-		$popup = false;
-      	
+            // Save error to the System Log
+            $this->log->write('Missing application provider.');
 
-		if($profile){
+            // Set Message
+            $this->session->data['error'] = sprintf("An error occurred, please <a href=\"%s\">notify</a> the administrator.",
+                                                    $this->url->link('information/contact'));
 
-			//creating data				
-			if($profile['country']){
-				$country_id= $this->getCountryIdByName($profile['country']);
-			}elseif($profile['region']){
-				$country_id= $this->getCountryIdByName($profile['region']);
-			}else{
-				$country_id= $this->config->get('config_country_id');
-			}
-			
+            // Redirect to the Login Page
+            $this->response->redirect($this->redirect);
+        }
 
-			$data = array(
-							    'firstname' => $profile['firstName'],
-							    'lastname' => $profile['lastName'],
-							    'email' => $profile['email'],
-							    'telephone' => $profile['phone'],
-							    'fax' => '',
-							    'company' => '',
-							    'customer_group_id' => (isset($setting['customer_group']))? $setting['customer_group'] : '1',
-							    'company_id' => '',
-							    'tax_id' => '',
-							    'address_1' => $profile['address'],
-							    'address_2' => '',
-							    'city' => $profile['city'],
-							    'postcode' => $profile['zip'],
-							    'country_id' => $country_id,
-							    'zone_id' => '',
-							    'password' => '',
-							    'confirm' => '',
-							    'newsletter' => '1',
-							    'agree' => '1',
-							    'provider' => $provider,
-							    'id' => $profile['identifier']
-						);
-			//checking if customer already created with this provider
-			if($profile['identifier'] != ''){
-				$customer = $this->get_customer_by_provider_id($provider,$profile['identifier']);
-			}else{
-				$customer = false;
-			}
-			
-			
-			if($customer){
-				$this->customer->login($customer['email'], '', true);
-				$this->response->redirect(urldecode($this->session->data['d_social_login']['return_url']));
-			}else{
-			
-			//checking if email sent
-				if(!$profile['email']){
-					$popup = true;
-				}else{
-					$customer = $this->getCustomerByEmail($profile['email']);
-					if(!$customer){
-						foreach ($fields as $field){
-				      		if($field['enabled']) {
-				      			//checking if fields required for input
-				      			$popup = true;
-				      			break;
-				      		}
-				      	}
-				    }
-				}
+        try{
 
-				if(!$popup){
+			$hybridauth = new Hybrid_Auth( $this->setting );
+			$hybridauth::$logger->info('d_social_login: Start authantication.');
+			$adapter = $hybridauth->authenticate( $this->setting['provider'] );  
+			$hybridauth::$logger->info('d_social_login: Start getUserProfile.');
+			//get the user profile 
+			$profile = $adapter->getUserProfile();
+			$this->setting['profile'] = (array) $profile;
 
-					if(!$customer){
-						$this->load->model('account/customer');
-						$password = $this->generate_password();
-						$data['password'] = $password;
-						$data['confirm'] = $password;
-						$this->model_account_customer->addCustomer($data);
-						$this->customer->login($profile['email'], $password);
-						$this->provider_edit_customer($this->customer->getId(), $data);
-						$this->response->redirect($this->return_to_page($setting['return_page'], $this->session->data['d_social_login']['return_url']));
-					}else{
-						$this->customer->login($profile['email'], '', true);
-						$data = array(
-							    'provider' => $provider,
-							    'id' => $profile['identifier']
-						);
-						$this->provider_edit_customer($this->customer->getId(), $data);
-					
-						$this->response->redirect($this->session->data['d_social_login']['return_url']);
-					}
-				}else{
-						$this->language->load('module/d_social_login');
-						$sort_order = array(); 
-						foreach ($fields as $key => $value) {
-							if(isset($value['sort_order'])){
-				      			$sort_order[$key] = $value['sort_order'];
-							}
-				    	}
-						array_multisort($sort_order, SORT_ASC, $fields);
-						$data['fields'] = $fields;
-						$data['background_img'] = $setting['background_img'];
-						$data['background_color'] = $setting['providers'][ucfirst($provider)]['background_color'];
-
-						$this->load->model('localisation/country');
-						$data['countries'] = $this->model_localisation_country->getCountries();
-
-						$this->session->data['profile'] = $profile;
-						$data['profile'] = $profile;
-						$data['provider'] = $provider;
-						$data['profile_value'] = $data;
-						$data['button_sign_in_mail'] = $this->language->get('button_sign_in_mail');
-						$data['button_sign_in'] = $this->language->get('button_sign_in');
-						$data['text_none'] = $this->language->get('text_none');
-						$data['text_select'] = $this->language->get('text_select');
-						$data['text_email'] = $this->language->get('text_email');
-						$data['text_firstname'] = $this->language->get('text_firstname');
-						$data['text_lastname'] = $this->language->get('text_lastname');
-						$data['text_phone'] = $this->language->get('text_phone');
-						$data['text_address_1'] = $this->language->get('text_address_1');
-						$data['text_address_2'] = $this->language->get('text_address_1');
-						$data['text_city'] = $this->language->get('text_city');
-						$data['text_postcode'] = $this->language->get('text_postcode');
-						$data['text_country_id'] = $this->language->get('text_country_id');
-						$data['text_zone_id'] = $this->language->get('text_zone_id');
-						$data['text_company'] = $this->language->get('text_company');
-						$data['text_company_id'] = $this->language->get('text_company_id');
-						$data['text_tax_id'] = $this->language->get('text_tax_id');
-						$data['text_password'] = $this->language->get('text_password');
-						$data['text_confirm'] = $this->language->get('text_confirm');
-						$data['text_email_intro'] = $this->language->get('text_email_intro');
-
-						if(
-							isset( $_SERVER['HTTPS'] ) && ( $_SERVER['HTTPS'] == 'on' || $_SERVER['HTTPS'] == 1 )
-						|| 	isset( $_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https'
-						){
-							$data['http'] = HTTPS_SERVER;
-						}
-						else {
-							$data['http'] = HTTP_SERVER;
-						}
-
-						
-						if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/d_social_login/email.tpl')) {
-							 $this->response->setOutput($this->load->view($this->config->get('config_template') . '/template/d_social_login/email.tpl', $data));
-						} else {
-							 $this->response->setOutput($this->load->view('default/template/d_social_login/email.tpl', $data));
-						}
-					
-				}
-			}
-		}
-	}
-
-	public function create_with_email(){
-		$this->language->load('module/d_social_login');
-		$json = array();
-		$profile = array_merge($this->session->data['profile'], $this->request->post);
-		$error = false;
-
-		if($this->validate_email($profile['email'])){
-			$customer = $this->getCustomerByEmail($profile['email']);
-			if($customer){
-				$error = $this->language->get('error_email_taken');
-			}
-		}else{
-			$error = $this->language->get('error_email_incorrect');
-			$json['empty'][] = 'email';
-		}
-
-		$setting = $this->session->data['d_social_login'];
-		$fields = $setting['fields'];
-
-		foreach($fields as $field) {
-			if($field['enabled']){
-			  if($field['id'] == 'confirm'){
-			  	if(($profile['password'] != $profile['confirm'])){
-			  		$error = $this->language->get('error_password_and_confirm_different');
-			  		$json['empty'][] = 'confirm';
-			  	}
-			  }
-			   if ($this->request->post[$field['id']] == "") {
-			   	$error = $this->language->get('error_fill_all_fields');
-			   	$json['empty'][] = $field['id'];  
-			  }
-			}
-		}
-
-
-		if(!$error){
-
-				$json['msg'] = '';
-				$this->load->model('account/customer');
-
-				if($fields['firstname']['enabled']){
-					$firstname = $profile['firstname'];
-				}else{
-					$firstname = $profile['firstName'];
-				}
-
-				if($fields['lastname']['enabled']){
-					$lastname = $profile['lastname'];
-				}else{
-					$lastname = $profile['lastName'];
-				}
-
-				if($fields['country_id']['enabled']){
-					$country_id = $profile['country_id'];
-				}else{
-					if($profile['country']){
-						$country_id= $this->getCountryIdByName($profile['country']);
-					}elseif($profile['region']){
-						$country_id= $this->getCountryIdByName($profile['region']);
-					}else{
-						$country_id= $this->config->get('config_country_id');
-					}
-				}
-
-				if($fields['postcode']['enabled']){
-					$postcode = $profile['postcode'];
-				}else{
-					$postcode = $profile['zip'];
-				}
-
-				if($fields['zone_id']['enabled']){
-					$zone_id = $profile['zone_id'];
-				}else{
-					$zone_id = '';
-				}
-
-				if($fields['address_1']['enabled']){
-					$address_1 = $profile['address_1'];
-				}else{
-					$address_1 = $profile['address'];
-				}
-
-				if($fields['address_2']['enabled']){
-					$address_2 = $profile['address_2'];
-				}else{
-					$address_2 = '';
-				}
-
-				if($fields['company']['enabled']){
-					$json['msg'] .= $profile['company'];
-					$company = $profile['company'];
-				}else{
-					$company = '';
-				}
-				if($fields['company_id']['enabled']){
-					$json['msg'] .= $profile['company_id'];
-					$company_id = $profile['company_id'];
-				}else{
-					$company_id = '';
-				}
-				if($fields['tax_id']['enabled']){
-					$json['msg'] .= $profile['tax_id'];
-					$tax_id = $profile['tax_id'];
-				}else{
-					$tax_id = '';
-				}
-
-				if($fields['password']['enabled']){
-					$password = $profile['password'];
-				}else{
-					$password = $this->generate_password();
-				}
-					
-				$data = array(
-					    'firstname' => $firstname,
-					    'lastname' => $lastname,
-					    'email' => $profile['email'],
-					    'telephone' => $profile['phone'],
-					    'fax' => '',
-					    'company' => $company,
-					    'customer_group_id' => (isset($setting['customer_group']))? $setting['customer_group'] : '1',
-					    'company_id' => $company_id,
-					    'tax_id' => $tax_id,
-					    'address_1' => $address_1,
-					    'address_2' => $address_2,
-					    'city' => $profile['city'],
-					    'postcode' => $postcode,
-					    'country_id' => $country_id,
-					    'zone_id' => $zone_id,
-					    'password' => $password,
-					    'confirm' => $password,
-					    'newsletter' => '1',
-					    'agree' => '1',
-					    'provider' => $this->request->get['provider'],
-					    'id' => $profile['identifier']
+			$hybridauth::$logger->info('d_social_login: got UserProfile.'.serialize($this->setting['profile']));
+			$authentication_data = array(
+                    'provider' => $this->setting['provider'],
+                    'identifier' => $this->setting['profile']['identifier'],
+                    'web_site_url' => $this->setting['profile']['webSiteURL'],
+                    'profile_url' => $this->setting['profile']['profileURL'],
+                    'photo_url' => $this->setting['profile']['photoURL'],
+                    'display_name' => $this->setting['profile']['displayName'],
+                    'description' => $this->setting['profile']['description'],
+                    'first_name' => $this->setting['profile']['firstName'],
+                    'last_name' => $this->setting['profile']['lastName'],
+                    'gender' => $this->setting['profile']['gender'],
+                    'language' => $this->setting['profile']['language'],
+                    'age' => $this->setting['profile']['age'],
+                    'birth_day' => $this->setting['profile']['birthDay'],
+                    'birth_month' => $this->setting['profile']['birthMonth'],
+                    'birth_year' => $this->setting['profile']['birthYear'],
+                    'email' => $this->setting['profile']['email'],
+                    'email_verified' => $this->setting['profile']['emailVerified'],
+                    'phone' => $this->setting['profile']['phone'],
+                    'address' => $this->setting['profile']['address'],
+                    'country' => $this->setting['profile']['country'],
+                    'region' => $this->setting['profile']['region'],
+                    'city' => $this->setting['profile']['city'],
+                    'zip' => $this->setting['profile']['zip']
 				);
-				$json['data'] = $data;
-				$this->model_account_customer->addCustomer($data);
-				$this->customer->login($profile['email'], $password, true);
-				$this->provider_edit_customer($this->customer->getId(), $data);
-				$json['url'] = $this->return_to_page($setting['return_page'], $this->session->data['d_social_login']['return_url']);
-		}else{
-			$json['error'] = $error; 
+
+			$hybridauth::$logger->info('d_social_login: set authentication_data '.serialize($authentication_data));
+
+			//check by identifier
+			$customer_id = $this->model_module_d_social_login->getCustomerByIdentifier($this->setting['provider'], $this->setting['profile']['identifier']);
+
+			if($customer_id){
+				$hybridauth::$logger->info('d_social_login: getCustomerByIdentifier success.');
+				//login
+				$this->model_module_d_social_login->login($customer_id);
+
+				//redirect
+				$this->response->redirect($this->redirect);
+			}
+
+			//check by email
+			if($this->setting['profile']['email']){
+
+				$customer_id = $this->model_module_d_social_login->getCustomerByEmail($this->setting['profile']['email']);
+				if($customer_id){
+					$hybridauth::$logger->info('d_social_login: getCustomerByEmail success.');
+				}
+			}
+
+
+			if(!$customer_id){
+				$hybridauth::$logger->info('d_social_login: no customer_id. creating customer_data');
+				//prepare customer data
+				$address = array();
+
+	            if (!empty($this->setting['profile']['address'])) {
+	                $address[] = $this->setting['profile']['address'];
+	            }
+
+	            if (!empty($this->setting['profile']['region'])) {
+	                $address[] = $this->setting['profile']['region'];
+	            }
+
+	            if (!empty($this->setting['profile']['country'])) {
+	                $address[] = $this->setting['profile']['country'];
+	            }
+
+	   			$customer_data = array(
+	   				'email'      => $this->setting['profile']['email'],
+	            	'firstname'  => $this->setting['profile']['firstName'],
+	            	'lastname'   => $this->setting['profile']['lastName'],
+	            	'telephone'  => $this->setting['profile']['phone'],
+	            	'fax'        => false,
+	            	'newsletter' => $this->setting['newsletter'],
+	            	'customer_group_id' => (isset($this->setting['customer_group']))? $this->setting['customer_group'] : '1',
+	            	'company'    => false,
+	            	'address_1'  => ($address ? implode(', ', $address) : false),
+	            	'address_2'  => false,
+	            	'city'       => $this->setting['profile']['city'],
+	            	'postcode'   => $this->setting['profile']['zip'],
+	            	'country_id' => $this->model_module_d_social_login->getCountryIdByName($this->setting['profile']['country']),
+	            	'zone_id'    => $this->model_module_d_social_login->getZoneIdByName($this->setting['profile']['region']),
+	            	'password'   => ''
+	            );
+
+				$hybridauth::$logger->info('d_social_login: set customer_data '.serialize($customer_data));
+
+				//check if form required
+				$form = false;
+				foreach ($this->setting['fields'] as $field){
+		      		if($field['enabled']) {
+		      			//checking if fields required for input
+		      			$form = true;
+		      			break;
+		      		}
+		      	}
+
+		   		if(!$form){
+		   			$hybridauth::$logger->info('d_social_login: adding customer with customer_data');
+		   			$customer_data['password'] = $this->password();
+		   			$customer_id = $this->model_module_d_social_login->addCustomer($customer_data);
+		   		}else{
+		   			$hybridauth::$logger->info('d_social_login: need to use form');
+					$this->form($customer_data, $authentication_data);
+		   		}
+			}
+
+			if($customer_id){
+				$hybridauth::$logger->info('d_social_login: customer_id found');
+				$authentication_data['customer_id'] = (int) $customer_id;
+
+				$this->model_module_d_social_login->addAuthentication($authentication_data);
+				$hybridauth::$logger->info('d_social_login: addAuthentication');
+				//login
+				$this->model_module_d_social_login->login($customer_id);
+
+				//redirect
+				$this->response->redirect($this->redirect);
+			}
 		}
-		$this->response->setOutput(json_encode($json));	
+		catch( Exception $e ){  
+
+			switch ($e->getCode()){
+                case 0 : $error = "Unspecified error."; break;
+                case 1 : $error = "Hybriauth configuration error."; break;
+                case 2 : $error = "Provider not properly configured."; break;
+                case 3 : $error = "Unknown or disabled provider."; break;
+                case 4 : $error = "Missing provider application credentials."; break;
+                case 5 : $error = "Authentication failed. The user has canceled the authentication or the provider refused the connection."; break;
+                case 6 : $error = "User profile request failed. Most likely the user is not connected to the provider and he should to authenticate again.";
+                         $adapter->logout();
+                         break;
+                case 7 : $error = "User not connected to the provider.";
+                         $adapter->logout();
+                         break;
+                case 8 : $error = "Provider does not support this feature."; break;
+            }
+
+            $this->session->data['d_social_login_error'] = $error;
+
+			$error .= "\n\nHybridAuth Error: " . $e->getMessage();
+            $error .= "\n\nTrace:\n " . $e->getTraceAsString();
+
+			$this->log->write($error);
+
+			$this->response->redirect($this->redirect);
+		}
 	}
 
-	private function provider_edit_customer($customer_id, $data){
+	private function form($customer_data, $authentication_data){
+		$this->session->data['customer_data'] = $customer_data;
+		$this->session->data['authentication_data'] = $authentication_data;
+		$data['customer_data'] = $customer_data;
+		$data['authentication_data'] = $authentication_data;
+		$data['button_sign_in_mail'] = $this->language->get('button_sign_in_mail');
+		$data['button_sign_in'] = $this->language->get('button_sign_in');
+		$data['text_none'] = $this->language->get('text_none');
+		$data['text_select'] = $this->language->get('text_select');
+		$data['text_email'] = $this->language->get('text_email');
+		$data['text_firstname'] = $this->language->get('text_firstname');
+		$data['text_lastname'] = $this->language->get('text_lastname');
+		$data['text_phone'] = $this->language->get('text_phone');
+		$data['text_address_1'] = $this->language->get('text_address_1');
+		$data['text_address_2'] = $this->language->get('text_address_1');
+		$data['text_city'] = $this->language->get('text_city');
+		$data['text_postcode'] = $this->language->get('text_postcode');
+		$data['text_country_id'] = $this->language->get('text_country_id');
+		$data['text_zone_id'] = $this->language->get('text_zone_id');
+		$data['text_company'] = $this->language->get('text_company');
+		$data['text_company_id'] = $this->language->get('text_company_id');
+		$data['text_tax_id'] = $this->language->get('text_tax_id');
+		$data['text_password'] = $this->language->get('text_password');
+		$data['text_confirm'] = $this->language->get('text_confirm');
+		$data['text_email_intro'] = $this->language->get('text_email_intro');
 
-		$this->db->query("UPDATE " . DB_PREFIX . "customer SET `".$data['provider']."_id` = '" . $this->db->escape($data['id']) . "' WHERE customer_id = '" . (int)$customer_id . "'");
+		$data['background_img'] = $this->setting['background_img'];
+		$data['background_color'] = $this->setting['providers'][ucfirst($this->setting['provider'])]['background_color'];
+
+		$sort_order = array(); 
+		foreach ($this->setting['fields'] as $key => $value) {
+			if(isset($value['sort_order'])){
+      			$sort_order[$key] = $value['sort_order'];
+			}
+    	}
+		array_multisort($sort_order, SORT_ASC, $this->setting['fields']);
+		$data['fields'] = $this->setting['fields'];
+
+		$this->load->model('localisation/country');
+		$data['countries'] = $this->model_localisation_country->getCountries();
+
+		if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/d_social_login/form.tpl')) {
+			 $this->response->setOutput($this->load->view($this->config->get('config_template') . '/template/d_social_login/form.tpl', $data));
+		} else {
+			 $this->response->setOutput($this->load->view('default/template/d_social_login/form.tpl', $data));
+		}
+	}
+
+	public function register(){
+
+		$this->setup();
 		
-	}
-
-	private function get_customer_by_provider_id($provider, $id){
-		if($provider || $id){
-			$query = $this->db->query("SELECT * FROM " . DB_PREFIX . "customer WHERE `".$provider."_id` = '" . $this->db->escape($id) . "'");
-			return $query->row;
-		}else{
+		if($this->request->server['REQUEST_METHOD'] != 'POST'){
 			return false;
 		}
+		$this->language->load($this->route);
+		$this->load->model($this->route);
+
+		$json = array();
+		$customer_data = array_merge($this->session->data['customer_data'], $this->request->post);
+		$authentication_data = $this->session->data['authentication_data'];
+		$this->setting = $this->config->get('d_social_login_setting');
+
+		// check email
+		if($this->validate_email($customer_data['email'])){
+			$customer_id = $this->model_module_d_social_login->getCustomerByEmail($customer_data['email']);
+			if($customer_id){
+				$json['error']['email'] = $this->language->get('error_email_taken');
+			}
+		}else{
+			
+			$json['error']['email'] =  $this->language->get('error_email_incorrect');
+		}
+
+		// fields
+		foreach($this->setting['fields'] as $field) {
+			if($field['enabled']){
+			  	if($field['id'] == 'confirm'){
+			  		if(($customer_data['password'] != $customer_data['confirm'])){
+			  			$json['error']['confirm'] = $this->language->get('error_password_and_confirm_different');
+			  		}
+			  	}
+				if ($this->request->post[$field['id']] == "") {
+			   		$json['error'][$field['id']] = $this->language->get('error_fill_all_fields');  
+			  	}
+			}
+		}
+
+
+		if(empty($json['error'])){
+
+				if(!$setting['fields']['password']['enabled']){
+					$customer_data['password'] = $this->password();
+				}
+
+				$customer_id = $this->model_module_d_social_login->addCustomer($customer_data);
+
+				$authentication_data['customer_id'] = (int) $customer_id;
+				$this->model_module_d_social_login->addAuthentication($authentication_data);
+
+				//login
+				$this->model_module_d_social_login->login($customer_id);
+
+				//redirect
+				$json['redirect'] = $this->redirect;
+		}
+
+		$this->response->addHeader('Content-Type: application/json');
+		$this->response->setOutput(json_encode($json));
 	}
 
 	public function validate_email($email){
@@ -475,19 +366,7 @@ birthYear
 		}
 	}
 
-	private function getCountryIdByName($country_name){
-		$query = $this->db->query("SELECT * FROM " . DB_PREFIX . "country WHERE LOWER(name) LIKE '" . $this->db->escape(utf8_strtolower($country_name)). "' AND status = '1'");
-		
-		$country = $query->row;
-		if(isset($country['country_id'])){
-			return $country['country_id'];
-		}else{
-			return $this->config->get('config_country_id');
-		}
-		
-	}
-
-	private function generate_password($length = 8) {
+	private function password($length = 8) {
 	    $chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
 	    $count = mb_strlen($chars);
 
@@ -499,66 +378,43 @@ birthYear
 	    return $result;
 	}
 
-	public function getCustomerByEmail($email) {
-		$query = $this->db->query("SELECT * FROM " . DB_PREFIX . "customer WHERE LOWER(email) = '" . $this->db->escape(utf8_strtolower($email)) . "'");
-		
-		return $query->row;
-	}
+	private function setup(){
+		// correct &amp; in url
+        if (isset($this->request->get) && isset($_GET)) {
 
-	public function country() {
-		$json = array();
-		
-		$this->load->model('localisation/country');
+            foreach ($this->request->get as $key => $value) {
+                $this->request->get[str_replace('amp;', '', $key)] = $value;
+            }
 
-    	$country_info = $this->model_localisation_country->getCountry($this->request->get['country_id']);
-		
-		if ($country_info) {
-			$this->load->model('localisation/zone');
+            foreach ($_GET as $key => $value) {
+                $_GET[str_replace('amp;', '', $key)] = $value;
+            }
+        }
 
-			$json = array(
-				'country_id'        => $country_info['country_id'],
-				'name'              => $country_info['name'],
-				'iso_code_2'        => $country_info['iso_code_2'],
-				'iso_code_3'        => $country_info['iso_code_3'],
-				'address_format'    => $country_info['address_format'],
-				'postcode_required' => $country_info['postcode_required'],
-				'zone'              => $this->model_localisation_zone->getZonesByCountryId($this->request->get['country_id']),
-				'status'            => $country_info['status']		
-			);
-		}
-		
-		$this->response->setOutput(json_encode($json));
-	}
-
-	public function return_to_page($return_url, $viewed_url){
-		if($return_url == 'viewed'){
-			$result = $viewed_url;
-		}
-
-		if($return_url == 'address'){
-			$address_id = $this->customer->getAddressId();
-			if($address_id){
-				$result = $this->url->link('account/address/update', 'address_id='.$address_id, 'SSL');
-			}else{
-				$result = $viewed_url;
-			}
-		}
-
-		if($return_url == 'home'){
-			$result = $this->url->link('common/home');
-		}
-
-		if($return_url == 'account'){
-			$result = $this->url->link('account/account', '', 'SSL');
-		}
-
-		return htmlspecialchars_decode($result);
+        // set redirect address
+        if(isset($this->session->data['redirect'])){
+        	$this->redirect = $this->session->data['redirect'];
+        }else{
+        	$this->redirect =  $this->url->link('account/account', '', 'SSL');
+        }
 
 	}
 
+	private function getCountryId($profile){
+		$this->load->model($this->route);
 
-	public static function getCurrentUrl( $request_uri = true ) 
-	{
+		if($profile['country']){
+			return $this->model_module_d_social_login->getCountryIdByName($profile['country']);
+		}
+
+		if($profile['region']){
+			return $this->model_module_d_social_login->getCountryIdByName($profile['region']);
+		}
+		
+		return $this->config->get('config_country_id');
+	}
+
+	public static function getCurrentUrl( $request_uri = true ) {
 		if(
 			isset( $_SERVER['HTTPS'] ) && ( $_SERVER['HTTPS'] == 'on' || $_SERVER['HTTPS'] == 1 )
 		|| 	isset( $_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https'
@@ -588,5 +444,5 @@ birthYear
 		// return current url
 		return $url;
 	}
+
 }
-?>

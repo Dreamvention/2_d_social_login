@@ -55,7 +55,7 @@
 }
 #d_social_login .dsl-button.dsl-button-huge .l-side {
   font-size: 26px;
-  padding: 8px 10px 0px 8px;
+  padding: 8px 10px 8px 8px;
 }
 #d_social_login .dsl-button.dsl-button-huge .r-side {
   font-size: 15px;
@@ -104,8 +104,11 @@ a [class*="dsl-icon-"],
 }
 </style>
 <div id="d_social_login">
+  <?php if($error){ ?>
+  <div class="alert alert-warning"><?php echo $error; ?></div>
+  <?php } ?>
   <span class="dsl-label dsl-label-<?php echo $size; ?>"><?php echo $button_sign_in; ?></span>
-  <?php foreach($providers as $key => $provider){ ?><?php if ($provider['enabled']) { ?><a id="dsl_<?php echo $provider['id']; ?>_button" class="dsl-button dsl-button-<?php echo $size; ?>" href="index.php?route=module/d_social_login/provider_login&provider=<?php echo $key; ?>"><span class="l-side"><span class="dsl-icon dsl-icon-<?php echo $provider['id']; ?>"></span></span><span class="r-side"><?php echo $provider['heading']; ?></span></a><?php }  ?><?php } ?>
+  <?php foreach($providers as $key => $provider){ ?><?php if ($provider['enabled']) { ?><a id="dsl_<?php echo $provider['id']; ?>_button" class="dsl-button dsl-button-<?php echo $size; ?>" href="index.php?route=module/d_social_login/login&provider=<?php echo $key; ?>"><span class="l-side"><span class="dsl-icon <?php echo $provider['icon']; ?>"></span></span><span class="r-side"><?php echo $provider['heading']; ?></span></a><?php }  ?><?php } ?>
 </div>
 <script>
 $( document ).ready(function() {

@@ -1,43 +1,56 @@
 <?php 
-$_['d_social_login_setting'] = array(
-    "name" => "",
-    "size" => "icon", 
+$_['d_social_login'] = array(
     "base_url" => "", 
-    "return_page" => "viewed",
-    "return_url" => "",
-    "background_img" => "data/d_social_login/d_social_login_bg.png",
-    "providers" => array ( 
+    
+    "providers" => array( 
 
-      "Google" => array ( 
+      "Google" => array( 
         "enabled" => true,
-        "keys"    => array ( "id" => "", "secret" => "" ), 
+        "keys"    => array( "id" => "", "secret" => "" ), 
+        "scope" => 'https://www.googleapis.com/auth/userinfo.email',
         "id"  => 'google',
         "sort_order" => 1,
-        "icon" => 'icon-google-plus',
+        "icon" => 'dsl-google-plus',
         "background_color" => '#dd4b39',
         "background_color_active" => '#be3e2e',
       ),
 
-      "Facebook" => array ( 
+      "Facebook" => array( 
         "enabled" => true,
-        "keys"    => array ( "id" => "", "secret" => "" ), 
+        "keys"    => array ( "id" => "", "secret" => "" ),
+        "scope" => 'email', 
         "id"  => 'facebook',
         "sort_order" => 2,
-        "icon" => 'icon-facebook',
+        "icon" => 'dsl-facebook',
         "background_color" => '#4864b4',
         "background_color_active" => '#3a5192',
       ),
 
       "LinkedIn" => array ( 
         "enabled" => true,
-        "keys"    => array ( "key" => "", "secret" => "" ),
+        "keys"    => array( "key" => "", "secret" => "" ),
         "id"  => 'linkedin',
         "sort_order" => 5,
-        "icon" => 'icon-linkedin',
+        "icon" => 'dsl-linkedin',
         "background_color" => '#2a72b6',
         "background_color_active" => '#21588d',
-      )
+      ),
+
+      "Yahoo" => array (
+        "enabled" => true,
+        "keys"    => array ( "key" => "", "secret" => "" ),
+        "id"  => 'yahoo',
+        "sort_order" => 11,
+        "icon" => 'dsl-yahoo',
+        "background_color" => '#500095',
+        "background_color_active" => '#3d026f',
+      ),
+
     ),
+    "debug_mode" => false,
+    //system/logs/d_social_login.txt
+    "debug_file" => "d_social_login.txt", 
+
     'fields' => array('firstname' => array('id' => 'firstname', 'enabled' => true, 'sort_order' => 1, 'type' => 'text'),
                       'lastname' => array('id' => 'lastname', 'enabled' => true, 'sort_order' => 2, 'type' => 'text'),
                       'phone' => array('id' => 'phone', 'enabled' => true, 'sort_order' => 3, 'type' => 'text', 'mask' => '9(999) 9999-9999?9'),
@@ -53,10 +66,16 @@ $_['d_social_login_setting'] = array(
                       'password' => array('id' => 'password', 'enabled' => true, 'sort_order' => 13, 'type' => 'password'),
                       'confirm' => array('id' => 'confirm', 'enabled' => true, 'sort_order' => 14, 'type' => 'password')
     ),
-    "debug_mode" => false,
-    "base_url_index" => true,
+    
 
-    "debug_file" => "logs/d_social_login.txt",  
+    "size" => "icon",
+    "return_page_url" => "",
+    "config" => "d_social_login",
+    "customer_group" => 1,
+    "newsletter" => 1,
+
+    //image/catalog/d_social_login/bg.png
+    "background_img" => "catalog/d_social_login/bg.png",
   );
 
 ?>
