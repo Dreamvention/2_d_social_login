@@ -179,7 +179,7 @@
                       <div class="col-sm-10">
                         <select id="config" onChange="changeConfig($(this).val())" class="form-control" name="<?php echo $id;?>_setting[config]">
                           <?php foreach ($config_files as $config_file) { ?>
-                          <option value="<?php echo $config_file; ?>" <?php echo ($config_file == $setting['config'])? 'selected="selected"' : ''; ?>><?php echo $config_file; ?></option>
+                          <option value="<?php echo $config_file; ?>" <?php echo ($config_file == $config)? 'selected="selected"' : ''; ?>><?php echo $config_file; ?></option>
                           <?php } ?>
                         </select>
                       </div>
@@ -373,7 +373,7 @@
 <script type="text/javascript"><!--
 function changeConfig(config){
   console.log('changeConfig')
-  $('#content').append('<form action="<?php echo $module_link; ?>&store_id='+$('#store').val() + '" id="config_update" method="post" style="display:none;"><input type="text" name="config" value="' + config + '" /></form>');
+  $('#content').append('<form action="<?php echo $module_link; ?><?php echo ($stores) ? "&store_id='+$('#store').val() +'" : ''; ?>" id="config_update" method="post" style="display:none;"><input type="text" name="config" value="' + config + '" /></form>');
   $('#config_update').submit();
 }
 // sorting fields

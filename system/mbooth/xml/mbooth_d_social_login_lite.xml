@@ -1,10 +1,10 @@
 <extension>
-    <id>d_social_login</id>
+    <id>d_social_login_lite</id>
     <name>Social Login</name>
     <description>Social login is a module that addes the ability to create an account in the webshop with a scoial network account and then login in by simply clicking a button. No need to remeber the password. It has Facebook, Paypal, Google+, Twitter, Linkeding, Vknontakte, Windows live, Tumblr and more</description>
     <type>module</type>
     <description>Adds social login buttons to opencart</description>
-    <version>4.0.1</version>
+    <version>4.0.0</version>
 	<opencart_version>2.0.0.0,2.0.1.0,2.0.1.1,2.0.2.0,2.0.3.1</opencart_version>
     <mbooth_version>2.3</mbooth_version>
     <author>Dreamvention</author>
