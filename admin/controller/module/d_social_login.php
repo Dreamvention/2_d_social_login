@@ -530,7 +530,7 @@ class ControllerModuleDSocialLogin extends Controller {
 			return 'mbooth_'. $this->id . '.xml';
 		} else{
 			foreach ($this->lite as $file){
-				if (file_exists(DIR_SYSTEM . 'mbooth/xml/mbooth_'. $this->id . '_' . $file . '.php')) {
+				if (file_exists(DIR_SYSTEM . 'mbooth/xml/mbooth_'. $this->id . '_' . $file . '.xml')) {
 					$this->prefix = '_' . $file;
 					return $this->id . '_' . $file;
 				}
