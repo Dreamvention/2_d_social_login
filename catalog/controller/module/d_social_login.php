@@ -68,7 +68,7 @@ class ControllerModuleDSocialLogin extends Controller {
 
 		$this->setting = $this->config->get('d_social_login_setting');
 		
-		$this->setting['base_url']   = HTTP_SERVER . 'd_social_login.php';
+		$this->setting['base_url']   = $this->config->get('config_secure') ? HTTPS_SERVER . 'd_social_login.php' : HTTP_SERVER . 'd_social_login.php';
         $this->setting['debug_file'] = DIR_LOGS . $this->setting['debug_file'];
         $this->setting['debug_mode'] = (bool) $this->setting['debug_mode'];
 
