@@ -262,6 +262,8 @@ class ControllerModuleDSocialLogin extends Controller {
 		$data['header'] = $this->load->controller('common/header');
 		$data['column_left'] = $this->load->controller('common/column_left');
 		$data['footer'] = $this->load->controller('common/footer');
+
+		$this->db_authentication();
 				
 		$this->response->setOutput($this->load->view($this->route . '.tpl', $data));
 	}
@@ -345,6 +347,12 @@ class ControllerModuleDSocialLogin extends Controller {
 		// 	 $this->db->query("ALTER TABLE " . DB_PREFIX . "customer ADD foursquare_id VARCHAR( 255 )  NOT NULL");
 		// }
 
+		$this->db_authentication();
+
+		$this->getUpdate(1);
+	}
+
+	public function db_authentication(){
 		$this->db->query("CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "customer_authentication` (
 		  `customer_authentication_id` int(11) NOT NULL AUTO_INCREMENT,
 		  `customer_id` int(11) NOT NULL,
@@ -375,8 +383,6 @@ class ControllerModuleDSocialLogin extends Controller {
 		  PRIMARY KEY (`customer_authentication_id`),
 		  UNIQUE KEY `identifier` (`identifier`, `provider`)
 		) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=6 ;");
-
-		  $this->getUpdate(1);
 	}
 		 
 	public function uninstall() {
