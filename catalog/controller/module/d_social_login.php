@@ -138,6 +138,9 @@ class ControllerModuleDSocialLogin extends Controller {
 				$this->response->redirect($this->redirect);
 			}
 
+			$customer_id = $this->model_module_d_social_login->getCustomerByIdentifierOld($this->setting['provider'], $this->setting['profile']['identifier']);
+
+
 			//check by email
 			if($this->setting['profile']['email']){
 

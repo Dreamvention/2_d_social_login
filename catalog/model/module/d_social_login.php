@@ -15,6 +15,27 @@ class ModelModuleDSocialLogin extends Model {
         }
     }
 
+     public function getCustomerByIdentifierOld($provider, $identifier) {
+        $query = $this->db->query("SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = '".DB_DATABASE."' AND TABLE_NAME = '" . DB_PREFIX . "customer' ORDER BY ORDINAL_POSITION"); 
+        $result = $query->rows; 
+        $columns = array();
+        foreach($result as $column){
+         $columns[] = $column['COLUMN_NAME'];
+        }
+
+        if(in_array(strtolower($provider).'_id', $columns)){
+            $result = $this->db->query("SELECT * FROM " . DB_PREFIX . "customer WHERE `".strtolower($provider)."_id` = '" . $this->db->escape($identifier) . "'");
+            
+            if ($result->num_rows) {
+                return (int) $result->row['customer_id'];
+            } else {
+                return false;
+            }
+        }else{
+            return false;
+        } 
+    }
+
     public function getCustomerByEmail($email) {
         $result = $this->db->query("SELECT customer_id FROM " . DB_PREFIX . "customer WHERE LOWER(email) = '" . $this->db->escape(utf8_strtolower($email)) . "' LIMIT 1");
 
