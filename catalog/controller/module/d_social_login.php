@@ -341,7 +341,7 @@ class ControllerModuleDSocialLogin extends Controller {
 
 		if(empty($json['error'])){
 
-				if(!$setting['fields']['password']['enabled']){
+				if(!$this->setting['fields']['password']['enabled']){
 					$customer_data['password'] = $this->password();
 				}
 
