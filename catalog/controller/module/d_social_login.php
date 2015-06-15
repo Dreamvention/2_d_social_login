@@ -253,6 +253,7 @@ class ControllerModuleDSocialLogin extends Controller {
 	private function form($customer_data, $authentication_data){
 		$this->session->data['customer_data'] = $customer_data;
 		$this->session->data['authentication_data'] = $authentication_data;
+		$data['provider'] = $this->setting['provider'];
 		$data['customer_data'] = $customer_data;
 		$data['authentication_data'] = $authentication_data;
 		$data['button_sign_in_mail'] = $this->language->get('button_sign_in_mail');
