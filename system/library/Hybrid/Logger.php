@@ -39,7 +39,7 @@ class Hybrid_Logger
 	public static function debug( $message, $object = NULL )
 	{
 		if( Hybrid_Auth::$config["debug_mode"] === true ){
-			$datetime = new DateTime();
+			$datetime = new DateTime('now',  new DateTimeZone( 'UTC' ));
 			$datetime =  $datetime->format(DATE_ATOM);
 
 			file_put_contents(
@@ -57,7 +57,7 @@ class Hybrid_Logger
 	public static function info( $message )
 	{
 		if( in_array(Hybrid_Auth::$config["debug_mode"], array(true, 'info'), true) ){
-			$datetime = new DateTime();
+			$datetime = new DateTime('now',  new DateTimeZone( 'UTC' ));
 			$datetime =  $datetime->format(DATE_ATOM);
 
 			file_put_contents(
@@ -76,7 +76,7 @@ class Hybrid_Logger
 	public static function error($message, $object = NULL)
 	{
 		if(isset(Hybrid_Auth::$config["debug_mode"]) && in_array(Hybrid_Auth::$config["debug_mode"], array(true, 'info', 'error'), true) ){
-			$datetime = new DateTime();
+			$datetime = new DateTime('now',  new DateTimeZone( 'UTC' ));
 			$datetime =  $datetime->format(DATE_ATOM);
 
 			file_put_contents(
