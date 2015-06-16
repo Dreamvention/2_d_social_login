@@ -231,14 +231,14 @@ class ControllerModuleDSocialLogin extends Controller {
                 case 4 : $error = "Missing provider application credentials."; break;
                 case 5 : $error = "Authentication failed. The user has canceled the authentication or the provider refused the connection."; break;
                 case 6 : $error = "User profile request failed. Most likely the user is not connected to the provider and he should to authenticate again.";
-                         $adapter->logout();
+                         if (isset($adapter)){$adapter->logout();}
                          break;
                 case 7 : $error = "User not connected to the provider.";
-                         $adapter->logout();
                          break;
                 case 8 : $error = "Provider does not support this feature."; break;
             }
-
+            if (isset($adapter)){$adapter->logout();}
+            
             $this->session->data['d_social_login_error'] = $error;
 
 			$error .= "\n\nHybridAuth Error: " . $e->getMessage();
