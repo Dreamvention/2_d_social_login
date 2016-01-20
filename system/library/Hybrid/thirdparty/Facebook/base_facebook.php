@@ -171,13 +171,6 @@ abstract class BaseFacebook
   );
 
   /**
-   * The decoded response object.
-   *
-   * @var mixed
-   */
-  protected $response;
-
-  /**
    * The Application ID.
    *
    * @var string
@@ -459,16 +452,6 @@ abstract class BaseFacebook
   }
 
   /**
-   * Return the response object afer the fact
-   *
-   * @return mixed
-   */
-  public function getResponse()
-  {
-      return $this->response;
-  }
-
-  /**
    * Determines and returns the user access token, first using
    * the signed request if present, and then falling back on
    * the authorization code if present.  The intent is to
@@ -672,21 +655,6 @@ abstract class BaseFacebook
       array_merge(array(
         'next' => $this->getCurrentUrl(),
         'access_token' => $this->getUserAccessToken(),
-      ), $params)
-    );
-  }
-
-  /**
-   * Get a login status URL to fetch the status from Facebook.
-   *
-   * @param array $params Provide custom parameters
-   * @return string The URL for the logout flow
-   */
-  public function getLoginStatusUrl($params=array()) {
-    return $this->getLoginUrl(
-      array_merge(array(
-        'response_type' => 'code',
-        'display' => 'none',
       ), $params)
     );
   }
@@ -930,7 +898,7 @@ abstract class BaseFacebook
     }
     // @codeCoverageIgnoreEnd
 
-    return $this->response = $result;
+    return $result;
   }
 
   /**

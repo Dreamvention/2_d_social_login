@@ -43,21 +43,22 @@ $_['entry_debug_mode']          = 'Debug mode';
 $_['entry_iframe']              = 'Set store as background';
 
 $_['entry_sort_order']          = 'Sort and activate social login buttons. You can also set the colors of the buttons and their color when the button is pushed. The color of the button will be used as the background color for the last popup screen:';
-$_['text_google']               = 'Google+';
-$_['text_facebook']             = 'Facebook';
-$_['text_twitter']              = 'Twitter';
-$_['text_live']                 = 'Live';
-$_['text_linkedin']             = 'LinkedIn';
-$_['text_vkontakte']            = 'Vkontakte';
-$_['text_odnoklassniki']        = 'Odnoklassniki';
-$_['text_mailru']               = 'Mail.ru';
-$_['text_yandex']               = 'Yandex';
-$_['text_instagram']            = 'Instagram';
-$_['text_paypal']               = 'Paypal';
-$_['text_vimeo']                = 'Vimeo';
-$_['text_tumblr']               = 'Tumblr';
-$_['text_yahoo']                = 'Yahoo';
-$_['text_foursquare']           = 'Foursquare';
+
+$_['text_instructions'] = array(
+        'google_plus'   => 'Google+',
+        'facebook'      => 'Facebook',
+        'twitter'       => 'Twitter',
+        'windows'       => 'Live',
+        'linkedin'      => 'Linkedin',
+        'vkontakte'     => 'vkontakte',
+        'yandex'        => 'Yandex',
+        'paypal'        => 'Paypall',
+        'instagram'     => 'Instagram',
+        'tumblr'        => 'Tumbler',
+        'yahoo'         => 'Yahoo',
+        'foursquare'    => 'Foursquare',
+        'odnoklassniki' => 'Odnoklassniki',
+    );
 
 $_['text_background_color']     = 'Button color';
 $_['text_background_color_active'] = 'on Push';

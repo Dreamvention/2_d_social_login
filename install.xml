@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<modification>
+    <name>Social Login</name>
+    <code>d_social_login</code>
+    <version>4.3.4</version>
+    <author>Dreamvention</author>
+    <link>https://dreamvention.zendesk.com</link>	
+    <file path="admin/model/sale/customer.php">
+        <operation>
+            <search><![CDATA[$this->db->query("DELETE FROM " . DB_PREFIX . "customer WHERE customer_id = '" . (int)$customer_id . "'");]]></search>
+            <add  position="after">
+                    <![CDATA[$this->db->query("DELETE FROM " . DB_PREFIX . "customer_authentication WHERE customer_id = '" . (int)$customer_id . "'"); //vqmod_d_social_login.xml]]>
+            </add>
+        </operation>
+    </file>
+</modification>

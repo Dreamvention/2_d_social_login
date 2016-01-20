@@ -10,7 +10,9 @@ class ControllerModuleDSocialLogin extends Controller {
 	public function __construct($registry) {
 		parent::__construct($registry);
 		$this->load->model('module/d_social_login');
+
 		$this->mbooth = $this->model_module_d_social_login->getMboothFile($this->id, $this->sub_versions);
+
 	}
 
 	public function index() {
@@ -27,7 +29,7 @@ class ControllerModuleDSocialLogin extends Controller {
 		}
 
 		//scripts
-		$this->document->addStyle('view/stylesheet/bootstrap.css');
+		$this->document->addStyle('view/stylesheet/shopunity/bootstrap.css');
 		$this->document->addScript('view/javascript/shopunity/bootstrap-sortable.js');
 		$this->document->addScript('view/javascript/shopunity/tinysort/jquery.tinysort.min.js');
 		$this->document->addStyle('view/javascript/shopunity/colorpicker/css/bootstrap-colorpicker.min.css');
@@ -78,6 +80,7 @@ class ControllerModuleDSocialLogin extends Controller {
 		$this->document->setTitle($this->language->get('heading_title_main'));
 		$data['heading_title'] = $this->language->get('heading_title_main');
 		$data['text_edit'] = $this->language->get('text_edit');
+				
 		// Variable
 		$data['id'] = $this->id;
 		$data['route'] = $this->route;
@@ -125,22 +128,7 @@ class ControllerModuleDSocialLogin extends Controller {
 		$data['button_get_update'] = $this->language->get('button_get_update');
 
 		$data['entry_sort_order'] = $this->language->get('entry_sort_order');
-		$data['text_facebook'] = $this->language->get('text_facebook');
-		$data['text_google'] = $this->language->get('text_google');
-		$data['text_twitter'] = $this->language->get('text_twitter');
-		$data['text_live'] = $this->language->get('text_live');
-		$data['text_linkedin'] = $this->language->get('text_linkedin');
-		$data['text_vkontakte'] = $this->language->get('text_vkontakte');
-		$data['text_odnoklassniki'] = $this->language->get('text_odnoklassniki');
-		$data['text_mailru'] = $this->language->get('text_mailru');
-		$data['text_yandex'] = $this->language->get('text_yandex');
-		$data['text_instagram'] = $this->language->get('text_instagram');
-		$data['text_paypal'] = $this->language->get('text_paypal');
-		$data['text_vimeo'] = $this->language->get('text_vimeo');
-		$data['text_tumblr'] = $this->language->get('text_tumblr');
-		$data['text_yahoo'] = $this->language->get('text_yahoo');
-		$data['text_foursquare'] = $this->language->get('text_foursquare');
-
+		$data['text_instructions'] = $this->language->get('text_instructions');
 
 		$data['entry_fields_sort_order'] = $this->language->get('entry_fields_sort_order');
 		$data['text_firstname'] = $this->language->get('text_firstname');
@@ -186,6 +174,7 @@ class ControllerModuleDSocialLogin extends Controller {
 
 		// Instructions
 		$data['text_instructions_full'] = $this->language->get('text_instructions_full');
+		$data['text_instructions_tabs'] = $this->language->get('text_instructions_tabs');
 		$data['text_debug_file_into'] = $this->language->get('text_debug_file_into');
 		$data['entry_debug_file'] = $this->language->get('entry_debug_file');
 
@@ -205,7 +194,7 @@ class ControllerModuleDSocialLogin extends Controller {
 		$data['clear_debug_file'] = str_replace('&amp;', '&', $this->url->link($this->route.'/clearDebugFile', 'token=' . $this->session->data['token'], 'SSL'));
 		
 		//setting 
-		$setting = $this->model_setting_setting->getSetting($this->id, $store_id);
+//		$setting = $this->model_setting_setting->getSetting($this->id, $store_id); /* нахера эта строчка ???? */
 		$setting = (isset($setting[$this->id.'_setting'])) ? $setting[$this->id.'_setting'] : '';
 
 		$this->config->load($data['config']);
