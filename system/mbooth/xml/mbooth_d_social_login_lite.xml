@@ -4,13 +4,13 @@
     <description>Social login is a module that addes the ability to create an account in the webshop with a scoial network account and then login in by simply clicking a button. No need to remeber the password. It has Facebook, Paypal, Google+, Twitter, Linkeding, Vknontakte, Windows live, Tumblr and more</description>
     <type>module</type>
     <description>Adds social login buttons to opencart</description>
-    <version>4.3.2</version>
+    <version>4.3.3</version>
 	<opencart_version>2.0.0.0,2.0.1.0,2.0.1.1,2.0.2.0,2.0.3.1,2.1.0.1</opencart_version>
     <mbooth_version>2.3</mbooth_version>
     <author>Dreamvention</author>
     <files>
 	<!-- xml -->
-		<file>system/mbooth/xml/mbooth_d_social_login_lite.xml</file>
+
 		<file>d_social_login.php</file>
 		<file>d_social_login_live.php</file>
 	<!-- admin -->
@@ -27,9 +27,10 @@
 		<file>catalog/view/theme/default/template/module/d_social_login.tpl</file>
 		<file>catalog/view/theme/default/template/d_social_login/form.tpl</file>
 	<!-- vqmod -->
-		<file>vqmod/xml/a_vqmod_d_social_login.xml</file>
+	 
 	<!-- system -->	
-		<file>system/config/d_social_login.php</file>
+        <file>system/mbooth/xml/mbooth_d_social_login_lite.xml</file>
+		<file>system/config/d_social_login_lite.php</file>
 		<file>system/logs/d_social_login.txt</file>
 	</files>
 	<dirs>
