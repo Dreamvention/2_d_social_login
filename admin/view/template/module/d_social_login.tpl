@@ -156,6 +156,14 @@
                   </div>
 
                   <div class="form-group">
+                      <label class="col-sm-2 control-label" for="input_iframe"><?php echo $entry_iframe; ?></label>
+                      <div class="col-sm-10">
+                        <input type="hidden" name="<?php echo $id;?>_setting[iframe]" value="0" />
+                        <input type="checkbox" name="<?php echo $id;?>_setting[iframe]" <?php echo ($setting['iframe'])? 'checked="checked"':'';?> value="1" id="input_iframe"/>
+                      </div>
+                  </div>
+
+                  <div class="form-group">
                       <label class="col-sm-2 control-label" for="input_debug_mode"><?php echo $entry_debug_mode; ?></label>
                       <div class="col-sm-10">
                         <input type="hidden" name="<?php echo $id;?>_setting[debug_mode]" value="0" />
@@ -197,10 +205,12 @@
                             <div class="row">
                               <div class="col-sm-2">
                               <span for="d_social_login_modules_providers_<?php echo $key; ?>_enabled">
+                                <label >
+                                  <i class="<?php echo $provider['icon']; ?>"></i> 
+                                <?php echo ${'text_'.$provider['id']}; ?></label ><br/>
                                 <input type="hidden" name="<?php echo $id;?>_setting[providers][<?php echo $key; ?>][enabled]" value="0" />
                                 <input type="checkbox" name="<?php echo $id;?>_setting[providers][<?php echo $key; ?>][enabled]" <?php echo ($provider['enabled'])? 'checked="checked"':'';?> value="1" id="<?php echo $id;?>_setting_providers_<?php echo $key; ?>_enabled"/>
-                                <i class="<?php echo $provider['icon']; ?>"></i> 
-                                <?php echo ${'text_'.$provider['id']}; ?>
+                                
                               </span>
                               <input type="hidden" name="<?php echo $id;?>_setting[providers][<?php echo $key; ?>][sort_order]" class="sort-value" value="<?php echo $provider['sort_order']; ?>" /><span class="dsl-icon-<?php echo $provider['id']; ?>"></span>
                               </div>
@@ -255,12 +265,12 @@
                             <div class="col-sm-5">
                             <input type="hidden" name="<?php echo $id;?>_setting[fields][<?php echo $field['id']; ?>][enabled]" value="0" />
                             <input type="checkbox" name="<?php echo $id;?>_setting[fields][<?php echo $field['id']; ?>][enabled]" <?php echo ($field['enabled'])? 'checked="checked"':'';?> value="1" id="<?php echo $id;?>_setting_fields_<?php echo $field['id']; ?>_enabled" />
-                            <label for="<?php echo $id;?>_setting_fields_<?php echo $field['id']; ?>_enabled"><?php echo ${'text_'.$field['id']}; ?></label>
+                            <label for="<?php echo $id;?>_setting_fields_<?php echo $field['id']; ?>_enabled"><?php echo ${ 'text_'.$field['id'] }; ?></label>
                             <input type="hidden" name="<?php echo $id;?>_setting[fields][<?php echo $field['id']; ?>][sort_order]" class="sort-value" value="<?php echo $field['sort_order']; ?>" />
                             <input type="hidden" name="<?php echo $id;?>_setting[fields][<?php echo $field['id']; ?>][type]" value="<?php echo $field['type']; ?>" />
                             <input type="hidden" name="<?php echo $id;?>_setting[fields][<?php echo $field['id']; ?>][id]" value="<?php echo $field['id']; ?>" />
                             </div>
-                            <?php if(isset($field['mask'])) {?>
+                            <?php if(isset($field['mask'])) { ?>
                               <label class="col-sm-2">
                                 <?php echo $text_mask; ?>
                               </label>
@@ -380,6 +390,9 @@ function changeConfig(config){
 $('.sortable > tr').tsort({attr:'sort-data'});
 $(function () {
   
+  $("[type='checkbox']").bootstrapSwitch({
+    'onColor': 'success'
+  });
 
   $(".sortable").sortable({
     //containerSelector: '.sortable',

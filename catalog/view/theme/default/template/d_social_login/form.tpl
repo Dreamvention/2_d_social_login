@@ -10,14 +10,34 @@ body{
   background: <?php echo $background_color; ?>;
   background-image: url('image/<?php echo $background_img; ?>');
   font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+  margin: 0px;
 }
-
+#iframe { 
+  position: absolute; 
+  top:0;
+  float: left; 
+  clear: both; 
+  width: 100%; 
+  height: 100%; 
+  z-index: 0; 
+  left no-repeat; }
 #dsl_email{
   width: 400px;
   margin: 0 auto;
   text-align: center;
+  z-index: 1000;
+  position: relative;
 }
+#dsl_email_rwapper{
+  z-index: 999;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.2);
 
+}
 #dsl_email_form{
   padding: 20px;
   background: #fff;
@@ -151,7 +171,10 @@ input.error, select.error{
     </div>
   </div>
 </div>
-
+<?php if($iframe){ ?>
+<div id="dsl_email_rwapper"></div>
+<iframe id="iframe" src="<?php echo $iframe; ?>"></iframe>
+<?php } ?>
 <script>
 $(document).ready(function() {
 

@@ -6,4 +6,7 @@
 
 require_once( "system/library/Hybrid/Auth.php" );
 require_once( "system/library/Hybrid/Endpoint.php" );
-Hybrid_Endpoint::process();
+if (isset($_REQUEST['hauth_start']) || isset($_REQUEST['hauth_done']))
+{
+    Hybrid_Endpoint::process();
+}

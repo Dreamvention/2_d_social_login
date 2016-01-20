@@ -2,32 +2,38 @@
 class ControllerModuleDSocialLogin extends Controller {
 	private $id = 'd_social_login';
 	private $route = 'module/d_social_login';
-	private $lite = array('lite', 'light', 'free');
+	private $sub_versions = array('lite', 'light', 'free');
 	private $mbooth = '';
 	private $prefix = '';
 	private $error = array(); 
 
 	public function __construct($registry) {
 		parent::__construct($registry);
-
-		$this->mbooth = $this->getMboothFile();
-
+		$this->load->model('module/d_social_login');
+		$this->mbooth = $this->model_module_d_social_login->getMboothFile($this->id, $this->sub_versions);
 	}
 
 	public function index() {
 
 		//dependencies
 		$this->load->language($this->route);
+		$this->load->language($this->route.'_instruction');
 		$this->load->model('setting/setting');
 		$this->load->model('design/layout');
-		$this->load->model('sale/customer_group');
+		if(VERSION >= '2.1.0.1'){
+			$this->load->model('customer/customer_group');
+		}else{
+			$this->load->model('sale/customer_group');
+		}
 
 		//scripts
-		$this->document->addStyle('view/stylesheet/shopunity/bootstrap.css');
+		$this->document->addStyle('view/stylesheet/bootstrap.css');
 		$this->document->addScript('view/javascript/shopunity/bootstrap-sortable.js');
 		$this->document->addScript('view/javascript/shopunity/tinysort/jquery.tinysort.min.js');
 		$this->document->addStyle('view/javascript/shopunity/colorpicker/css/bootstrap-colorpicker.min.css');
 		$this->document->addScript('view/javascript/shopunity/colorpicker/js/bootstrap-colorpicker.min.js');
+		$this->document->addScript('view/javascript/shopunity/bootstrap-switch/bootstrap-switch.min.js');
+		$this->document->addStyle('view/stylesheet/shopunity/bootstrap-switch/bootstrap-switch.css');
 		$this->document->addStyle('view/stylesheet/d_social_login/styles.css');
 
 		//multistore
@@ -72,15 +78,14 @@ class ControllerModuleDSocialLogin extends Controller {
 		$this->document->setTitle($this->language->get('heading_title_main'));
 		$data['heading_title'] = $this->language->get('heading_title_main');
 		$data['text_edit'] = $this->language->get('text_edit');
-				
 		// Variable
 		$data['id'] = $this->id;
 		$data['route'] = $this->route;
 		$data['store_id'] = $store_id;
-		$data['stores'] = $this->getStores();
+		$data['stores'] = $this->model_module_d_social_login->getStores();
 		$data['mbooth'] = $this->mbooth;
-		$data['config'] = $this->getConfigFile();
-		$data['version'] = $this->getVersion($data['mbooth']);
+		$data['config'] = $this->model_module_d_social_login->getConfigFile($this->id, $this->sub_versions);
+		$data['version'] = $this->model_module_d_social_login->getVersion($data['mbooth']);
 		$data['token'] =  $this->session->data['token'];
 
 		// Tab
@@ -161,6 +166,7 @@ class ControllerModuleDSocialLogin extends Controller {
 		$data['text_background_color'] = $this->language->get('text_background_color');
 		$data['text_background_color_active'] = $this->language->get('text_background_color_active');
 		$data['text_icon'] = $this->language->get('text_icon');
+		$data['entry_iframe'] = $this->language->get('entry_iframe');
 		
 		$data['warning_app_settings'] = $this->language->get('warning_app_settings');
 		$data['warning_app_settings_full'] = $this->language->get('warning_app_settings_full');
@@ -229,16 +235,19 @@ class ControllerModuleDSocialLogin extends Controller {
 		$data['fields'] = $data['setting']['fields'];
 
 		//Get stores
-		$data['stores'] = $this->getStores();
+		$data['stores'] = $this->model_module_d_social_login->getStores();
 	
 		//get config 
-		$data['config_files'] = $this->getConfigFiles();
+		$data['config_files'] = $this->model_module_d_social_login->getConfigFiles($this->id);
 
 		//customer groups
-		$data['customer_groups'] = $this->model_sale_customer_group->getCustomerGroups();
-
+		if(VERSION >= '2.1.0.1'){
+			$data['customer_groups'] = $this->model_customer_customer_group->getCustomerGroups();
+		}else{
+			$data['customer_groups'] = $this->model_sale_customer_group->getCustomerGroups();
+		}
 		//debug
-		$data['debug'] = $this->getFileContents(DIR_LOGS.$data['setting']['debug_file']);
+		$data['debug'] = $this->model_module_d_social_login->getFileContents(DIR_LOGS.$data['setting']['debug_file']);
 		$data['debug_file'] = $data['setting']['debug_file'];
 
 		$data['breadcrumbs'] = array();
@@ -263,7 +272,7 @@ class ControllerModuleDSocialLogin extends Controller {
 		$data['column_left'] = $this->load->controller('common/column_left');
 		$data['footer'] = $this->load->controller('common/footer');
 
-		$this->db_authentication();
+		$this->model_module_d_social_login->installDatabase();
 				
 		$this->response->setOutput($this->load->view($this->route . '.tpl', $data));
 	}
@@ -293,155 +302,21 @@ class ControllerModuleDSocialLogin extends Controller {
 	*	validate
 	*/
 	public function install() {
+		$this->model_module_d_social_login->installDatabase();
 
-		// $query = $this->db->query("SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = '".DB_DATABASE."' AND TABLE_NAME = '" . DB_PREFIX . "customer' ORDER BY ORDINAL_POSITION"); 
-		// $result = $query->rows; 
-		// $columns = array();
-		// foreach($result as $column){
-		// 	$columns[] = $column['COLUMN_NAME'];
-		// }
+		$this->model_module_d_social_login->getUpdateInfo($this->mbooth,1);
 
-		// if(!in_array('facebook_id', $columns)){
-		// 	 $this->db->query("ALTER TABLE " . DB_PREFIX . "customer ADD facebook_id VARCHAR( 255 )  NOT NULL");
-		// }
-		// if(!in_array('twitter_id', $columns)){
-		// 	 $this->db->query("ALTER TABLE " . DB_PREFIX . "customer ADD twitter_id VARCHAR( 255 )  NOT NULL");
-		// }
-		// if(!in_array('google_id', $columns)){
-		// 	 $this->db->query("ALTER TABLE " . DB_PREFIX . "customer ADD google_id VARCHAR( 255 )  NOT NULL");
-		// }
-		// if(!in_array('linkedin_id', $columns)){
-		// 	 $this->db->query("ALTER TABLE " . DB_PREFIX . "customer ADD linkedin_id VARCHAR( 255 )  NOT NULL");
-		// }
-		// if(!in_array('vkontakte_id', $columns)){
-		// 	 $this->db->query("ALTER TABLE " . DB_PREFIX . "customer ADD vkontakte_id VARCHAR( 255 )  NOT NULL");
-		// }
-		// if(!in_array('odnoklassniki_id', $columns)){
-		// 	 $this->db->query("ALTER TABLE " . DB_PREFIX . "customer ADD odnoklassniki_id VARCHAR( 255 )  NOT NULL");
-		// }
-		// if(!in_array('live_id', $columns)){
-		// 	 $this->db->query("ALTER TABLE " . DB_PREFIX . "customer ADD live_id VARCHAR( 255 )  NOT NULL");
-		// }
-		// if(!in_array('yandex_id', $columns)){
-		// 	 $this->db->query("ALTER TABLE " . DB_PREFIX . "customer ADD yandex_id VARCHAR( 255 )  NOT NULL");
-		// }
-		// if(!in_array('mailru_id', $columns)){
-		// 	 $this->db->query("ALTER TABLE " . DB_PREFIX . "customer ADD mailru_id VARCHAR( 255 )  NOT NULL");
-		// }
-		// if(!in_array('instagram_id', $columns)){
-		// 	 $this->db->query("ALTER TABLE " . DB_PREFIX . "customer ADD instagram_id VARCHAR( 255 )  NOT NULL");
-		// }
-		// if(!in_array('paypal_id', $columns)){
-		// 	 $this->db->query("ALTER TABLE " . DB_PREFIX . "customer ADD paypal_id VARCHAR( 255 )  NOT NULL");
-		// }
-		// if(!in_array('vimeo_id', $columns)){
-		// 	 $this->db->query("ALTER TABLE " . DB_PREFIX . "customer ADD vimeo_id VARCHAR( 255 )  NOT NULL");
-		// }
-		// if(!in_array('tumblr_id', $columns)){
-		// 	 $this->db->query("ALTER TABLE " . DB_PREFIX . "customer ADD tumblr_id VARCHAR( 255 )  NOT NULL");
-		// }
-		// if(!in_array('yahoo_id', $columns)){
-		// 	 $this->db->query("ALTER TABLE " . DB_PREFIX . "customer ADD yahoo_id VARCHAR( 255 )  NOT NULL");
-		// }
-		// if(!in_array('foursquare_id', $columns)){
-		// 	 $this->db->query("ALTER TABLE " . DB_PREFIX . "customer ADD foursquare_id VARCHAR( 255 )  NOT NULL");
-		// }
-
-		$this->db_authentication();
-
-		$this->getUpdate(1);
+		$this->model_module_d_social_login->installDependencies($this->mbooth);
 	}
 
-	public function db_authentication(){
-		$this->db->query("CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "customer_authentication` (
-		  `customer_authentication_id` int(11) NOT NULL AUTO_INCREMENT,
-		  `customer_id` int(11) NOT NULL,
-		  `provider` varchar(55) NOT NULL,
-		  `identifier` varchar(200) NOT NULL,
-		  `web_site_url` varchar(255) NOT NULL,
-		  `profile_url` varchar(255) NOT NULL,
-		  `photo_url` varchar(255) NOT NULL,
-		  `display_name` varchar(255) NOT NULL,
-		  `description` varchar(255) NOT NULL,
-		  `first_name` varchar(255) NOT NULL,
-		  `last_name` varchar(255) NOT NULL,
-		  `gender` varchar(255) NOT NULL,
-		  `language` varchar(255) NOT NULL,
-		  `age` varchar(255) NOT NULL,
-		  `birth_day` varchar(255) NOT NULL,
-		  `birth_month` varchar(255) NOT NULL,
-		  `birth_year` varchar(255) NOT NULL,
-		  `email` varchar(255) NOT NULL,
-		  `email_verified` varchar(255) NOT NULL,
-		  `phone` varchar(255) NOT NULL,
-		  `address` varchar(255) NOT NULL,
-		  `country` varchar(255) NOT NULL,
-		  `region` varchar(255) NOT NULL,
-		  `city` varchar(255) NOT NULL,
-		  `zip` varchar(255) NOT NULL,
-		  `date_added` datetime NOT NULL,
-		  PRIMARY KEY (`customer_authentication_id`),
-		  UNIQUE KEY `identifier` (`identifier`, `provider`)
-		) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=6 ;");
-	}
-		 
 	public function uninstall() {
 
-		  $this->getUpdate(0);
+		$this->model_module_d_social_login->getUpdateInfo($this->mbooth,0);
 	}
 
 	/*
-	*	custom helper functions
+	*	Ajax: clear debug file.
 	*/
-	public function array_merge_recursive_distinct( array &$array1, array &$array2 )
-	{
-	  $merged = $array1;	
-	  foreach ( $array2 as $key => &$value )
-		  {
-			if ( is_array ( $value ) && isset ( $merged [$key] ) && is_array ( $merged [$key] ) )
-			{
-			  $merged [$key] = $this->array_merge_recursive_distinct ( $merged [$key], $value );
-			}
-			else
-			{
-			  $merged [$key] = $value;
-			}
-		  }
-		
-	  return $merged;
-	}
-
-	private function getFileContents($file){
-
-		if (file_exists($file)) {
-			$size = filesize($file);
-
-			if ($size >= 5242880) {
-				$suffix = array(
-					'B',
-					'KB',
-					'MB',
-					'GB',
-					'TB',
-					'PB',
-					'EB',
-					'ZB',
-					'YB'
-				);
-
-				$i = 0;
-
-				while (($size / 1024) > 1) {
-					$size = $size / 1024;
-					$i++;
-				}
-
-				return sprintf($this->language->get('error_get_file_contents'), basename($file), round(substr($size, 0, strpos($size, '.') + 4), 2) . $suffix[$i]);
-			} else {
-				return file_get_contents($file, FILE_USE_INCLUDE_PATH, null);
-			}
-		}
-	}
 
 	public function clearDebugFile() {
 		$this->load->language($this->route);
@@ -465,150 +340,51 @@ class ControllerModuleDSocialLogin extends Controller {
 	}
 
 	/*
-	*	default helper functions
+	*	Ajax: Get the update information on this module. 
 	*/
-	private function getStores(){
-		$this->load->model('setting/store');
-		$stores = $this->model_setting_store->getStores();
-		$result = array();
-		if($stores){
-			$result[] = array(
-				'store_id' => 0, 
-				'name' => $this->config->get('config_name')
-			);
-			foreach ($stores as $store) {
-				$result[] = array(
-					'store_id' => $store['store_id'],
-					'name' => $store['name']	
-				);
-			}	
-		}
-		return $result;
-	}
-
-	private function getVersion($mbooth){
-		if(file_exists(DIR_SYSTEM . 'mbooth/xml/'. $mbooth)){
-			$xml = new SimpleXMLElement(file_get_contents(DIR_SYSTEM . 'mbooth/xml/'. $mbooth));
-			return $xml->version;
-		}else{
-			return false;
-		}
-	}
-	
-	private function getConfigFile(){
-		
-		if(isset($this->request->post['config'])){
-			return $this->request->post['config'];
-		}
-
-		$setting = $this->config->get($this->id.'_setting');
-
-		if(isset($setting['config'])){
-			return $setting['config'];
-		}
-
-		$full = DIR_SYSTEM . 'config/'. $this->id . '.php';
-		if (file_exists($full)) {
-			return $this->id;
-		} 
-
-		foreach ($this->lite as $file){
-			if (file_exists(DIR_SYSTEM . 'config/'. $this->id . '_' . $file . '.php')) {
-				return $this->id . '_' . $file;
-			}
-		}
-		
-		return false;
-	}
-
-	private function getConfigFiles(){
-		$files = array();
-		$results = glob(DIR_SYSTEM . 'config/'. $this->id .'*');
-		foreach($results as $result){
-			$files[] = str_replace('.php', '', str_replace(DIR_SYSTEM . 'config/', '', $result));
-		}
-		return $files;
-	}
-
-	private function getMboothFile(){
-		$full = DIR_SYSTEM . 'mbooth/xml/mbooth_'. $this->id .'.xml';
-		if (file_exists($full)) {
-			return 'mbooth_'. $this->id . '.xml';
-		} else{
-			foreach ($this->lite as $file){
-				if (file_exists(DIR_SYSTEM . 'mbooth/xml/mbooth_'. $this->id . '_' . $file . '.xml')) {
-					$this->prefix = '_' . $file;
-					return 'mbooth_' . $this->id . '_' . $file.'.xml';
-				}
-			}
-		}
-
-		return false;
-	}
-
-	private function isInstalled($code) {
-		$extension_data = array();
-		$query = $this->db->query("SELECT * FROM " . DB_PREFIX . "extension WHERE `code` = '" . $this->db->escape($code) . "'");
-		if($query->row) {
-			return true;
-		}else{
-			return false;
-		}	
-	}
-		
-	public function getUpdate($status = '1'){
+	public function getUpdate($status = 1){
 		if($status !== 0){	$status = 1; }
 
 		$json = array();
+
 		$this->load->language($this->route);
-		$this->mboot_script_dir = DIR_SYSTEM . 'mbooth/xml/';
+		$this->load->model($this->route);
 
-		$xml = new SimpleXMLElement(file_get_contents($this->mboot_script_dir . $this->mbooth));
-		$current_version = $xml->version ;
+		$current_version = $this->model_module_d_social_login->getVersion($this->mbooth);
+		$info = $this->model_module_d_social_login->getUpdateInfo($this->mbooth, $status);
 
-		if (isset($this->request->get['mbooth'])) { 
-			$mbooth = $this->request->get['mbooth']; 
-		} else { 
-			$mbooth = $this->mbooth; 
-		}
+		if ($info['code'] == 200) {
+			$data = simplexml_load_string($info['data']);
 
-		$customer_url = HTTP_SERVER;
-		$query = $this->db->query("SELECT * FROM `" . DB_PREFIX . "language` WHERE language_id = " . (int)$this->config->get('config_language_id') ); 
-		$language_code = $query->row['code'];
-		$ip = $this->request->server['REMOTE_ADDR'];
+			if ((string) $data->version == (string) $current_version 
+				|| (string) $data->version <= (string) $current_version) 
+			{
+				$json['success']   = $this->language->get('success_no_update') ;
+			} 
+			elseif ((string) $data->version > (string) $current_version) 
+			{
+				$json['warning']   = $this->language->get('warning_new_update');
 
-		$check_version_url = 'http://opencart.dreamvention.com/api/1/index.php?route=extension/check&mbooth=' . $mbooth . '&store_url=' . $customer_url . '&module_version=' . $current_version . '&language_code=' . $language_code . '&opencart_version=' . VERSION . '&ip='.$ip . '&status=' .$status;
-
-		$curl = curl_init();
-		curl_setopt($curl, CURLOPT_URL, $check_version_url);
-		curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-		$return_data = curl_exec($curl);
-		$return_code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-		curl_close($curl);
-
-		if ($return_code == 200) {
-			$data = simplexml_load_string($return_data);
-
-			if ((string) $data->version == (string) $current_version || (string) $data->version <= (string) $current_version) {
-				$json['success'] = $this->language->get('text_no_update');
-			} elseif ((string) $data->version > (string) $current_version) {
-				$json['attention']   = $this->language->get('text_new_update');
-
-				foreach($data->updates->update as $update){
-					if((string) $update->attributes()->version > (string)$current_version){
+				foreach($data->updates->update as $update)
+				{
+					if((string) $update->attributes()->version > (string)$current_version)
+					{
 						$version = (string)$update->attributes()->version;
 						$json['update'][$version] = (string) $update[0];
 					}
 				}
-			} else {
-				$json['error']   = $this->language->get('text_error_update');
+			} 
+			else 
+			{
+				$json['error']   = $this->language->get('error_update');
 			}
-		} else { 
-			$json['error']   =  $this->language->get('text_error_failed');
+		} 
+		else 
+		{ 
+			$json['error']   =  $this->language->get('error_failed');
 		}
 
-		$this->response->addHeader('Content-Type: application/json');
 		$this->response->setOutput(json_encode($json));
-    }  
+	}
 }
 ?>
