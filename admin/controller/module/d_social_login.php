@@ -194,7 +194,7 @@ class ControllerModuleDSocialLogin extends Controller {
 		$data['clear_debug_file'] = str_replace('&amp;', '&', $this->url->link($this->route.'/clearDebugFile', 'token=' . $this->session->data['token'], 'SSL'));
 		
 		//setting 
-//		$setting = $this->model_setting_setting->getSetting($this->id, $store_id); /* нахера эта строчка ???? */
+		$setting = $this->model_setting_setting->getSetting($this->id, $store_id);
 		$setting = (isset($setting[$this->id.'_setting'])) ? $setting[$this->id.'_setting'] : '';
 
 		$this->config->load($data['config']);
