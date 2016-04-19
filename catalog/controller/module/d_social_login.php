@@ -319,7 +319,7 @@ class ControllerModuleDSocialLogin extends Controller {
         $data['countries'] = $this->model_localisation_country->getCountries();
 
         if(VERSION >= '2.2.0.0'){
-            $this->response->setOutput($this->load->view('module/d_social_login/form', $data));
+            $this->response->setOutput($this->load->view('d_social_login/form', $data));
         }elseif (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/d_social_login/form.tpl')) {
             $this->response->setOutput($this->load->view($this->config->get('config_template') . '/template/d_social_login/form.tpl', $data));
         } else {
