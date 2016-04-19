@@ -52,7 +52,9 @@ class ControllerModuleDSocialLogin extends Controller {
         unset($this->session->data['HA::CONFIG']);
         unset($this->session->data['HA::STORE']);
 
-        if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/module/d_social_login.tpl')) {
+        if(VERSION >= '2.2.0.0'){
+            return $this->load->view('module/d_social_login', $data);
+        }elseif (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/module/d_social_login.tpl')) {
             return $this->load->view($this->config->get('config_template') . '/template/module/d_social_login.tpl', $data);
         } else {
             return $this->load->view('default/template/module/d_social_login.tpl', $data);
@@ -316,7 +318,9 @@ class ControllerModuleDSocialLogin extends Controller {
         $this->load->model('localisation/country');
         $data['countries'] = $this->model_localisation_country->getCountries();
 
-        if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/d_social_login/form.tpl')) {
+        if(VERSION >= '2.2.0.0'){
+            $this->response->setOutput($this->load->view('module/d_social_login/form', $data));
+        }elseif (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/d_social_login/form.tpl')) {
             $this->response->setOutput($this->load->view($this->config->get('config_template') . '/template/d_social_login/form.tpl', $data));
         } else {
             $this->response->setOutput($this->load->view('default/template/d_social_login/form.tpl', $data));
