@@ -307,7 +307,7 @@ $_['text_instructions_tabs'] = array(
         '<h3 class="tab-title"><i class="fa fa-yahoo"></i> Setup Yahoo login button</h3>
         <div class="tab-body">
           <ol>
-              <li>Visit Yahoo app developers page <a href="https://developer.apps.yahoo.com/dashboard/createKey.html" target="_blank"> https://developer.apps.yahoo.com/dashboard/createKey.html</a></li>
+              <li>Visit Yahoo app developers page <a href="https://developer.yahoo.com/apps/create/" target="_blank"> https://developer.yahoo.com/apps/create/</a></li>
               <li>Click Create App</li>
               <img src="view/image/d_social_login/yahoo/1-create-app.png" class="img-thumbnail img-responsive" />
               <li>Fill in the Application Name, Application website, Application description, callback URL and permissions Social Directory (Profiles) - Read/Write Public and Private:</li>

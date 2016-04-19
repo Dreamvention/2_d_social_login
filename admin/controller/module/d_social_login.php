@@ -12,7 +12,6 @@ class ControllerModuleDSocialLogin extends Controller {
 		$this->load->model('module/d_social_login');
 
 		$this->mbooth = $this->model_module_d_social_login->getMboothFile($this->id, $this->sub_versions);
-
 	}
 
 	public function index() {
@@ -133,7 +132,7 @@ class ControllerModuleDSocialLogin extends Controller {
 		$data['entry_fields_sort_order'] = $this->language->get('entry_fields_sort_order');
 		$data['text_firstname'] = $this->language->get('text_firstname');
 		$data['text_lastname'] = $this->language->get('text_lastname');
-		$data['text_phone'] = $this->language->get('text_phone');
+		$data['text_telephone'] = $this->language->get('text_telephone');
 		$data['text_mask'] = $this->language->get('text_mask');
 		$data['text_address_1'] = $this->language->get('text_address_1');
 		$data['text_address_2'] = $this->language->get('text_address_2');
@@ -194,7 +193,7 @@ class ControllerModuleDSocialLogin extends Controller {
 		$data['clear_debug_file'] = str_replace('&amp;', '&', $this->url->link($this->route.'/clearDebugFile', 'token=' . $this->session->data['token'], 'SSL'));
 		
 		//setting 
-		$setting = $this->model_setting_setting->getSetting($this->id, $store_id);
+		$setting = $this->model_setting_setting->getSetting($this->id, $store_id); 
 		$setting = (isset($setting[$this->id.'_setting'])) ? $setting[$this->id.'_setting'] : '';
 
 		$this->config->load($data['config']);
@@ -260,8 +259,6 @@ class ControllerModuleDSocialLogin extends Controller {
 		$data['header'] = $this->load->controller('common/header');
 		$data['column_left'] = $this->load->controller('common/column_left');
 		$data['footer'] = $this->load->controller('common/footer');
-
-		$this->model_module_d_social_login->installDatabase();
 				
 		$this->response->setOutput($this->load->view($this->route . '.tpl', $data));
 	}

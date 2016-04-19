@@ -1,7 +1,7 @@
 <?php
 
 /*
- * 	location: catalog/controller/module/d_social_login.php
+ *  location: catalog/controller/module/d_social_login.php
  */
 
 class ControllerModuleDSocialLogin extends Controller {
@@ -127,7 +127,7 @@ class ControllerModuleDSocialLogin extends Controller {
                 'birth_year' => $this->setting['profile']['birthYear'],
                 'email' => $this->setting['profile']['email'],
                 'email_verified' => $this->setting['profile']['emailVerified'],
-                'phone' => $this->setting['profile']['phone'],
+                'telephone' => $this->setting['profile']['phone'],
                 'address' => $this->setting['profile']['address'],
                 'country' => $this->setting['profile']['country'],
                 'region' => $this->setting['profile']['region'],
@@ -182,7 +182,7 @@ class ControllerModuleDSocialLogin extends Controller {
                     'email' => $this->setting['profile']['email'],
                     'firstname' => $this->setting['profile']['firstName'],
                     'lastname' => $this->setting['profile']['lastName'],
-                    'phone' => $this->setting['profile']['phone'],
+                    'telephone' => $this->setting['profile']['phone'],
                     'fax' => false,
                     'newsletter' => $this->setting['newsletter'],
                     'customer_group_id' => (isset($this->setting['customer_group'])) ? $this->setting['customer_group'] : '1',
@@ -284,7 +284,7 @@ class ControllerModuleDSocialLogin extends Controller {
         $data['text_email'] = $this->language->get('text_email');
         $data['text_firstname'] = $this->language->get('text_firstname');
         $data['text_lastname'] = $this->language->get('text_lastname');
-        $data['text_phone'] = $this->language->get('text_phone');
+        $data['text_telephone'] = $this->language->get('text_telephone');
         $data['text_address_1'] = $this->language->get('text_address_1');
         $data['text_address_2'] = $this->language->get('text_address_1');
         $data['text_city'] = $this->language->get('text_city');
@@ -434,7 +434,7 @@ class ControllerModuleDSocialLogin extends Controller {
         if (isset($this->session->data['sl_redirect']) && !stripos($this->session->data['sl_redirect'], 'logout')) {
             $this->sl_redirect = $this->session->data['sl_redirect'];
         } else {
-            $this->sl_redirect = $this->url->link('account/account', '', 'SSL');            		
+            $this->sl_redirect = $this->url->link('account/account', '', 'SSL');                    
         }
     }
 

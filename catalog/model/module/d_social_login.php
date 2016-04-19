@@ -1,11 +1,11 @@
 <?php
 /*
- *	location: catalog/model/module/d_social_login.php
+ *  location: catalog/model/module/d_social_login.php
  */
 
 class ModelModuleDSocialLogin extends Model {
 
-	public function getCustomerByIdentifier($provider, $identifier) {
+    public function getCustomerByIdentifier($provider, $identifier) {
         $result = $this->db->query("SELECT customer_id FROM " . DB_PREFIX . "customer_authentication WHERE provider = '" . $this->db->escape($provider) . "' AND identifier = MD5('" . $this->db->escape($identifier) . "') LIMIT 1");
 
         if ($result->num_rows) {
@@ -117,7 +117,7 @@ class ModelModuleDSocialLogin extends Model {
                         "birth_year = '" . $this->db->escape($data['birth_year']) . "', ".
                         "email = '" . $this->db->escape($data['email']) . "', ".
                         "email_verified = '" . $this->db->escape($data['email_verified']) . "', ".
-                        "phone = '" . $this->db->escape($data['phone']) . "', ".
+                        "telephone = '" . $this->db->escape($data['telephone']) . "', ".
                         "address = '" . $this->db->escape($data['address']) . "', ".
                         "country = '" . $this->db->escape($data['country']) . "', ".
                         "region = '" . $this->db->escape($data['region']) . "', ".
@@ -128,7 +128,7 @@ class ModelModuleDSocialLogin extends Model {
 
     public function addCustomer($data) {
 
-        $this->db->query("INSERT INTO " . DB_PREFIX . "customer SET store_id = '" . (int)$this->config->get('config_store_id') . "', firstname = '" . $this->db->escape($data['firstname']) . "', lastname = '" . $this->db->escape($data['lastname']) . "', email = '" . $this->db->escape($data['email']) . "', telephone = '" . $this->db->escape($data['phone']) . "', fax = '" . $this->db->escape($data['fax']) . "', password = '" . $this->db->escape(md5($data['password'])) . "', newsletter = '" . (isset($data['newsletter']) ? (int)$data['newsletter'] : 0) . "', customer_group_id = '" . (int)$data['customer_group_id'] . "', status = '1', date_added = NOW()");
+        $this->db->query("INSERT INTO " . DB_PREFIX . "customer SET store_id = '" . (int)$this->config->get('config_store_id') . "', firstname = '" . $this->db->escape($data['firstname']) . "', lastname = '" . $this->db->escape($data['lastname']) . "', email = '" . $this->db->escape($data['email']) . "', telephone = '" . $this->db->escape($data['telephone']) . "', fax = '" . $this->db->escape($data['fax']) . "', password = '" . $this->db->escape(md5($data['password'])) . "', newsletter = '" . (isset($data['newsletter']) ? (int)$data['newsletter'] : 0) . "', customer_group_id = '" . (int)$data['customer_group_id'] . "', status = '1', date_added = NOW()");
         $customer_id = $this->db->getLastId();
 
         $this->db->query("INSERT INTO " . DB_PREFIX . "address SET customer_id = '" . (int)$customer_id . "', firstname = '" . $this->db->escape($data['firstname']) . "', lastname = '" . $this->db->escape($data['lastname']) . "', company = '" . $this->db->escape($data['company']) . "', address_1 = '" . $this->db->escape($data['address_1']) . "', address_2 = '" . $this->db->escape($data['address_2']) . "', city = '" . $this->db->escape($data['city']) . "', postcode = '" . $this->db->escape($data['postcode']) . "', country_id = '" . (int)$data['country_id'] . "', zone_id = '" . (int)$data['zone_id'] . "'");
@@ -200,18 +200,18 @@ class ModelModuleDSocialLogin extends Model {
         return $customer_id;
     }
 
-	public function getCountryIdByName($country){
-		$query = $this->db->query("SELECT * FROM " . DB_PREFIX . "country WHERE LOWER(name) LIKE '" . $this->db->escape(utf8_strtolower($country)). "' OR iso_code_2 LIKE '" . $this->db->escape($country) . "' OR iso_code_3 LIKE '" . $this->db->escape($country) . "' LIMIT 1");
-	
-		if ($query->num_rows) {
+    public function getCountryIdByName($country){
+        $query = $this->db->query("SELECT * FROM " . DB_PREFIX . "country WHERE LOWER(name) LIKE '" . $this->db->escape(utf8_strtolower($country)). "' OR iso_code_2 LIKE '" . $this->db->escape($country) . "' OR iso_code_3 LIKE '" . $this->db->escape($country) . "' LIMIT 1");
+    
+        if ($query->num_rows) {
             return $query->row['country_id'];
         } else {
             return false;
         }
-	}
+    }
 
-	public function getZoneIdByName($zone){
-		$query = $this->db->query("SELECT zone_id FROM " . DB_PREFIX . "zone WHERE LOWER(name) LIKE '" . $this->db->escape(utf8_strtolower($zone)). "' OR code LIKE '" . $this->db->escape($zone) . "' LIMIT 1");
+    public function getZoneIdByName($zone){
+        $query = $this->db->query("SELECT zone_id FROM " . DB_PREFIX . "zone WHERE LOWER(name) LIKE '" . $this->db->escape(utf8_strtolower($zone)). "' OR code LIKE '" . $this->db->escape($zone) . "' LIMIT 1");
 
         if ($query->num_rows) {
             return $query->row['zone_id'];

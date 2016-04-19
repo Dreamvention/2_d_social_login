@@ -68,7 +68,7 @@ $_['text_icon']                 = 'Icons';
 $_['entry_fields_sort_order']   = 'Sort and activate fields for the popup screen for the first social login action, which is the registration of a new customer. (email is not present because its activated by default) ';
 $_['text_firstname']            = 'First name';
 $_['text_lastname']             = 'Last name';
-$_['text_phone']                = 'Phone';
+$_['text_telephone']            = 'Telephone';
 $_['text_mask']                 = '<span data-toggle="tooltip" title="" data-original-title="You can add a mask filter to the phone input field like this (999) 999-99-99. Leave empty is you do not want to use it.">Mask</span>';
 $_['text_address_1']            = 'Address 1';
 $_['text_address_2']            = 'Address 2';
