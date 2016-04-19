@@ -179,7 +179,6 @@ class ModelModuleDSocialLogin extends Model {
 
 
 	public function getMboothFile($id, $sub_versions){
-    
 		$full = DIR_SYSTEM . 'mbooth/xml/mbooth_'. $id .'.xml';
 		if (file_exists($full)) {
 			return 'mbooth_'. $id . '.xml';
@@ -187,8 +186,7 @@ class ModelModuleDSocialLogin extends Model {
 			foreach ($sub_versions as $lite){
 				if (file_exists(DIR_SYSTEM . 'mbooth/xml/mbooth_'. $id . '_' . $lite . '.xml')) {
 					$this->prefix = '_' . $lite;
-               
-					return $id . '_' . $lite . '.xml';
+					return 'mbooth_'. $id . '_' . $lite . '.xml';
 				}
 			}
 		}

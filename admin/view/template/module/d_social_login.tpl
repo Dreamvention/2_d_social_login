@@ -340,12 +340,12 @@
                                             <h1>How to set up social apps?</h1>
                                             <ul class="nav nav-tabs">
                                                 <?php foreach ($text_instructions as $key => $instruction) { ?>
-                                                <li><a href="#<?php echo $key; ?>"  data-toggle="tab"><i class="fa fa-<?php echo $key; ?>"></i> <?php echo $instruction; ?></a></li>
+                                                <li <?php if($key == 'google_plus') { ?>class="active"<?php } ?>><a href="#<?php echo $key; ?>"  data-toggle="tab"><i class="fa fa-<?php echo $key; ?>"></i> <?php echo $instruction; ?></a></li>
                                                 <?php } ?>
                                             </ul>
                                             <div class="tab-content">
                                                 <?php foreach ($text_instructions_tabs as $key => $tab) { ?>
-                                                <div id="<?php echo $key; ?>" class="tab-pane">
+                                                <div id="<?php echo $key; ?>" class="tab-pane <?php if($key == 'google_plus') { ?>active<?php } ?>">
                                                     <?php echo $tab; ?>
                                                 </div>
                                                 <?php } ?>

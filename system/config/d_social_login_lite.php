@@ -27,28 +27,26 @@ $_['d_social_login'] = array(
         "background_color_active" => '#3a5192',
       ),
 
-      "Twitter" => array ( 
+      "LinkedIn" => array ( 
         "enabled" => true,
         "keys"    => array( "key" => "", "secret" => "" ),
-        "id"  => 'twitter',
-        "includeEmail" => true,
-        "sort_order" => 3,
-        "icon" => 'dsl-twitter',
-        "background_color" => '#00ceff',
-        "background_color_active" => '#03b3dd',
+        "id"  => 'linkedin',
+        "sort_order" => 5,
+        "icon" => 'dsl-linkedin',
+        "background_color" => '#2a72b6',
+        "background_color_active" => '#21588d',
       ),
 
-      // windows live
-      "Live" => array ( 
+      "Yahoo" => array (
         "enabled" => true,
-        "keys"    => array( "id" => "", "secret" => "" ),
-        "scope" => 'wl.emails',
-        "id"  => 'live',
-        "sort_order" => 4,
-        "icon" => 'dsl-windows',
-        "background_color" => '#2672ec',
-        "background_color_active" => '#205dbf',
-      ),      
+        "keys"    => array ( "key" => "", "secret" => "" ),
+        "id"  => 'yahoo',
+        "sort_order" => 11,
+        "icon" => 'dsl-yahoo',
+        "background_color" => '#500095',
+        "background_color_active" => '#3d026f',
+      ),
+
     ),
     "debug_mode" => false,
     //system/logs/d_social_login.txt
@@ -64,8 +62,8 @@ $_['d_social_login'] = array(
                       'country_id' => array('id' => 'country_id', 'enabled' => true, 'sort_order' => 8, 'type' => 'select'),
                       'zone_id' => array('id' => 'zone_id', 'enabled' => true, 'sort_order' => 9, 'type' => 'select'),
                       'company' => array('id' => 'company', 'enabled' => true, 'sort_order' => 10, 'type' => 'text'),
-                     // 'company_id' => array('id' => 'company_id', 'enabled' => true, 'sort_order' => 11, 'type' => 'text'),
-                     // 'tax_id' => array('id' => 'tax_id', 'enabled' => true, 'sort_order' => 12, 'type' => 'text'),
+                      'company_id' => array('id' => 'company_id', 'enabled' => true, 'sort_order' => 11, 'type' => 'text'),
+                      'tax_id' => array('id' => 'tax_id', 'enabled' => true, 'sort_order' => 12, 'type' => 'text'),
                       'password' => array('id' => 'password', 'enabled' => true, 'sort_order' => 13, 'type' => 'password'),
                       'confirm' => array('id' => 'confirm', 'enabled' => true, 'sort_order' => 14, 'type' => 'password')
     ),
