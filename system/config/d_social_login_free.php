@@ -39,9 +39,10 @@ $_['d_social_login'] = array(
 
     "size" => "icon",
     "return_page_url" => "",
-    "config" => "d_social_login",
+    "config" => "d_social_login_free",
     "customer_group" => 1,
     "newsletter" => 1,
+    "iframe" => 1,
 
     //image/catalog/d_social_login/bg.png
     "background_img" => "catalog/d_social_login/bg.png",

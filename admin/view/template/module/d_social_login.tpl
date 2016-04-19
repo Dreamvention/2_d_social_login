@@ -183,13 +183,19 @@
 
                             <?php if ($config_files) { ?>
                             <div class="form-group">
-                                <label class="col-sm-2 control-label" for="input_debug_mode"><?php echo $entry_config_files; ?></label>
+                                <label class="col-sm-2 control-label" for="select_config"><?php echo $entry_config_files; ?></label>
                                 <div class="col-sm-10">
-                                    <select id="config" onChange="changeConfig($(this).val())" class="form-control" name="<?php echo $id;?>_setting[config]">
-                                        <?php foreach ($config_files as $config_file) { ?>
-                                        <option value="<?php echo $config_file; ?>" <?php echo ($config_file == $config)? 'selected="selected"' : ''; ?>><?php echo $config_file; ?></option>
-                                        <?php } ?>
-                                    </select>
+                                    <div class="input-group">
+                                        <select id="select_config" class="form-control" name="<?php echo $id;?>_setting[config]">
+                                            <?php foreach ($config_files as $config_file) { ?>
+                                            <option value="<?php echo $config_file; ?>" <?php echo ($config_file == $config)? 'selected="selected"' : ''; ?>><?php echo $config_file; ?></option>
+                                            <?php } ?>
+                                        </select>
+                                        <span class="input-group-btn">
+                                            <button class="btn btn-primary" id="select_config_submit" type="button">Apply</button>
+                                        </span>
+                                    </div><!-- /input-group -->
+                                    
                                 </div>
                             </div>
                             <?php } ?>
@@ -404,11 +410,12 @@
     }
 </style>
 <script type="text/javascript"><!--
-function changeConfig(config) {
-        console.log('changeConfig');
-        $('#content').append('<form action="<?php echo $module_link; ?><?php echo ($stores) ? "&store_id=' + $('#store').val() + '" : ''; ?>" id="config_update" method="post" style="display:none;"><input type="text" name="config" value="' + config + '" /></form>');
-                $('#config_update').submit();
-    }
+
+$('#select_config_submit').on('click', function(){
+    var config = $('#select_config').val();
+    $('#content').append('<form action="<?php echo $module_link; ?><?php echo ($stores) ? "&store_id=' + $('#store').val() + '" : ''; ?>" id="config_update" method="post" style="display:none;"><input type="text" name="config" value="' + config + '" /></form>');
+    $('#config_update').submit();
+})
 // sorting fields
     $('.sortable > tr').tsort({attr:'sort-data'});
     $(function () {
