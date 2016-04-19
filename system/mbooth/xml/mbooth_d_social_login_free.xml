@@ -4,8 +4,8 @@
     <description>Social login is a module that addes the ability to create an account in the webshop with a scoial network account and then login in by simply clicking a button. No need to remeber the password. It has Facebook, Paypal, Google+, Twitter, Linkeding, Vknontakte, Windows live, Tumblr and more</description>
     <type>module</type>
     <description>Adds social login buttons to opencart</description>
-    <version>4.1.0</version>
-	<opencart_version>2.0.0.0,2.0.1.0,2.0.1.1,2.0.2.0,2.0.3.1</opencart_version>
+    <version>4.3.4</version>
+	<opencart_version>2.0.0.0,2.0.1.0,2.0.1.1,2.0.2.0,2.0.3.1,2.1.0.1;2.1.0.2;2.2.0.0</opencart_version>
     <mbooth_version>2.3</mbooth_version>
     <author>Dreamvention</author>
     <files>
@@ -15,7 +15,8 @@
 		<file>d_social_login_live.php</file>
 	<!-- admin -->
 		<file>admin/controller/module/d_social_login.php</file>
-		<file>admin/language/english/module/d_social_login.php</file>		
+		<file>admin/language/english/module/d_social_login.php</file>
+		<file>admin/language/english/module/d_social_login_instruction.php</file>	
 		<file>admin/view/template/module/d_social_login.tpl</file>
 		<file>admin/model/module/d_social_login.php</file>
 	<!-- catalog -->
@@ -43,7 +44,35 @@
 		<require>shopunity</require>
 	</required>
 	<updates>
-		<update version="4.1.0">
+		<update version="4.3.4">
+		1. fix telephone
+		</update>
+		<update version="4.3.3">
+		1. added odnoklassniki icon
+		</update>
+		<update version="4.3.2">
+		1. fix mail smtp
+		</update>
+		<update version="4.3.1">
+		1. New google tutorial
+		2. odnoklassniki tutorial
+		</update>
+		<update version="4.3.0">
+		1. provider fix
+		2. odnoklassniki
+		</update>
+		<update version="4.2.1">
+		1. compatibility with 2.1.0.1
+		</update>
+		<update version="4.2.0">
+		1. Store as background option.
+		2. Fixed facebook conflict with https.
+		3. Dependency support
+		</update>
+		<update version="4.1.1">
+		1. Fix bugs with static methods.
+		</update>
+        <update version="4.1.0">
 		1. The customer can now login in with social logins even if his email is already regestered with the shop<br/>
 		2. Facebook Api fix.
 		</update>
