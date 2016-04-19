@@ -8,6 +8,7 @@
 	<file name="admin/model/sale/customer.php">
 		<operation error="skip" info="added to deleteCustomer customer_authentication delete">
 			<search position="after"><![CDATA[$this->db->query("DELETE FROM " . DB_PREFIX . "customer WHERE customer_id = '" . (int)$customer_id . "'");]]></search>
+			<ignoreif><![CDATA[//vqmod_d_social_login.xml]]></ignoreif>
 			<add><![CDATA[$this->db->query("DELETE FROM " . DB_PREFIX . "customer_authentication WHERE customer_id = '" . (int)$customer_id . "'"); //vqmod_d_social_login.xml]]></add>
 		</operation>
 	</file>

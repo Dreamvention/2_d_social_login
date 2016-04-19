@@ -17,6 +17,7 @@
 		<file>admin/controller/module/d_social_login.php</file>
 		<file>admin/language/english/module/d_social_login.php</file>		
 		<file>admin/view/template/module/d_social_login.tpl</file>
+		<file>admin/model/module/d_social_login.php</file>
 	<!-- catalog -->
 		<file>catalog/controller/module/d_social_login.php</file>
 		<file>catalog/language/english/module/d_social_login.php</file>
