@@ -1,5 +1,4 @@
 <?php
-
 /*
  *  location: catalog/controller/module/d_social_login.php
  */
