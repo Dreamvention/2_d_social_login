@@ -99,45 +99,72 @@ class ModelModuleDSocialLogin extends Model {
     public function addAuthentication($data) {
 
        $this->db->query("INSERT INTO " . DB_PREFIX . "customer_authentication SET ".
-                        "customer_id = '" . (int) $data['customer_id'] . "', ".
-                        "provider = '" . $this->db->escape($data['provider']) . "', ".
-                        "identifier = MD5('" . $this->db->escape($data['identifier']) . "'), ".
-                        "web_site_url = '" . $this->db->escape($data['web_site_url']) . "', ".
-                        "profile_url = '" . $this->db->escape($data['profile_url']) . "', ".
-                        "photo_url = '" . $this->db->escape($data['photo_url']) . "', ".
-                        "display_name = '" . $this->db->escape($data['display_name']) . "', ".
-                        "description = '" . $this->db->escape($data['description']) . "', ".
-                        "first_name = '" . $this->db->escape($data['first_name']) . "', ".
-                        "last_name = '" . $this->db->escape($data['last_name']) . "', ".
-                        "gender = '" . $this->db->escape($data['gender']) . "', ".
-                        "language = '" . $this->db->escape($data['language']) . "', ".
-                        "age = '" . $this->db->escape($data['age']) . "', ".
-                        "birth_day = '" . $this->db->escape($data['birth_day']) . "', ".
-                        "birth_month = '" . $this->db->escape($data['birth_month']) . "', ".
-                        "birth_year = '" . $this->db->escape($data['birth_year']) . "', ".
-                        "email = '" . $this->db->escape($data['email']) . "', ".
-                        "email_verified = '" . $this->db->escape($data['email_verified']) . "', ".
-                        "telephone = '" . $this->db->escape($data['telephone']) . "', ".
-                        "address = '" . $this->db->escape($data['address']) . "', ".
-                        "country = '" . $this->db->escape($data['country']) . "', ".
-                        "region = '" . $this->db->escape($data['region']) . "', ".
-                        "city = '" . $this->db->escape($data['city']) . "', ".
-                        "zip = '" . $this->db->escape($data['zip']) . "', ".
-                        "date_added = NOW()");
+            "customer_id = '" . (int) $data['customer_id'] . "', ".
+            "provider = '" . $this->db->escape($data['provider']) . "', ".
+            "identifier = MD5('" . $this->db->escape($data['identifier']).$data['customer_id'] . "'), ".
+            "web_site_url = '" . $this->db->escape($data['web_site_url']) . "', ".
+            "profile_url = '" . $this->db->escape($data['profile_url']) . "', ".
+            "photo_url = '" . $this->db->escape($data['photo_url']) . "', ".
+            "display_name = '" . $this->db->escape($data['display_name']) . "', ".
+            "description = '" . $this->db->escape($data['description']) . "', ".
+            "first_name = '" . $this->db->escape($data['first_name']) . "', ".
+            "last_name = '" . $this->db->escape($data['last_name']) . "', ".
+            "gender = '" . $this->db->escape($data['gender']) . "', ".
+            "language = '" . $this->db->escape($data['language']) . "', ".
+            "age = '" . $this->db->escape($data['age']) . "', ".
+            "birth_day = '" . $this->db->escape($data['birth_day']) . "', ".
+            "birth_month = '" . $this->db->escape($data['birth_month']) . "', ".
+            "birth_year = '" . $this->db->escape($data['birth_year']) . "', ".
+            "email = '" . $this->db->escape($data['email']) . "', ".
+            "email_verified = '" . $this->db->escape($data['email_verified']) . "', ".
+            "telephone = '" . $this->db->escape($data['telephone']) . "', ".
+            "address = '" . $this->db->escape($data['address']) . "', ".
+            "country = '" . $this->db->escape($data['country']) . "', ".
+            "region = '" . $this->db->escape($data['region']) . "', ".
+            "city = '" . $this->db->escape($data['city']) . "', ".
+            "zip = '" . $this->db->escape($data['zip']) . "', ".
+            "date_added = NOW()");
     }
 
     public function addCustomer($data) {
 
-        $this->db->query("INSERT INTO " . DB_PREFIX . "customer SET store_id = '" . (int)$this->config->get('config_store_id') . "', firstname = '" . $this->db->escape($data['firstname']) . "', lastname = '" . $this->db->escape($data['lastname']) . "', email = '" . $this->db->escape($data['email']) . "', telephone = '" . $this->db->escape($data['telephone']) . "', fax = '" . $this->db->escape($data['fax']) . "', password = '" . $this->db->escape(md5($data['password'])) . "', newsletter = '" . (isset($data['newsletter']) ? (int)$data['newsletter'] : 0) . "', customer_group_id = '" . (int)$data['customer_group_id'] . "', status = '1', date_added = NOW()");
+        $this->db->query("INSERT INTO " . DB_PREFIX . "customer SET 
+            store_id = '" . (int)$this->config->get('config_store_id') . "', 
+            firstname = '" . $this->db->escape($data['firstname']) . "', 
+            lastname = '" . $this->db->escape($data['lastname']) . "', 
+            email = '" . $this->db->escape($data['email']) . "', 
+            telephone = '" . $this->db->escape($data['telephone']) . "', 
+            fax = '" . $this->db->escape($data['fax']) . "', 
+            password = '" . $this->db->escape(md5($data['password'])) . "', 
+            newsletter = '" . (isset($data['newsletter']) ? (int)$data['newsletter'] : 0) . "', 
+            customer_group_id = '" . (int)$data['customer_group_id'] . "', 
+            status = '1', 
+            date_added = NOW()");
+
         $customer_id = $this->db->getLastId();
 
-        $this->db->query("INSERT INTO " . DB_PREFIX . "address SET customer_id = '" . (int)$customer_id . "', firstname = '" . $this->db->escape($data['firstname']) . "', lastname = '" . $this->db->escape($data['lastname']) . "', company = '" . $this->db->escape($data['company']) . "', address_1 = '" . $this->db->escape($data['address_1']) . "', address_2 = '" . $this->db->escape($data['address_2']) . "', city = '" . $this->db->escape($data['city']) . "', postcode = '" . $this->db->escape($data['postcode']) . "', country_id = '" . (int)$data['country_id'] . "', zone_id = '" . (int)$data['zone_id'] . "'");
+        $this->db->query("INSERT INTO " . DB_PREFIX . "address SET 
+            customer_id = '" . (int)$customer_id . "', 
+            firstname = '" . $this->db->escape($data['firstname']) . "', 
+            lastname = '" . $this->db->escape($data['lastname']) . "', 
+            company = '" . $this->db->escape($data['company']) . "', 
+            address_1 = '" . $this->db->escape($data['address_1']) . "', 
+            address_2 = '" . $this->db->escape($data['address_2']) . "', 
+            city = '" . $this->db->escape($data['city']) . "', 
+            postcode = '" . $this->db->escape($data['postcode']) . "', 
+            country_id = '" . (int)$data['country_id'] . "', 
+            zone_id = '" . (int)$data['zone_id'] . "'");
+
         $address_id = $this->db->getLastId();
 
-        $this->db->query("UPDATE " . DB_PREFIX . "customer SET address_id = '" . (int)$address_id . "' WHERE customer_id = '" . (int)$customer_id . "'");
+        $this->db->query("UPDATE " . DB_PREFIX . "customer SET 
+            address_id = '" . (int)$address_id . "' 
+            WHERE customer_id = '" . (int)$customer_id . "'");
 
         if (!$this->config->get('config_customer_approval')) {
-            $this->db->query("UPDATE " . DB_PREFIX . "customer SET approved = '1' WHERE customer_id = '" . (int)$customer_id . "'");
+            $this->db->query("UPDATE " . DB_PREFIX . "customer SET 
+                approved = '1' 
+                WHERE customer_id = '" . (int)$customer_id . "'");
         }
 
         $this->language->load('mail/customer');
@@ -218,6 +245,12 @@ class ModelModuleDSocialLogin extends Model {
         } else {
             return false;
         }
+    }
+
+    public function getCustomer($customer_id){
+        $result = $this->db->query("SELECT * FROM " . DB_PREFIX . "customer_authentication WHERE customer_id = '" . (int) $customer_id . "' LIMIT 1");
+
+        return $result->row;
     }
 
 }
