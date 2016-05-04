@@ -101,7 +101,7 @@ class ModelModuleDSocialLogin extends Model {
        $this->db->query("INSERT INTO " . DB_PREFIX . "customer_authentication SET ".
             "customer_id = '" . (int) $data['customer_id'] . "', ".
             "provider = '" . $this->db->escape($data['provider']) . "', ".
-            "identifier = MD5('" . $this->db->escape($data['identifier']).$data['customer_id'] . "'), ".
+            "identifier = MD5('" . $this->db->escape($data['identifier']). "'), ".
             "web_site_url = '" . $this->db->escape($data['web_site_url']) . "', ".
             "profile_url = '" . $this->db->escape($data['profile_url']) . "', ".
             "photo_url = '" . $this->db->escape($data['photo_url']) . "', ".
