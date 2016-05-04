@@ -1,6 +1,6 @@
 <extension>
     <id>d_social_login_free</id>
-    <name>Social Login</name>
+    <name>Social Login free</name>
     <description>Social login is a module that addes the ability to create an account in the webshop with a scoial network account and then login in by simply clicking a button. No need to remeber the password. It has Facebook, Paypal, Google+, Twitter, Linkeding, Vknontakte, Windows live, Tumblr and more</description>
     <type>module</type>
     <description>Adds social login buttons to opencart</description>
