@@ -1,5 +1,5 @@
 <?php
-
+date_default_timezone_set('UTC');
 /**
  * HybridAuth
  * http://hybridauth.sourceforge.net | http://github.com/hybridauth/hybridauth
@@ -15,7 +15,7 @@
  */
 class Hybrid_Auth {
 
-	public static $version = "2.4.2-dev";
+	public static $version = "2.9.0";
 
 	/**
 	 * Configuration array
@@ -75,7 +75,7 @@ class Hybrid_Auth {
 		$config["path_base"] = realpath(dirname(__FILE__)) . "/";
 		$config["path_libraries"] = $config["path_base"] . "thirdparty/";
 		$config["path_resources"] = $config["path_base"] . "resources/";
-		$config["path_providers"] = $config["path_base"] . "Providers/";
+		$config["path_providers"] = $config["path_base"] . "providers/";
 
 		// reset debug mode
 		if (!isset($config["debug_mode"])) {
@@ -84,24 +84,24 @@ class Hybrid_Auth {
 		}
 
 		# load hybridauth required files, a autoload is on the way...
-		require_once $config["path_base"] . "Error.php";
-		require_once $config["path_base"] . "Exception.php";
-		require_once $config["path_base"] . "Logger.php";
+		require_once $config["path_base"] . "error.php";
+		require_once $config["path_base"] . "exception.php";
+		require_once $config["path_base"] . "logger.php";
 
-		require_once $config["path_base"] . "Provider_Adapter.php";
+		require_once $config["path_base"] . "provider_adapter.php";
 
-		require_once $config["path_base"] . "Provider_Model.php";
-		require_once $config["path_base"] . "Provider_Model_OpenID.php";
-		require_once $config["path_base"] . "Provider_Model_OAuth1.php";
-		require_once $config["path_base"] . "Provider_Model_OAuth2.php";
+		require_once $config["path_base"] . "provider_model.php";
+		require_once $config["path_base"] . "provider_model_openid.php";
+		require_once $config["path_base"] . "provider_model_oauth1.php";
+		require_once $config["path_base"] . "provider_model_oauth2.php";
 
-		require_once $config["path_base"] . "User.php";
-		require_once $config["path_base"] . "User_Profile.php";
-		require_once $config["path_base"] . "User_Contact.php";
-		require_once $config["path_base"] . "User_Activity.php";
+		require_once $config["path_base"] . "user.php";
+		require_once $config["path_base"] . "user_profile.php";
+		require_once $config["path_base"] . "user_contact.php";
+		require_once $config["path_base"] . "user_activity.php";
 
 		if (!class_exists("Hybrid_Storage", false)) {
-			require_once $config["path_base"] . "Storage.php";
+			require_once $config["path_base"] . "storage.php";
 		}
 
 		// hash given config
@@ -306,7 +306,7 @@ class Hybrid_Auth {
 
 	/**
 	 * Return array listing all enabled providers as well as a flag if you are connected
-	 * 
+	 *
 	 * <code>
 	 * array(
 	 *   'Facebook' => array(
@@ -352,6 +352,9 @@ class Hybrid_Auth {
 	 * @param string $mode PHP|JS
 	 */
 	public static function redirect($url, $mode = "PHP") {
+		if(!$mode){
+			$mode = 'PHP';	
+		}
 		Hybrid_Logger::info("Enter Hybrid_Auth::redirect( $url, $mode )");
 
 		// Ensure session is saved before sending response, see https://github.com/symfony/symfony/pull/12341
@@ -390,7 +393,7 @@ class Hybrid_Auth {
 
 		$protocol = 'http://';
 
-		if ((isset($_SERVER['HTTPS']) && ( $_SERVER['HTTPS'] == 'on' || $_SERVER['HTTPS'] == 1 )) 
+		if ((isset($_SERVER['HTTPS']) && ( $_SERVER['HTTPS'] == 'on' || $_SERVER['HTTPS'] == 1 ))
 				|| (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https'))
 		{
 			$protocol = 'https://';

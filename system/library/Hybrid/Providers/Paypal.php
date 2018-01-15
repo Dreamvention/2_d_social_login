@@ -20,9 +20,9 @@
 class Hybrid_Providers_Paypal extends Hybrid_Provider_Model_OAuth2
 {
 	// default permissions 
-	public $scope = "openid profile email address phone https://uri.paypal.com/services/paypalattributes";
+	public $scope = "profile email address phone https://uri.paypal.com/services/paypalattributes";
 
-    public $sandbox = false;
+    public $sandbox = true;
 
 	/**
 	* IDp wrappers initializer 
@@ -39,8 +39,8 @@ class Hybrid_Providers_Paypal extends Hybrid_Provider_Model_OAuth2
 		}
 
 		// include OAuth2 client and Paypal client
-		require_once Hybrid_Auth::$config["path_libraries"] . "OAuth/OAuth2Client.php";
-		require_once Hybrid_Auth::$config["path_libraries"] . "Paypal/PaypalOAuth2Client.php";
+		require_once Hybrid_Auth::$config["path_libraries"] . "oauth/oauth2client.php";
+		require_once Hybrid_Auth::$config["path_libraries"] . "paypal/paypaloauth2client.php";
 
 		// create a new OAuth2 client instance
 		$this->api = new PaypalOAuth2Client( $this->config["keys"]["id"], $this->config["keys"]["secret"], $this->endpoint );
@@ -101,12 +101,12 @@ class Hybrid_Providers_Paypal extends Hybrid_Provider_Model_OAuth2
 
 		// ask google api for user infos
 		$response = $this->api->api( "https://api".($this->sandbox?'.sandbox' : '').".paypal.com/v1/identity/openidconnect/userinfo/?schema=openid" ); 
-		//Hybrid_Logger::info( "Enter getUserProfile: ".serialize($response));
-		if ( ! isset( $response->user_id ) || isset( $response->message ) ){
+
+		if ( ! isset( $response->payer_id ) || isset( $response->message ) ){
 			throw new Exception( "User profile request failed! {$this->providerId} returned an invalid response.", 6 );
 		}
 
-		$this->user->profile->identifier    = (property_exists($response,'user_id'))?$response->user_id:"";
+		$this->user->profile->identifier    = (property_exists($response,'payer_id'))?$response->payer_id:"";
 		$this->user->profile->firstName     = (property_exists($response,'given_name'))?$response->given_name:"";
 		$this->user->profile->lastName      = (property_exists($response,'family_name'))?$response->family_name:"";
 		$this->user->profile->displayName   = (property_exists($response,'name'))?$response->name:"";

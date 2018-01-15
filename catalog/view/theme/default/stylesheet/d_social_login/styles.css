@@ -12,6 +12,19 @@
 
 }
 
+[data-icon]:before {
+  font-family: "d-social-login" !important;
+  content: attr(data-icon);
+  font-style: normal !important;
+  font-weight: normal !important;
+  font-variant: normal !important;
+  text-transform: none !important;
+  speak: none;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
 [class^="dsl-"]:before,
 [class*=" dsl-"]:before {
   font-family: "d-social-login" !important;
@@ -33,9 +46,6 @@
 }
 .dsl-google-plus:before {
   content: "\e002";
-}
-.dsl-instagram:before {
-  content: "\e003";
 }
 .dsl-linkedin:before {
   content: "\e004";
@@ -60,4 +70,37 @@
 }
 .dsl-yandex:before {
   content: "\e00b";
+}
+.dsl-mailru:before {
+  content: "\e00c";
+}
+.dsl-odnoklassniki:before {
+  content: "\e00d";
+}
+.dsl-instagram:before {
+  content: "\e003";
+}
+.dsl-github:before {
+  content: "\e00e";
+}
+.dsl-vimeo:before {
+  content: "\e00f";
+}
+.dsl-dribbble:before {
+  content: "\e010";
+}
+.dsl-openid:before {
+  content: "\e011";
+}
+.dsl-steam:before {
+  content: "\e012";
+}
+.dsl-500px:before {
+  content: "\e013";
+}
+.dsl-amazon:before {
+  content: "\e014";
+}
+.dsl-lastfm:before {
+  content: "\e015";
 }

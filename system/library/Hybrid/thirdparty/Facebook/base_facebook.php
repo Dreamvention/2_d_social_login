@@ -171,6 +171,13 @@ abstract class BaseFacebook
   );
 
   /**
+   * The decoded response object.
+   *
+   * @var mixed
+   */
+  protected $response;
+
+  /**
    * The Application ID.
    *
    * @var string
@@ -225,7 +232,7 @@ abstract class BaseFacebook
    *
    * @var boolean
    */
-  protected $trustForwarded = false;
+  protected $trustForwarded = true;
 
   /**
    * Indicates if signed_request is allowed in query parameters.
@@ -452,6 +459,16 @@ abstract class BaseFacebook
   }
 
   /**
+   * Return the response object afer the fact
+   *
+   * @return mixed
+   */
+  public function getResponse()
+  {
+      return $this->response;
+  }
+
+  /**
    * Determines and returns the user access token, first using
    * the signed request if present, and then falling back on
    * the authorization code if present.  The intent is to
@@ -660,6 +677,21 @@ abstract class BaseFacebook
   }
 
   /**
+   * Get a login status URL to fetch the status from Facebook.
+   *
+   * @param array $params Provide custom parameters
+   * @return string The URL for the logout flow
+   */
+  public function getLoginStatusUrl($params=array()) {
+    return $this->getLoginUrl(
+      array_merge(array(
+        'response_type' => 'code',
+        'display' => 'none',
+      ), $params)
+    );
+  }
+
+  /**
    * Make an API call.
    *
    * @return mixed The decoded response
@@ -706,7 +738,7 @@ abstract class BaseFacebook
    *               code could not be determined.
    */
   protected function getCode() {
-    if (!isset($_REQUEST['code']) || !isset($_REQUEST['state'])) {
+    if (!isset($_REQUEST['code']) || !isset($_REQUEST['state']) || $this->state === null) {
       return false;
     }
     if ($this->state === $_REQUEST['state']) {
@@ -898,7 +930,7 @@ abstract class BaseFacebook
     }
     // @codeCoverageIgnoreEnd
 
-    return $result;
+    return $this->response = $result;
   }
 
   /**
@@ -1456,7 +1488,7 @@ abstract class BaseFacebook
    * @param string $big   The value to be checked against $small
    * @param string $small The input string
    *
-   * @return boolean Returns TRUE if $big matches $small
+   * @return boolean Returns true if $big matches $small
    */
   protected static function isAllowedDomain($big, $small) {
     if ($big === $small) {
@@ -1471,7 +1503,7 @@ abstract class BaseFacebook
    * @param string $big   The value to be checked against $small
    * @param string $small The input string
    *
-   * @return boolean TRUE if $big ends with $small
+   * @return boolean true if $big ends with $small
    */
   protected static function endsWith($big, $small) {
     $len = strlen($small);

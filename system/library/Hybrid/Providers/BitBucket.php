@@ -7,7 +7,7 @@
 
 /**
  * BitBucket Provider for HybridAuth
- * @package GitLauncher\HybridAuth\Providers
+ * @package GitLauncher\HybridAuth\providers
  * @author Gabriel Somoza <contact@gabrielsomoza.com>
  */
 class Hybrid_Providers_BitBucket extends Hybrid_Provider_Model_OAuth1
