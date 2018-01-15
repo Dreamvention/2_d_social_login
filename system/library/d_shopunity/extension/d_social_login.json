@@ -1,0 +1,110 @@
+{
+    "codename": "d_social_login",
+    "version": "5.0.6",
+    "name": "Social Login",
+    "description": "Social login is a module that addes the ability to create an account in the webshop with a social network account and then login in by simply clicking a button. No need to remeber the password. It has Facebook, Paypal, Google+, Twitter, Linkeding, Vknontakte, Windows live, Tumblr and more",
+    "index": "extension/module/d_social_login",
+    "author": {
+        "name": "Dreamvention",
+        "email": "info@dreamvention.com",
+        "url": "https://dreamvention.com/"
+    },
+    "opencart_version": [
+        "2.0.1.0",
+        "2.0.1.1",
+        "2.0.2.0",
+        "2.0.3.1",
+        "2.1.0.1",
+        "2.1.0.2",
+        "2.2.0.0",
+        "2.3.0.0",
+        "2.3.0.1",
+        "2.3.0.2",
+        "3.0.0.0",
+        "3.0.1.1",
+        "3.0.1.2",
+        "3.0.2.0"
+    ],
+    "type": "module",
+    "license": {
+        "type": "commercial",
+        "url": "https://shopunity.net/licenses/commercial"
+    },
+    "install": {
+        "url": "extension/extension/module/install&extension=d_social_login"
+    },
+    "uninstall": {
+        "url": "extension/extension/module/uninstall&extension=d_social_login"
+    },
+    "support": {
+        "email": "support@dreamvention.com",
+        "url": "https://dreamvention.com/support"
+    },
+    "required": {
+        "d_opencart_patch": ">= 1.0.0",
+        "d_twig_manager": ">= 1.5.0",
+        "d_bootstrap_extra": ">= 1.0.1",
+        "d_bootstrap_switch": ">= 3.3.5",
+        "d_bootstrap_colorpicker": ">= 2.5.1",
+        "d_tinysort": ">= 2.3.7"
+    },
+    "files": [
+        "system/library/d_shopunity/extension/d_social_login.json",
+        "system/library/d_shopunity/install/d_social_login.xml",
+        "system/config/d_social_login.php",
+
+        "admin/controller/extension/module/d_social_login.php",
+        "admin/model/extension/module/d_social_login.php",
+        "admin/language/en-gb/extension/module/d_social_login.php",
+        "admin/language/en-gb/extension/module/d_social_login_instruction.php",
+        "admin/view/template/extension/module/d_social_login.twig",
+
+        "catalog/controller/extension/d_social_login/callback_live.php",
+        "catalog/controller/extension/d_social_login/callback.php",
+        "catalog/controller/extension/module/d_social_login.php",
+        "catalog/model/extension/module/d_social_login.php",
+        "catalog/language/en-gb/extension/module/d_social_login.php",
+        "catalog/view/theme/default/template/extension/module/d_social_login.twig",
+        "catalog/view/theme/default/template/d_social_login/form.twig"
+    ],
+    "dirs": [
+        "admin/view/image/d_social_login",
+        "admin/view/stylesheet/d_social_login",
+        "admin/view/javascript/d_social_login",
+        "image/catalog/d_social_login",
+        "catalog/view/javascript/d_social_login",
+        "catalog/view/theme/default/stylesheet/d_social_login",
+        "system/library/hybrid"
+    ],
+    "changelog": [
+        {
+          "version":"5.0.6",
+          "change": "Fix breadcrumbs"
+        },
+        {
+          "version":"5.0.5",
+          "change": "Fix google, etc"
+        },
+        {
+          "version":"5.0.4",
+          "change": "resubmit"
+        },
+        {
+          "version":"5.0.3",
+          "change": "delete files from root directory"
+        },
+        {
+          "version":"5.0.2",
+          "change": "add fixes for PRO version"
+        },
+        {
+          "version":"5.0.1",
+          "change": "now it is core for Social Login PRO"
+        },
+        {
+          "version":"5.0.0",
+          "change": "Initial commit"
+        }
+
+    ]
+}

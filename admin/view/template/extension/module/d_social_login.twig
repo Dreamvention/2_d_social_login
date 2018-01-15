@@ -1,0 +1,488 @@
+{# location: admin/view #}
+
+{{ header }}{{ column_left }}
+
+<div id="content">
+
+    <div class="page-header">
+        <div class="container-fluid">
+            <div class="form-inline pull-right">
+                {% if (stores) %}
+                <select id="store" onChange="location = '{{ module_link }}&store_id=' + $('#store').val()" class="form-control">
+                    {% for store in stores %}
+                    <option value="{{ store['store_id'] }}" {{ store['store_id'] == store_id ? 'selected="selected"' : '' }}>{{ store['name'] }}</option>
+                    {% endfor %}
+                </select>
+                {% endif %}
+                <button id="save_and_stay" data-toggle="tooltip" title="{{ button_save_and_stay }}" class="btn btn-success"><i class="fa fa-save"></i></button>
+                <button type="submit" form="form" data-toggle="tooltip" title="{{ button_save }}" class="btn btn-primary"><i class="fa fa-save"></i></button>
+                <a href="{{ cancel }}" data-toggle="tooltip" title="{{ button_cancel }}" class="btn btn-default"><i class="fa fa-reply"></i></a></div>
+            <h1>{{ heading_title }} {{ version }}</h1>
+            <ul class="breadcrumb">
+                {% for breadcrumb in breadcrumbs %}
+                <li><a href="{{ breadcrumb['href'] }}">{{ breadcrumb['text'] }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <div class="container-fluid">
+        {% if (error_warning) %}
+        <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> {{ error_warning }}
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+        </div>
+        {% endif %}
+
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title"><i class="fa fa-pencil"></i> {{ text_edit }}</h3>
+            </div>
+
+            <div class="panel-body">
+                <form action="{{ action }}" method="post" enctype="multipart/form-data" id="form" class="form-horizontal">
+
+                    <ul class="nav nav-tabs">
+                        <li class="active"><a href="#setting_basic" data-toggle="tab">
+                            <i class="fa fa-cog"></i>
+                            {{ text_setting_basic }}
+                        </a></li>
+                        <li ><a href="#setting_button" data-toggle="tab">
+                            <i class="fa fa-bullhorn"></i>
+                            {{ text_setting_button }}
+                        </a></li>
+                        <li ><a href="#setting_field" data-toggle="tab">
+                            <i class="fa fa-bars"></i>
+                            {{ text_setting_field }}
+                        </a></li>
+                        <li ><a href="#setting_provider" data-toggle="tab">
+                            <i class="fa fa-code"></i>
+                            {{ text_setting_provider }}
+                        </a></li>
+                        <li ><a href="#instruction" data-toggle="tab">
+                            <i class="fa fa-graduation-cap"></i>
+                            {{ text_instruction }}
+                        </a></li>
+                        <li ><a href="#debug" data-toggle="tab">
+                            <i class="fa fa-bug"></i>
+                            {{ text_debug }}
+                        </a></li>
+                    </ul>
+
+                    <div class="tab-content">
+
+                        <div id="setting_basic" class="tab-pane active">
+
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label" for="input_status">{{ entry_status }}</label>
+                                <div class="col-sm-10">
+                                    <input type="hidden" name="{{ id }}_status" value="0" />
+                                    <input type="checkbox" name="{{ id }}_status" class="switcher" data-label-text="{{ text_enabled }}" id="input_status" {{ d_social_login_status ? 'checked="checked"' : '' }} value="1" />
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label" for="select_size">{{ entry_size }}</label>
+                                <div class="col-sm-10">
+                                    <select name="{{ id }}_setting[size]" class="form-control">
+                                        {% if (setting['size'] == 'icons') %}
+                                        <option value="icons" selected="selected">{{ text_icons }}</option>
+                                        {% else %}
+                                        <option value="icons">{{ text_icons }}</option>
+                                        {% endif %}
+                                        {% if (setting['size'] == 'small') %}
+                                        <option value="small" selected="selected">{{ text_small }}</option>
+                                        {% else %}
+                                        <option value="small">{{ text_small }}</option>
+                                        {% endif %}
+                                        {% if (setting['size'] == 'medium') %}
+                                        <option value="medium" selected="selected">{{ text_medium }}</option>
+                                        {% else %}
+                                        <option value="medium">{{ text_medium }}</option>
+                                        {% endif %}
+                                        {% if (setting['size'] == 'large') %}
+                                        <option value="large" selected="selected">{{ text_large }}</option>
+                                        {% else %}
+                                        <option value="large">{{ text_large }}</option>
+                                        {% endif %}
+                                        {% if (setting['size'] == 'huge') %}
+                                        <option value="huge" selected="selected">{{ text_huge }}</option>
+                                        {% else %}
+                                        <option value="huge">{{ text_huge }}</option>
+                                        {% endif %}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label" for="select_customer_group">{{ entry_customer_group }}</label>
+                                <div class="col-sm-10">
+                                    <select id="select_customer_group" name="{{ id }}_setting[customer_group]" class="form-control">
+                                        {% for customer_group in customer_groups %}
+                                        <option value="{{ customer_group['customer_group_id'] }}" {{ customer_group['customer_group_id'] == setting['customer_group'] ? 'selected="selected"' : '' }}>{{ customer_group['name'] }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label" for="input_debug_mode">{{ entry_newsletter }}</label>
+                                <div class="col-sm-10">
+                                    <input type="hidden" name="{{ id }}_setting[newsletter]" value="0" />
+                                    <input type="checkbox" name="{{ id }}_setting[newsletter]" {{ setting['newsletter']? 'checked="checked"' : '' }} value="1" id="input_newsletter"/>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label" for="input_return_page_url">{{ entry_return_page_url }}</label>
+                                <div class="col-sm-10">
+                                    <input type="text" id="input_return_page_url" name="{{ id }}_setting[return_page_url]" value="{{ setting['return_page_url'] }}"  class="form-control"/>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label" for="select_return_url">{{ entry_background_img }}</label>
+                                <div class="col-sm-10">
+                                    <a href="" id="thumb-image" data-toggle="image" class="img-thumbnail"><img src="{{ background_img_thumb }}" alt="" title="" /></a>
+                                    <input type="hidden" name="{{ id }}_setting[background_img]" value="{{ setting['background_img'] }}" id="input-image" />
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label" for="input_iframe">{{ entry_iframe }}</label>
+                                <div class="col-sm-10">
+                                    <input type="hidden" name="{{ id }}_setting[iframe]" value="0" />
+                                    <input type="checkbox" name="{{ id }}_setting[iframe]" {{ setting['iframe']? 'checked="checked"' : '' }} value="1" id="input_iframe"/>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label" for="input_debug_mode">{{ entry_debug_mode }}</label>
+                                <div class="col-sm-10">
+                                    <input type="hidden" name="{{ id }}_setting[debug_mode]" value="0" />
+                                    <input type="checkbox" name="{{ id }}_setting[debug_mode]" {{ setting['debug_mode']? 'checked="checked"' : '' }} value="1" id="input_debug_mode"/>
+                                </div>
+                            </div>
+
+                            {% if (config_files) %}
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label" for="select_config">{{ entry_config_files }}</label>
+                                <div class="col-sm-10">
+                                    <div class="input-group">
+                                        <select id="select_config" class="form-control" name="{{ id }}_setting[config]">
+                                            {% for config_file in config_files %}
+                                            <option value="{{ config_file }}" {{ (config_file == config) ? 'selected="selected"' : '' }}>{{ config_file }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <span class="input-group-btn">
+                                            <button class="btn btn-primary" id="select_config_submit" type="button">Apply</button>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <div id="setting_button" class="tab-pane">
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">{{entry_sort_order}}</label>
+                                <div class="col-sm-10">
+                                    <div class="sortable">
+                                        {% for key,provider in providers %}
+                                        <div class="well well-sm clearfix sort-item">
+                                            <div class="row">
+
+                                                <div class="col-sm-2">
+                                                    <span for="d_social_login_modules_providers_{{ key }}_enabled">
+                                                        <label ><i class="{{ provider['icon'] }}"></i>{{ provider['id'] }}</label ><br/>
+                                                        <input type="hidden" name="{{ id }}_setting[providers][{{ key }}][enabled]" value="0" />
+                                                        <input type="checkbox" name="{{ id }}_setting[providers][{{ key }}][enabled]" {{ provider['enabled']? 'checked="checked"':'' }} value="1" id="{{ id }}_setting_providers_{{ key }}_enabled"/>
+                                                    </span>
+                                                    <input type="hidden" name="{{ id }}_setting[providers][{{ key }}][sort_order]" class="sort-value" value="{{ provider['sort_order'] }}" /><span class="dsl-icon-{{ provider['id'] }}"></span>
+                                                </div>
+
+                                                <div class="col-sm-3">
+                                                    <label >{{ text_background_color }}</label>
+                                                    <div class="input-group color-picker">
+                                                        <input type="text" name="{{ id }}_setting[providers][{{ key }}][background_color]" class=" form-control" value="{{ provider['background_color'] }}" />
+                                                        <span class="input-group-addon"><i></i></span>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-sm-3">
+                                                    <label>{{ text_background_color_active }}</label>
+                                                    <div class="input-group color-picker">
+                                                        <input  type="text" name="{{ id }}_setting[providers][{{ key }}][background_color_active]" class="form-control" value="{{ provider['background_color_active'] }}" />
+                                                        <span class="input-group-addon"><i></i></span>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-sm-3">
+                                                    <label>{{ text_icon }}</label>
+                                                    <div class="input-group">
+                                                        <span class="input-group-addon"><i class="{{ provider['icon'] }}"></i></span>
+                                                        <input  type="text" name="{{ id }}_setting[providers][{{ key }}][icon]" class="form-control" value="{{ provider['icon'] }}" />
+                                                    </div>
+                                                </div>
+                                                <span class="icon-drag"></span>
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+
+                                        <script>
+                                            $(function () {
+                                                $('.color-picker').colorpicker();
+                                            });
+                                        </script>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="setting_field" class="tab-pane">
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label" >{{entry_fields_sort_order}}</label>
+                                <div class="col-sm-10">
+                                    <div class="sortable">
+                                        {% for field in fields %}
+                                        <div class="well well-sm clearfix sort-item">
+                                            <div class="row">
+                                                <div class="col-sm-5">
+                                                    <input type="hidden" name="{{ id }}_setting[fields][{{ field['id'] }}][enabled]" value="0" />
+                                                    <input type="checkbox" name="{{ id }}_setting[fields][{{ field['id'] }}][enabled]" {{ field['enabled']? 'checked="checked"':'' }} value="1" id="{{ id }}_setting_fields_{{ field['id'] }}_enabled" />
+                                                    <label for="{{ id }}_setting_fields_{{ field['id'] }}_enabled">{{ attribute(_context, 'text_' ~ field['id'])}}</label>
+                                                    <input type="hidden" name="{{ id }}_setting[fields][{{ field['id'] }}][sort_order]" class="sort-value" value="{{ field['sort_order'] }}" />
+                                                    <input type="hidden" name="{{ id }}_setting[fields][{{ field['id'] }}][type]" value="{{ field['type'] }}" />
+                                                    <input type="hidden" name="{{ id }}_setting[fields][{{ field['id'] }}][id]" value="{{ field['id'] }}" />
+                                                </div>
+                                                {% if (field['mask'] is defined) %}
+                                                <label class="col-sm-2">
+                                                    {{ text_mask }}
+                                                </label>
+                                                <div class="col-sm-3"><input type="text" name="{{ id }}_setting[fields][{{ field['id'] }}][mask]" value="{{ field['mask'] }}" class="form-control"></div>
+                                                {% endif %}
+                                                <span class="icon-drag"></span>
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="setting_provider" class="tab-pane">
+                            <div class="bs-callout bs-callout-warning"><h4>{{ warning_app_settings }}</h4><p>{{ warning_app_settings_full }}</p></div>
+                            {% for key,provider in providers %}
+                            <div class="form-group">
+                                <h4 class="col-sm-12" for="select_return_url"><i class="{{ provider['icon'] }}"></i> {{ provider['id'] ~ ' ' ~ text_app_settings }}<input type="hidden" name="{{ id }}_setting[providers][{{ key }}][id]" value="{{ provider['id'] }}" /></h4>
+
+                                <div class="col-sm-12">
+
+                                    {% for k,v in provider['keys'] %}
+                                    <div class="row">
+                                        <label class="col-sm-2 control-label">
+                                            {{ attribute(_context, 'text_app_' ~ k)}}
+                                        </label>
+                                        <div class="col-sm-10">
+                                            <input type="text" name="{{ id }}_setting[providers][{{ key }}][keys][{{ k }}]" value="{{ v }}" class="form-control" />
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+
+                                    {% if (provider['scope']) %}
+                                    <div class="row">
+                                        <label class="col-sm-2 control-label">
+                                            {{ text_app_scope }}
+                                        </label>
+                                        <div class="col-sm-10">
+                                            <input type="text" name="{{ id }}_setting[providers][{{ key }}][scope]" value="{{ provider['scope'] }}" class="form-control" />
+                                        </div>
+                                    </div>
+                                    {% endif %}
+
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="tab-pane" id="instruction">
+                            <div class="tab-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="wrap-5">
+                                            <h1>{{ text_instruction }}</h1>
+                                            {{ text_instructions_full }}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="wrap-5">
+                                            <h1>How to set up social apps?</h1>
+                                            <ul class="nav nav-tabs">
+                                                {% for key,instruction in text_instructions %}
+                                                <li {% if (key == 'google-plus') %}class="active"{% endif %}><a href="#{{ key }}" data-toggle="tab"><i class="fa fa-{{ key }}"></i> {{ instruction }}</a></li>
+                                                {% endfor %}
+                                            </ul>
+                                            <div class="tab-content">
+                                                {% for key,tab in text_instructions_tabs %}
+                                                <div id="{{ key }}" class="tab-pane {{ key == 'google-plus' ? 'active' }}">
+                                                    {{ tab }}
+                                                </div>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tab-pane" id="debug">
+                            <div class="tab-body">
+                                <div class="bs-callout bs-callout-warning">{{ text_debug_file_into }}</div>
+                                <textarea wrap="off" rows="15" readonly="readonly" class="form-control">{{ debug }}</textarea>
+                                <br/>
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label" for="input_debug_file">{{ entry_debug_file }}</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" id="input_debug_file" name="{{ id }}_setting[debug_file]" value="{{ setting['debug_file'] }}"  class="form-control"/>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-sm-10 col-sm-offset-2">
+                                        <a class="btn btn-danger" id="clear_debug_file">{{ button_clear_debug_file }}</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .sortable {
+        position: relative;
+    }
+    .sortable .well{
+        margin-bottom: 2px;
+    }
+    .sortable .dragged {
+        position: absolute;
+        z-index: 2000;
+        width: 100%;
+        display: table;
+        background: #fff
+    }
+    .sortable .placeholder{
+        opacity: 0.8;
+        border: dotted 1px #999;
+        background: #fff;
+        min-height: 42px;
+
+    }
+</style>
+
+<script type="text/javascript">
+
+    $('#select_config_submit').on('click', function(){
+        var config = $('#select_config').val();
+        $('#content').append('<form action="{{ module_link }}{{ stores ? "&store_id=' + $('#store').val() + '" : '' }}" id="config_update" method="post" style="display:none;"><input type="text" name="config" value="' + config + '" /></form>');
+        $('#config_update').submit();
+    });
+
+    // sorting fields
+    $('.sortable > tr').tsort({attr:'sort-data'});
+    $(function () {
+
+        $("[type='checkbox']").bootstrapSwitch({
+            'onColor': 'success',
+            'onText': 'YES',
+            'offText': 'NO',
+        });
+
+        $(".sortable").sortable({
+            itemPath: '',
+            itemSelector: '.sort-item',
+            distance: '10',
+            pullPlaceholder: false,
+            placeholder: '<div class="well well-sm clearfix placeholder"> </div>',
+            onDragStart: function (item, container, _super) {
+                var offset = item.offset(),
+                        pointer = container.rootGroup.pointer;
+
+                adjustment = {
+                    left: pointer.left - offset.left,
+                    top: pointer.top - offset.top
+                };
+
+                _super(item, container);
+            },
+            onDrag: function (item, position) {
+                item.css({
+                    left: position.left - adjustment.left,
+                    top: position.top - adjustment.top
+                });
+            },
+            onDrop: function (item, container, _super) {
+                item.closest('.sortable').find('.row').each(function (i, row) {
+                    console.log(i);
+                    $(row).find('.sort-value').val(i);
+
+                });
+
+                _super(item);
+            }
+        });
+    });
+</script>
+
+<script type="text/javascript">
+
+    $(function () {
+        $('body').on('click', '#save_and_stay', function () {
+            $.ajax({
+                type: 'post',
+                url: $('#form').attr('action') + '&save',
+                data: $('#form').serialize(),
+                beforeSend: function () {
+                    $('#form').fadeTo('slow', 0.5);
+                },
+                complete: function () {
+                    $('#form').fadeTo('slow', 1);
+                },
+                success: function (response) {
+                    console.log(response);
+                }
+            });
+        });
+
+        $('body').on('click', '#clear_debug_file', function () {
+            $.ajax({
+                url: '{{clear_debug_file}}',
+                type: 'post',
+                dataType: 'json',
+                data: 'debug_file={{debug_file}}',
+                beforeSend: function () {
+                    $('#form').fadeTo('slow', 0.5);
+                },
+                complete: function () {
+                    $('#form').fadeTo('slow', 1);
+                },
+                success: function (json) {
+                    $('.alert').remove();
+                    console.log(json);
+
+                    if (json['error']) {
+                        $('#debug .tab-body').prepend('<div class="alert alert-danger">' + json['error'] + '</div>');
+                    }
+
+                    if (json['success']) {
+                        $('#debug .tab-body').prepend('<div class="alert alert-success">' + json['success'] + '</div>');
+                    }
+                }
+            });
+        });
+    });
+</script>
+{{ footer }}
