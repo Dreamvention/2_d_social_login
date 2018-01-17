@@ -72,7 +72,7 @@ class ControllerExtensionModuleDSocialLogin extends Controller {
     public function login()
     {
         $this->setup();
-        require_once(DIR_SYSTEM . 'library/hybrid/auth.php');
+        require_once(DIR_SYSTEM . 'library/'.$this->id.'/hybrid/auth.php');
 
         $this->setting = $this->config->get('d_social_login_setting');
 

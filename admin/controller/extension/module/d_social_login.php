@@ -1,5 +1,7 @@
 <?php
-class ControllerExtensionModuleDSocialLogin extends Controller {
+
+class ControllerExtensionModuleDSocialLogin extends Controller
+{
     private $codename = 'd_social_login';
     private $id = 'd_social_login';
     private $route = 'extension/module/d_social_login';
@@ -10,12 +12,12 @@ class ControllerExtensionModuleDSocialLogin extends Controller {
     public function __construct($registry)
     {
         parent::__construct($registry);
-        if (file_exists(DIR_SYSTEM."/config/d_social_login_pro.php")) {
-            $this->load->language($this->route.'_pro');
-        }else{
+        if (file_exists(DIR_SYSTEM . "/config/d_social_login_pro.php")) {
+            $this->load->language($this->route . '_pro');
+        } else {
             $this->load->language($this->route);
         }
-        $this->load->language($this->route.'_instruction');
+        $this->load->language($this->route . '_instruction');
 
         $this->load->model($this->route);
         $this->load->model('design/layout');
@@ -25,33 +27,33 @@ class ControllerExtensionModuleDSocialLogin extends Controller {
         $this->load->model('extension/d_opencart_patch/load');
         $this->load->model('extension/d_opencart_patch/user');
 
-        $this->d_shopunity = (file_exists(DIR_SYSTEM.'library/d_shopunity/extension/d_shopunity.json'));
-        $this->d_opencart_patch = (file_exists(DIR_SYSTEM.'library/d_shopunity/extension/d_opencart_patch.json'));
-        $this->extension = json_decode(file_get_contents(DIR_SYSTEM.'library/d_shopunity/extension/'.$this->id.'.json'), true);
-        $this->d_twig_manager = (file_exists(DIR_SYSTEM.'library/d_shopunity/extension/d_twig_manager.json'));
+        $this->d_shopunity = (file_exists(DIR_SYSTEM . 'library/d_shopunity/extension/d_shopunity.json'));
+        $this->d_opencart_patch = (file_exists(DIR_SYSTEM . 'library/d_shopunity/extension/d_opencart_patch.json'));
+        $this->extension = json_decode(file_get_contents(DIR_SYSTEM . 'library/d_shopunity/extension/' . $this->id . '.json'), true);
+        $this->d_twig_manager = (file_exists(DIR_SYSTEM . 'library/d_shopunity/extension/d_twig_manager.json'));
 
         $this->store_id = (isset($this->request->get['store_id'])) ? $this->request->get['store_id'] : 0;
     }
 
     public function index()
     {
-        if($this->d_shopunity){
+        if ($this->d_shopunity) {
             $this->load->model('extension/d_shopunity/mbooth');
             $this->model_extension_d_shopunity_mbooth->validateDependencies($this->id);
         }
 
-        if($this->d_twig_manager){
+        if ($this->d_twig_manager) {
             $this->load->model('extension/module/d_twig_manager');
-            if(!$this->model_extension_module_d_twig_manager->isCompatible()){
+            if (!$this->model_extension_module_d_twig_manager->isCompatible()) {
                 $this->model_extension_module_d_twig_manager->installCompatibility();
                 $this->session->data['success'] = $this->language->get('success_twig_compatible');
                 $this->response->redirect($this->model_extension_d_opencart_patch_url->getExtensionLink('module'));
             }
         }
 
-        if(VERSION >= '2.1.0.1'){
+        if (VERSION >= '2.1.0.1') {
             $this->load->model('customer/customer_group');
-        }else{
+        } else {
             $this->load->model('sale/customer_group');
         }
 
@@ -69,7 +71,7 @@ class ControllerExtensionModuleDSocialLogin extends Controller {
         // Multistore
         if (isset($this->request->get['store_id'])) {
             $store_id = $this->request->get['store_id'];
-        }else{
+        } else {
             $store_id = 0;
         }
 
@@ -79,12 +81,12 @@ class ControllerExtensionModuleDSocialLogin extends Controller {
             // 3.x fix
             if (VERSION >= '3.0.0.0') {
                 $sl_post_array = array();
-                if ($this->request->post[$this->id.'_status'] == 0) {
-                    $sl_post_array['module_'.$this->id.'_status'] = 0;
-                } elseif ($this->request->post[$this->id.'_status'] == 1) {
-                    $sl_post_array['module_'.$this->id.'_status'] = 1;
+                if ($this->request->post[$this->id . '_status'] == 0) {
+                    $sl_post_array['module_' . $this->id . '_status'] = 0;
+                } elseif ($this->request->post[$this->id . '_status'] == 1) {
+                    $sl_post_array['module_' . $this->id . '_status'] = 1;
                 }
-                $this->model_setting_setting->editSetting('module_'.$this->id, $sl_post_array, $store_id);
+                $this->model_setting_setting->editSetting('module_' . $this->id, $sl_post_array, $store_id);
             }
 
             $this->model_setting_setting->editSetting($this->id, $this->request->post, $store_id);
@@ -95,10 +97,10 @@ class ControllerExtensionModuleDSocialLogin extends Controller {
         }
 
         // Status
-        if (isset($this->request->post[$this->id.'_status'])) {
-            $data[$this->id.'_status'] = $this->request->post[$this->id.'_status'];
+        if (isset($this->request->post[$this->id . '_status'])) {
+            $data[$this->id . '_status'] = $this->request->post[$this->id . '_status'];
         } else {
-            $data[$this->id.'_status'] = $this->config->get($this->id.'_status');
+            $data[$this->id . '_status'] = $this->config->get($this->id . '_status');
         }
 
         // Error
@@ -110,8 +112,8 @@ class ControllerExtensionModuleDSocialLogin extends Controller {
 
         // Url
         $url = '';
-        if(isset($this->request->get['store_id'])){
-            $url .=  '&store_id='.$store_id;
+        if (isset($this->request->get['store_id'])) {
+            $url .= '&store_id=' . $store_id;
         }
 
         // Heading
@@ -124,9 +126,9 @@ class ControllerExtensionModuleDSocialLogin extends Controller {
         $data['route'] = $this->route;
         $data['store_id'] = $store_id;
         $data['stores'] = $this->model_extension_module_d_social_login->getStores();
-        if (file_exists(DIR_SYSTEM."/config/d_social_login_pro.php")) {
-            $data['config'] = $this->model_extension_module_d_social_login->getConfigFile($this->id.'_pro', $this->sub_versions);
-        }else{
+        if (file_exists(DIR_SYSTEM . "/config/d_social_login_pro.php")) {
+            $data['config'] = $this->model_extension_module_d_social_login->getConfigFile($this->id . '_pro', $this->sub_versions);
+        } else {
             $data['config'] = $this->model_extension_module_d_social_login->getConfigFile($this->id, $this->sub_versions);
         }
 
@@ -230,16 +232,23 @@ class ControllerExtensionModuleDSocialLogin extends Controller {
         $data['module_link'] = $this->model_extension_d_opencart_patch_url->link($this->route);
         $data['action'] = $this->model_extension_d_opencart_patch_url->link($this->route, $url);
         $data['cancel'] = $this->model_extension_d_opencart_patch_url->getExtensionLink('module');
-        $data['clear_debug_file'] = $this->model_extension_d_opencart_patch_url->link($this->route.'/clearDebugFile');
-
+        $data['clear_debug_file'] = $this->model_extension_d_opencart_patch_url->link($this->route . '/clearDebugFile');
         // Setting
-        $setting = $this->model_setting_setting->getSetting($this->id, $store_id);
-        $setting = (isset($setting[$this->id.'_setting'])) ? $setting[$this->id.'_setting'] : '';
-
+        //load  plain config
         $this->config->load($data['config']);
-        $data['setting'] = ($this->config->get($this->id)) ? $this->config->get($this->id) : array();
+        $plain_config = $this->config->get($this->id);
+        $plain_config['providers'] = $this->model_extension_module_d_social_login->loadProviders($this->id);
+        //check if exist config in db
+        if ($this->model_setting_setting->getSetting($this->id)) {
+            $setting = $this->model_setting_setting->getSetting($this->id);
+        } else {
+            $setting[$this->id . '_setting'] = $plain_config;
+        }
+        $data['setting'] = ($setting) ? $setting[$this->id . '_setting']: array();
+        //load into setting right config
 
-        if(!isset($this->request->post['config']) && !empty($setting)){
+        //inherit users data
+        if (!isset($this->request->post['config']) && !empty($setting)) {
             $data['setting'] = array_replace_recursive($data['setting'], $setting);
         }
 
@@ -250,7 +259,7 @@ class ControllerExtensionModuleDSocialLogin extends Controller {
         } else {
             $data['background_img'] = $data['setting']['background_img'];
         }
-        if ($data['setting']['background_img']&& file_exists(DIR_IMAGE . $data['setting']['background_img']) && is_file(DIR_IMAGE . $data['setting']['background_img'])) {
+        if ($data['setting']['background_img'] && file_exists(DIR_IMAGE . $data['setting']['background_img']) && is_file(DIR_IMAGE . $data['setting']['background_img'])) {
             $data['background_img_thumb'] = $this->model_tool_image->resize($data['setting']['background_img'], 100, 100);
         } else {
             $data['background_img_thumb'] = $this->model_tool_image->resize('no_image.jpg', 100, 100);
@@ -269,14 +278,14 @@ class ControllerExtensionModuleDSocialLogin extends Controller {
         $data['config_files'] = $this->model_extension_module_d_social_login->getConfigFiles($this->id);
 
         // Customer groups
-        if(VERSION >= '2.1.0.1'){
+        if (VERSION >= '2.1.0.1') {
             $data['customer_groups'] = $this->model_customer_customer_group->getCustomerGroups();
-        }else{
+        } else {
             $data['customer_groups'] = $this->model_sale_customer_group->getCustomerGroups();
         }
 
         // Debug
-        $data['debug'] = $this->model_extension_module_d_social_login->getFileContents(DIR_LOGS.$data['setting']['debug_file']);
+        $data['debug'] = $this->model_extension_module_d_social_login->getFileContents(DIR_LOGS . $data['setting']['debug_file']);
         $data['debug_file'] = $data['setting']['debug_file'];
 
         // Breadcrumbs
@@ -287,8 +296,8 @@ class ControllerExtensionModuleDSocialLogin extends Controller {
         );
 
         $data['breadcrumbs'][] = array(
-            'text'      => $this->language->get('text_module'),
-            'href'      => $this->model_extension_d_opencart_patch_url->getExtensionLink('modules')
+            'text' => $this->language->get('text_module'),
+            'href' => $this->model_extension_d_opencart_patch_url->getExtensionLink('modules')
         );
 
         $data['breadcrumbs'][] = array(
@@ -350,7 +359,7 @@ class ControllerExtensionModuleDSocialLogin extends Controller {
         if (!$this->user->hasPermission('modify', $this->route)) {
             $json['error'] = $this->language->get('error_permission');
         } else {
-            $file = DIR_LOGS.$this->request->post['debug_file'];
+            $file = DIR_LOGS . $this->request->post['debug_file'];
             $handle = fopen($file, 'w+');
             fclose($handle);
             $json['success'] = $this->language->get('success_clear_debug_file');
@@ -360,4 +369,5 @@ class ControllerExtensionModuleDSocialLogin extends Controller {
         $this->response->setOutput(json_encode($json));
     }
 }
+
 ?>

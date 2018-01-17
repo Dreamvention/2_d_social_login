@@ -55,7 +55,7 @@ spl_autoload_register(function ($class) {
         $customBaseDir = FACEBOOK_SDK_SRC_DIR;
     }
     // base directory for the namespace prefix
-    $baseDir = $customBaseDir ?: __DIR__ . '/';
+    $baseDir = $customBaseDir ?: __DIR__ . 'autoload.php/';
 
     // does the class use the namespace prefix?
     $len = strlen($prefix);

@@ -2,46 +2,8 @@
 $_['d_social_login'] = array(
     "base_url" => "",
 
-    "providers" => array( 
-      "Google" => array( 
-        "enabled" => true,
-        "keys"    => array( "id" => "", "secret" => "" ), 
-        "scope" => 'https://www.googleapis.com/auth/userinfo.email',
-        "id"  => 'google',
-        "sort_order" => 1,
-        "icon" => 'dsl-google-plus',
-        "background_color" => '#dd4b39',
-        "background_color_active" => '#be3e2e',
-      ),
-      "Facebook" => array( 
-        "enabled" => true,
-        "keys"    => array ( "id" => "", "secret" => "" ),
-        "scope" => 'email', 
-        "id"  => 'facebook',
-        "trustForwarded" => false,
-        "sort_order" => 2,
-        "icon" => 'dsl-facebook',
-        "background_color" => '#4864b4',
-        "background_color_active" => '#3a5192',
-      ),
-      "LinkedIn" => array ( 
-        "enabled" => true,
-        "keys"    => array( "key" => "", "secret" => "" ),
-        "id"  => 'linkedin',
-        "sort_order" => 5,
-        "icon" => 'dsl-linkedin',
-        "background_color" => '#2a72b6',
-        "background_color_active" => '#21588d',
-      ),
-      "Yahoo" => array (
-        "enabled" => true,
-        "keys"    => array ( "key" => "", "secret" => "" ),
-        "id"  => 'yahoo',
-        "sort_order" => 11,
-        "icon" => 'dsl-yahoo',
-        "background_color" => '#500095',
-        "background_color_active" => '#3d026f',
-      ),
+    "providers" => array(
+
     ),
     "debug_mode" => false,
     //system/logs/d_social_login.txt
