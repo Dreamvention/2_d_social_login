@@ -2,11 +2,8 @@
 
 class ControllerExtensionModuleDSocialLogin extends Controller
 {
-    private $codename = 'd_social_login';
     private $id = 'd_social_login';
     private $route = 'extension/module/d_social_login';
-    private $sub_versions = array('lite', 'light', 'free');
-    private $prefix = '';
     private $error = array();
 
     public function __construct($registry)
@@ -122,7 +119,7 @@ class ControllerExtensionModuleDSocialLogin extends Controller
         $data['text_edit'] = $this->language->get('text_edit');
 
         // Variable
-        $data['id'] = $this->codename;
+        $data['id'] = $this->id;
         $data['route'] = $this->route;
         $data['store_id'] = $store_id;
         $data['stores'] = $this->model_extension_module_d_social_login->getStores();
@@ -244,8 +241,8 @@ class ControllerExtensionModuleDSocialLogin extends Controller
         } else {
             $setting[$this->id . '_setting'] = $plain_config;
         }
-        $data['setting'] = ($setting) ? $setting[$this->id . '_setting']: array();
         //load into setting right config
+        $data['setting'] = ($setting) ? $setting[$this->id . '_setting']: array();
 
         //inherit users data
         if (!isset($this->request->post['config']) && !empty($setting)) {

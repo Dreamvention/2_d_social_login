@@ -74,7 +74,7 @@ class ControllerExtensionModuleDSocialLogin extends Controller {
         $this->setup();
         require_once(DIR_SYSTEM . 'library/'.$this->id.'/hybrid/auth.php');
 
-        $this->setting = $this->config->get('d_social_login_setting');
+        $this->setting = $this->config->get($this->id.'_setting');
 
         // multistore fix
         $this->load->model('setting/store');
@@ -97,6 +97,7 @@ class ControllerExtensionModuleDSocialLogin extends Controller {
         $this->setting['debug_mode'] = (bool) $this->setting['debug_mode'];
 
         if (isset($this->request->get['provider'])) {
+            //todo whats for put it into sett,get,session
             $this->session->data['provider'] = $this->setting['provider'] = $this->request->get['provider'];
         } else {
 

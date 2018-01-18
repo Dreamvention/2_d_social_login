@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright 2011 Facebook, Inc.
+ * Copyright 2011 facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may
  * not use this file except in compliance with the License. You may obtain
@@ -115,7 +115,7 @@ class Facebook extends BaseFacebook
       // @codeCoverageIgnoreStart
       self::errorLog(
         'Shared session ID cookie could not be set! You must ensure you '.
-        'create the Facebook instance before headers have been sent. This '.
+        'create the facebook instance before headers have been sent. This '.
         'will cause authentication issues after the first request.'
       );
       // @codeCoverageIgnoreEnd

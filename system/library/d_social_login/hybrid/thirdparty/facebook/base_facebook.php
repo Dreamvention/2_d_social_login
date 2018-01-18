@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright 2011 Facebook, Inc.
+ * Copyright 2011 facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may
  * not use this file except in compliance with the License. You may obtain
@@ -16,10 +16,10 @@
  */
 
 if (!function_exists('curl_init')) {
-  throw new Exception('Facebook needs the CURL PHP extension.');
+  throw new Exception('facebook needs the CURL PHP extension.');
 }
 if (!function_exists('json_decode')) {
-  throw new Exception('Facebook needs the JSON PHP extension.');
+  throw new Exception('facebook needs the JSON PHP extension.');
 }
 
 /**
@@ -112,7 +112,7 @@ class FacebookApiException extends Exception
 }
 
 /**
- * Provides access to the Facebook Platform.  This class provides
+ * Provides access to the facebook Platform.  This class provides
  * a majority of the functionality needed, but the class is abstract
  * because it is designed to be sub-classed.  The subclass must
  * implement the four abstract methods listed at the bottom of
@@ -157,7 +157,7 @@ abstract class BaseFacebook
   );
 
   /**
-   * Maps aliases to Facebook domains.
+   * Maps aliases to facebook domains.
    *
    * @var array
    */
@@ -192,7 +192,7 @@ abstract class BaseFacebook
   protected $appSecret;
 
   /**
-   * The ID of the Facebook user, or 0 if the user is logged out.
+   * The ID of the facebook user, or 0 if the user is logged out.
    *
    * @var integer
    */
@@ -242,7 +242,7 @@ abstract class BaseFacebook
   protected $allowSignedRequest = true;
 
   /**
-   * Initialize a Facebook Application.
+   * Initialize a facebook Application.
    *
    * The configuration:
    * - appId: the application ID
@@ -557,7 +557,7 @@ abstract class BaseFacebook
 
   /**
    * Get the UID of the connected user, or 0
-   * if the Facebook user is not connected.
+   * if the facebook user is not connected.
    *
    * @return string the UID if available.
    */
@@ -575,7 +575,7 @@ abstract class BaseFacebook
    * requests, then considering an authorization code, and then
    * falling back to any persistent store storing the user.
    *
-   * @return integer The id of the connected Facebook user,
+   * @return integer The id of the connected facebook user,
    *                 or 0 if no such user exists.
    */
   protected function getUserFromAvailableData() {
@@ -677,7 +677,7 @@ abstract class BaseFacebook
   }
 
   /**
-   * Get a login status URL to fetch the status from Facebook.
+   * Get a login status URL to fetch the status from facebook.
    *
    * @param array $params Provide custom parameters
    * @return string The URL for the logout flow
@@ -755,12 +755,12 @@ abstract class BaseFacebook
   /**
    * Retrieves the UID with the understanding that
    * $this->accessToken has already been set and is
-   * seemingly legitimate.  It relies on Facebook's Graph API
+   * seemingly legitimate.  It relies on facebook's Graph API
    * to retrieve user information and then extract
    * the user ID.
    *
-   * @return integer Returns the UID of the Facebook user, or 0
-   *                 if the Facebook user could not be determined.
+   * @return integer Returns the UID of the facebook user, or 0
+   *                 if the facebook user could not be determined.
    */
   protected function getUserFromAccessToken() {
     try {
@@ -800,7 +800,7 @@ abstract class BaseFacebook
    * a specific user).  The authorization code is sent to graph.facebook.com
    * and a legitimate access token is generated provided the access token
    * and the user for which it was generated all match, and the user is
-   * either logged in to Facebook or has granted an offline access permission.
+   * either logged in to facebook or has granted an offline access permission.
    *
    * @param string $code An authorization code.
    * @param string $redirect_uri Optional redirect URI. Default null
@@ -1326,7 +1326,7 @@ abstract class BaseFacebook
   /**
    * Returns true if and only if the key or key/value pair should
    * be retained as part of the query string.  This amounts to
-   * a brute-force search of the very small list of Facebook-specific
+   * a brute-force search of the very small list of facebook-specific
    * params that should be stripped out.
    *
    * @param string $param A key or key/value pair within a URL's query (e.g.
@@ -1515,8 +1515,8 @@ abstract class BaseFacebook
 
   /**
    * Each of the following four methods should be overridden in
-   * a concrete subclass, as they are in the provided Facebook class.
-   * The Facebook class uses PHP sessions to provide a primitive
+   * a concrete subclass, as they are in the provided facebook class.
+   * The facebook class uses PHP sessions to provide a primitive
    * persistent store, but another subclass--one that you implement--
    * might use a database, memcache, or an in-memory cache.
    *

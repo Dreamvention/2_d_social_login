@@ -1,5 +1,5 @@
 <?php
-require_once Hybrid_Auth::$config["path_libraries"] . "src/Facebook/autoload.php";
+require_once Hybrid_Auth::$config["path_libraries"] . "src/facebook/autoload.php";
 use Facebook\Exceptions\FacebookSDKException;
 use Facebook\Facebook as FacebookSDK;
 
@@ -11,7 +11,7 @@ use Facebook\Facebook as FacebookSDK;
 
 /**
  * Hybrid_Providers_Facebook provider adapter based on OAuth2 protocol
- * Hybrid_Providers_Facebook use the Facebook PHP SDK created by Facebook
+ * Hybrid_Providers_Facebook use the facebook PHP SDK created by facebook
  * http://hybridauth.sourceforge.net/userguide/IDProvider_info_Facebook.html
  */
 class Hybrid_Providers_Facebook extends Hybrid_Provider_Model {
@@ -72,7 +72,7 @@ class Hybrid_Providers_Facebook extends Hybrid_Provider_Model {
         // Use re-request, because this will trigger permissions window if not all permissions are granted.
         $url = $helper->getReRequestUrl($this->endpoint, $this->scope);
 
-        // Redirect to Facebook
+        // Redirect to facebook
         Hybrid_Auth::redirect($url);
     }
 
@@ -85,9 +85,9 @@ class Hybrid_Providers_Facebook extends Hybrid_Provider_Model {
         try {
             $accessToken = $helper->getAccessToken($this->params['login_done']);
         } catch (Facebook\Exceptions\FacebookResponseException $e) {
-            throw new Hybrid_Exception('Facebook Graph returned an error: ' . $e->getMessage());
+            throw new Hybrid_Exception('facebook Graph returned an error: ' . $e->getMessage());
         } catch (Facebook\Exceptions\FacebookSDKException $e) {
-            throw new Hybrid_Exception('Facebook SDK returned an error: ' . $e->getMessage());
+            throw new Hybrid_Exception('facebook SDK returned an error: ' . $e->getMessage());
         }
 
         if (!isset($accessToken)) {
@@ -192,7 +192,7 @@ class Hybrid_Providers_Facebook extends Hybrid_Provider_Model {
     }
 
     /**
-     * Since the Graph API 2.0, the /friends endpoint only returns friend that also use your Facebook app.
+     * Since the Graph API 2.0, the /friends endpoint only returns friend that also use your facebook app.
      * {@inheritdoc}
      */
     function getUserContacts() {

@@ -75,6 +75,7 @@ class ModelExtensionModuleDSocialLogin extends Model
 
     /*
     *	Return name of config file.
+     * maybe no need
     */
     public function getConfigFile($id, $sub_versions)
     {
@@ -186,8 +187,7 @@ class ModelExtensionModuleDSocialLogin extends Model
             return false;
         }
     }
-
-
+    //todo maybe no need
     public function getMboothFile($id, $sub_versions)
     {
         $full = DIR_SYSTEM . 'mbooth/xml/mbooth_' . $id . '.xml';
@@ -204,6 +204,7 @@ class ModelExtensionModuleDSocialLogin extends Model
         return false;
     }
 
+    //todo we got the same methods in model d_sholunity extension-isInstalled,installDepe.. etc
     public function isInstalled($code)
     {
         $extension_data = array();

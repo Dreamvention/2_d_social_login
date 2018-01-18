@@ -309,7 +309,7 @@ class Hybrid_Auth {
 	 *
 	 * <code>
 	 * array(
-	 *   'Facebook' => array(
+	 *   'facebook' => array(
 	 *     'connected' => true
 	 *   )
 	 * )

@@ -71,7 +71,6 @@
                     <div class="tab-content">
 
                         <div id="setting_basic" class="tab-pane active">
-
                             <div class="form-group">
                                 <label class="col-sm-2 control-label" for="input_status">{{ entry_status }}</label>
                                 <div class="col-sm-10">
@@ -359,7 +358,7 @@
         </div>
     </div>
 </div>
-
+{#todo shold we transfer this style into .css?#}
 <style>
     .sortable {
         position: relative;
@@ -426,7 +425,7 @@
             },
             onDrop: function (item, container, _super) {
                 item.closest('.sortable').find('.row').each(function (i, row) {
-                    console.log(i);
+                //    console.log(i);
                     $(row).find('.sort-value').val(i);
 
                 });
@@ -452,7 +451,7 @@
                     $('#form').fadeTo('slow', 1);
                 },
                 success: function (response) {
-                    console.log(response);
+                    //console.log(response);
                 }
             });
         });
@@ -471,8 +470,7 @@
                 },
                 success: function (json) {
                     $('.alert').remove();
-                    console.log(json);
-
+//                    console.log(json);
                     if (json['error']) {
                         $('#debug .tab-body').prepend('<div class="alert alert-danger">' + json['error'] + '</div>');
                     }

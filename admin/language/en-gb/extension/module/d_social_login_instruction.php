@@ -30,7 +30,7 @@ $_['text_instructions_full']    = '
                 <p>We have rethought the process of logging. This is why we have changed the callback urls which solved alot of issues. But now you must reset the callback urls for some of the social logins. If you social login is not working - its probably the callback url.<br/><br/>'.HTTPS_CATALOG.'<strong>d_social_login.php?</strong>hauth.done=Google<br/><br/> </p>
             </div>
 
-            <li>Check that your newly created App is activated. i.e. Facebook keeps new apps deactivated and Twitter needs extra checkbox to allow social logins.</li>
+            <li>Check that your newly created App is activated. i.e. facebook keeps new apps deactivated and Twitter needs extra checkbox to allow social logins.</li>
 
 
             <li>Check that you have access to your callback path - visit <a href="'.HTTPS_CATALOG.'d_social_login.php">'.HTTPS_CATALOG.'d_social_login.php</a>. You should see this text HybridAuth Open Source Social Sign On PHP Library. hybridauth.sourceforge.net/. If you do not see it - try adding permissions 755 or 777 to your folder '.HTTPS_CATALOG.'catalog/model/d_social_login/ </li>
@@ -88,14 +88,14 @@ $_['text_instructions_tabs'] = array(
         </div>',
 
     'facebook' =>
-        '<h3 class="tab-title"><i class="fa fa-facebook"></i> Setup Facebook login button</h3>
+        '<h3 class="tab-title"><i class="fa fa-facebook"></i> Setup facebook login button</h3>
         <div class="tab-body">
             <ol>
                 <li>Visit facebook developers page <a href="https://developers.facebook.com/" target="_blank">https://developers.facebook.com/</a></li>
                 <li>In menu My Apps – select create new app</li>
                 <img src="view/image/d_social_login/facebook/01.jpg" class="img-thumbnail img-responsive" />
                 <img src="view/image/d_social_login/facebook/02.jpg" class="img-thumbnail img-responsive" />
-                <li>Select Facebook Login</li>
+                <li>Select facebook Login</li>
                 <img src="view/image/d_social_login/facebook//03.jpg" class="img-thumbnail img-responsive" />
                 <li>Fill in Valid OAuth redirect URIs</li>
                 <img src="view/image/d_social_login/facebook/04.png" class="img-thumbnail img-responsive" />
@@ -112,7 +112,7 @@ $_['text_instructions_tabs'] = array(
                 <li>Activate api in App Review</li>
                 <img src="view/image/d_social_login/facebook/08.jpg" class="img-thumbnail img-responsive" />
                 <img src="view/image/d_social_login/facebook/09.png" class="img-thumbnail img-responsive" /> 
-                <li>Fill in the App ID and App Secret in the Social Login settings tab for Facebook</li>
+                <li>Fill in the App ID and App Secret in the Social Login settings tab for facebook</li>
             </ol>
         </div>',
 
