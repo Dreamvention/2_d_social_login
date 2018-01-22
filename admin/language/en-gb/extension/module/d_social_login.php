@@ -19,6 +19,8 @@ $_['text_small']                = 'Small';
 $_['text_medium']               = 'Medium';
 $_['text_large']                = 'Large';
 $_['text_huge']                 = 'Huge';
+$_['text_display']              = 'display';
+$_['text_required']             = 'required';
 
 // Settings
 $_['text_setting_basic']        = 'Basic';
@@ -68,6 +70,7 @@ $_['text_instructions'] = array(
 
 $_['text_background_color']     = 'Button color';
 $_['text_background_color_active'] = 'on Push';
+$_['text_background_color_hover'] = 'on Hover   ';
 $_['text_icon']                 = 'Icons';
 
 

@@ -5,7 +5,6 @@
 
 class ModelExtensionModuleDSocialLogin extends Model
 {
-
     public function installDatabase()
     {
         $this->db->query("CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "customer_authentication` (
@@ -71,47 +70,6 @@ class ModelExtensionModuleDSocialLogin extends Model
     public function ajax($link)
     {
         return str_replace('&amp;', '&', $link);
-    }
-
-    /*
-    *	Return name of config file.
-     * maybe no need
-    */
-    public function getConfigFile($id, $sub_versions)
-    {
-
-        if (isset($this->request->post['config'])) {
-            return $this->request->post['config'];
-        }
-
-        $setting = $this->config->get($id . '_setting');
-
-        if (isset($setting['config'])) {
-            return $setting['config'];
-        }
-
-        $full = DIR_SYSTEM . 'config/' . $id . '.php';
-        if (file_exists($full)) {
-            return $id;
-        }
-
-        foreach ($sub_versions as $lite) {
-            if (file_exists(DIR_SYSTEM . 'config/' . $id . '_' . $lite . '.php')) {
-                return $id . '_' . $lite;
-            }
-        }
-
-        return false;
-    }
-
-    public function getConfigFiles($id)
-    {
-        $files = array();
-        $results = glob(DIR_SYSTEM . 'config/' . $id . '*');
-        foreach ($results as $result) {
-            $files[] = str_replace('.php', '', str_replace(DIR_SYSTEM . 'config/', '', $result));
-        }
-        return $files;
     }
 
 
@@ -187,6 +145,7 @@ class ModelExtensionModuleDSocialLogin extends Model
             return false;
         }
     }
+
     //todo maybe no need
     public function getMboothFile($id, $sub_versions)
     {
@@ -491,20 +450,20 @@ class ModelExtensionModuleDSocialLogin extends Model
         return $merged;
     }
 
-    public function loadProviders($id)
+    public function loadProviders()
     {
+        $id = 'd_social_login';
         $providers = array();
         $dir_files = array();
         $this->scan_dir(DIR_CONFIG . $id, $dir_files);
-        $result = array();
         foreach ($dir_files as $file) {
-            $file = str_replace(DIR_CONFIG.$id.'/', "", $file);
-            $file = str_replace('.php', "", $file);
-            $provider_name = (string)$file;
+            $provider_name = basename($file, ".php");
             $this->config->load($id . '/' . $provider_name);
             $provider = $this->config->get($id . "_" . $provider_name);
-            $provider_key = array_keys($provider)[0];
-            $providers [$provider_key] = $provider[$provider_key];
+            if ($provider) {
+                $providers = array_merge($providers, $provider);
+            }
+
         }
         return $providers;
     }

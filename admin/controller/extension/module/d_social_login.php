@@ -9,13 +9,8 @@ class ControllerExtensionModuleDSocialLogin extends Controller
     public function __construct($registry)
     {
         parent::__construct($registry);
-        if (file_exists(DIR_SYSTEM . "/config/d_social_login_pro.php")) {
-            $this->load->language($this->route . '_pro');
-        } else {
-            $this->load->language($this->route);
-        }
+        $this->load->language($this->route);
         $this->load->language($this->route . '_instruction');
-
         $this->load->model($this->route);
         $this->load->model('design/layout');
         $this->load->model('setting/setting');
@@ -123,99 +118,12 @@ class ControllerExtensionModuleDSocialLogin extends Controller
         $data['route'] = $this->route;
         $data['store_id'] = $store_id;
         $data['stores'] = $this->model_extension_module_d_social_login->getStores();
-        if (file_exists(DIR_SYSTEM . "/config/d_social_login_pro.php")) {
-            $data['config'] = $this->model_extension_module_d_social_login->getConfigFile($this->id . '_pro', $this->sub_versions);
-        } else {
-            $data['config'] = $this->model_extension_module_d_social_login->getConfigFile($this->id, $this->sub_versions);
-        }
-
         $data['version'] = $this->extension['version'];
         $data['token'] = $this->model_extension_d_opencart_patch_user->getUrlToken();
         $data['d_shopunity'] = $this->d_shopunity;
-
-        // Tab
-        $data['text_module'] = $this->language->get('text_module');
-        $data['text_setting'] = $this->language->get('text_setting');
-        $data['text_instruction'] = $this->language->get('text_instruction');
-
-        // Modules
-        $data['text_icons'] = $this->language->get('text_icons');
-        $data['text_small'] = $this->language->get('text_small');
-        $data['text_medium'] = $this->language->get('text_medium');
-        $data['text_large'] = $this->language->get('text_large');
-        $data['text_huge'] = $this->language->get('text_huge');
-
-        $data['entry_size'] = $this->language->get('entry_size');
-        $data['entry_customer_group'] = $this->language->get('entry_customer_group');
-        $data['entry_newsletter'] = $this->language->get('entry_newsletter');
-        $data['entry_status'] = $this->language->get('entry_status');
-
-        // Settings
-        $data['text_setting_basic'] = $this->language->get('text_setting_basic');
-        $data['text_setting_field'] = $this->language->get('text_setting_field');
-        $data['text_setting_button'] = $this->language->get('text_setting_button');
-        $data['text_setting_provider'] = $this->language->get('text_setting_provider');
-        $data['text_debug'] = $this->language->get('text_debug');
-        $data['text_enabled'] = $this->language->get('text_enabled');
-        $data['text_disabled'] = $this->language->get('text_disabled');
-
-        $data['entry_name'] = $this->language->get('entry_name');
-        $data['entry_config_files'] = $this->language->get('entry_config_files');
-
         $data['entry_get_update'] = sprintf($this->language->get('entry_get_update'), $data['version']);
-        $data['text_no_update'] = $this->language->get('text_no_update');
-        $data['text_new_update'] = $this->language->get('text_new_update');
-        $data['text_error_update'] = $this->language->get('text_error_update');
-        $data['text_error_failed'] = $this->language->get('text_error_failed');
-        $data['button_get_update'] = $this->language->get('button_get_update');
 
-        $data['entry_sort_order'] = $this->language->get('entry_sort_order');
-        $data['text_instructions'] = $this->language->get('text_instructions');
-
-        $data['entry_fields_sort_order'] = $this->language->get('entry_fields_sort_order');
-        $data['text_firstname'] = $this->language->get('text_firstname');
-        $data['text_lastname'] = $this->language->get('text_lastname');
-        $data['text_telephone'] = $this->language->get('text_telephone');
-        $data['text_mask'] = $this->language->get('text_mask');
-        $data['text_address_1'] = $this->language->get('text_address_1');
-        $data['text_address_2'] = $this->language->get('text_address_2');
-        $data['text_city'] = $this->language->get('text_city');
-        $data['text_postcode'] = $this->language->get('text_postcode');
-        $data['text_country_id'] = $this->language->get('text_country_id');
-        $data['text_zone_id'] = $this->language->get('text_zone_id');
-        $data['text_password'] = $this->language->get('text_password');
-        $data['text_confirm'] = $this->language->get('text_confirm');
-        $data['text_company'] = $this->language->get('text_company');
-        $data['text_company_id'] = $this->language->get('text_company_id');
-        $data['text_tax_id'] = $this->language->get('text_tax_id');
-
-        $data['entry_return_page_url'] = $this->language->get('entry_return_page_url');
-        $data['entry_debug_mode'] = $this->language->get('entry_debug_mode');
-
-        $data['entry_background_img'] = $this->language->get('entry_background_img');
-        $data['text_background_color'] = $this->language->get('text_background_color');
-        $data['text_background_color_active'] = $this->language->get('text_background_color_active');
-        $data['text_icon'] = $this->language->get('text_icon');
-        $data['entry_iframe'] = $this->language->get('entry_iframe');
-
-        $data['warning_app_settings'] = $this->language->get('warning_app_settings');
-        $data['warning_app_settings_full'] = $this->language->get('warning_app_settings_full');
-
-        $data['text_app_id'] = $this->language->get('text_app_id');
-        $data['text_app_secret'] = $this->language->get('text_app_secret');
-        $data['text_app_key'] = $this->language->get('text_app_key');
-        $data['text_app_scope'] = $this->language->get('text_app_scope');
-        $data['text_sort_order'] = $this->language->get('text_sort_order');
-        $data['text_app_settings'] = $this->language->get('text_app_settings');
-        $data['text_image_manager'] = $this->language->get('text_image_manager');
-        $data['text_browse'] = $this->language->get('text_browse');
-        $data['text_clear'] = $this->language->get('text_clear');
-
-        // Instructions
-        $data['text_instructions_full'] = $this->language->get('text_instructions_full');
-        $data['text_instructions_tabs'] = $this->language->get('text_instructions_tabs');
-        $data['text_debug_file_into'] = $this->language->get('text_debug_file_into');
-        $data['entry_debug_file'] = $this->language->get('entry_debug_file');
+        $data = array_merge($data, $this->getTextFields());
 
         // Buttons
         $data['button_save'] = $this->language->get('button_save');
@@ -230,49 +138,39 @@ class ControllerExtensionModuleDSocialLogin extends Controller
         $data['action'] = $this->model_extension_d_opencart_patch_url->link($this->route, $url);
         $data['cancel'] = $this->model_extension_d_opencart_patch_url->getExtensionLink('module');
         $data['clear_debug_file'] = $this->model_extension_d_opencart_patch_url->link($this->route . '/clearDebugFile');
+
         // Setting
-        //load  plain config
-        $this->config->load($data['config']);
-        $plain_config = $this->config->get($this->id);
-        $plain_config['providers'] = $this->model_extension_module_d_social_login->loadProviders($this->id);
+        //load  config from config dir
+        $this->config->load($this->id);
+        $config = $this->config->get($this->id);
+        $config['providers'] = $this->model_extension_module_d_social_login->loadProviders($this->id);
         //check if exist config in db
         if ($this->model_setting_setting->getSetting($this->id)) {
             $setting = $this->model_setting_setting->getSetting($this->id);
+            $data['setting'] = ($setting) ? $setting[$this->id . '_setting'] : array();
         } else {
-            $setting[$this->id . '_setting'] = $plain_config;
+            $data['setting'] = array();
         }
-        //load into setting right config
-        $data['setting'] = ($setting) ? $setting[$this->id . '_setting']: array();
-
         //inherit users data
-        if (!isset($this->request->post['config']) && !empty($setting)) {
-            $data['setting'] = array_replace_recursive($data['setting'], $setting);
-        }
-
-        // Background image
+        $data['setting'] = array_replace_recursive($config, $data['setting']);
+        $data['fields'] = $data['setting']['fields'];
+        // Background image size from config
         $this->load->model('tool/image');
         if (isset($this->request->post['setting']['background_img'])) {
             $data['background_img'] = $this->request->post['setting']['background_img'];
         } else {
             $data['background_img'] = $data['setting']['background_img'];
         }
+
         if ($data['setting']['background_img'] && file_exists(DIR_IMAGE . $data['setting']['background_img']) && is_file(DIR_IMAGE . $data['setting']['background_img'])) {
-            $data['background_img_thumb'] = $this->model_tool_image->resize($data['setting']['background_img'], 100, 100);
+            $data['background_img_thumb'] = $this->model_tool_image->resize($data['setting']['background_img'], $data['setting']['background_img_size']['width'], $data['setting']['background_img_size']['height']);
         } else {
-            $data['background_img_thumb'] = $this->model_tool_image->resize('no_image.jpg', 100, 100);
+            $data['background_img_thumb'] = $this->model_tool_image->resize('no_image.jpg', $data['setting']['background_img_size']['width'], $data['setting']['background_img_size']['height']);
         }
-
-        $data['no_image'] = $this->model_tool_image->resize('no_image.jpg', 100, 100);
-
-        // Providers
-        $data['providers'] = $data['setting']['providers'];
-        $data['fields'] = $data['setting']['fields'];
 
         // Get stores
         $data['stores'] = $this->model_extension_module_d_social_login->getStores();
 
-        // Get config
-        $data['config_files'] = $this->model_extension_module_d_social_login->getConfigFiles($this->id);
 
         // Customer groups
         if (VERSION >= '2.1.0.1') {
@@ -364,6 +262,98 @@ class ControllerExtensionModuleDSocialLogin extends Controller
 
         $this->response->addHeader('Content-Type: application/json');
         $this->response->setOutput(json_encode($json));
+    }
+
+    /**
+     * @param $data
+     * @return mixed
+     */
+    private function getTextFields()
+    {
+        // Tab
+        $data = array();
+        $data['text_module'] = $this->language->get('text_module');
+        $data['text_setting'] = $this->language->get('text_setting');
+        $data['text_instruction'] = $this->language->get('text_instruction');
+
+        // Modules
+        $data['text_icons'] = $this->language->get('text_icons');
+        $data['text_small'] = $this->language->get('text_small');
+        $data['text_medium'] = $this->language->get('text_medium');
+        $data['text_large'] = $this->language->get('text_large');
+        $data['text_huge'] = $this->language->get('text_huge');
+
+        $data['entry_size'] = $this->language->get('entry_size');
+        $data['entry_customer_group'] = $this->language->get('entry_customer_group');
+        $data['entry_newsletter'] = $this->language->get('entry_newsletter');
+        $data['entry_status'] = $this->language->get('entry_status');
+
+        // Settings
+        $data['text_setting_basic'] = $this->language->get('text_setting_basic');
+        $data['text_setting_field'] = $this->language->get('text_setting_field');
+        $data['text_setting_button'] = $this->language->get('text_setting_button');
+        $data['text_setting_provider'] = $this->language->get('text_setting_provider');
+        $data['text_debug'] = $this->language->get('text_debug');
+        $data['text_enabled'] = $this->language->get('text_enabled');
+        $data['text_disabled'] = $this->language->get('text_disabled');
+
+        $data['entry_name'] = $this->language->get('entry_name');
+
+        $data['text_no_update'] = $this->language->get('text_no_update');
+        $data['text_new_update'] = $this->language->get('text_new_update');
+        $data['text_error_update'] = $this->language->get('text_error_update');
+        $data['text_error_failed'] = $this->language->get('text_error_failed');
+        $data['button_get_update'] = $this->language->get('button_get_update');
+
+        $data['entry_sort_order'] = $this->language->get('entry_sort_order');
+        $data['text_instructions'] = $this->language->get('text_instructions');
+
+        $data['entry_fields_sort_order'] = $this->language->get('entry_fields_sort_order');
+        $data['text_firstname'] = $this->language->get('text_firstname');
+        $data['text_lastname'] = $this->language->get('text_lastname');
+        $data['text_telephone'] = $this->language->get('text_telephone');
+        $data['text_mask'] = $this->language->get('text_mask');
+        $data['text_address_1'] = $this->language->get('text_address_1');
+        $data['text_address_2'] = $this->language->get('text_address_2');
+        $data['text_city'] = $this->language->get('text_city');
+        $data['text_postcode'] = $this->language->get('text_postcode');
+        $data['text_country_id'] = $this->language->get('text_country_id');
+        $data['text_zone_id'] = $this->language->get('text_zone_id');
+        $data['text_password'] = $this->language->get('text_password');
+        $data['text_confirm'] = $this->language->get('text_confirm');
+        $data['text_company'] = $this->language->get('text_company');
+        $data['text_company_id'] = $this->language->get('text_company_id');
+        $data['text_tax_id'] = $this->language->get('text_tax_id');
+
+        $data['entry_return_page_url'] = $this->language->get('entry_return_page_url');
+        $data['entry_debug_mode'] = $this->language->get('entry_debug_mode');
+
+        $data['entry_background_img'] = $this->language->get('entry_background_img');
+        $data['text_background_color'] = $this->language->get('text_background_color');
+        $data['text_background_color_active'] = $this->language->get('text_background_color_active');
+        $data['text_background_color_hover'] = $this->language->get('text_background_color_hover');
+        $data['text_icon'] = $this->language->get('text_icon');
+        $data['entry_iframe'] = $this->language->get('entry_iframe');
+
+        $data['warning_app_settings'] = $this->language->get('warning_app_settings');
+        $data['warning_app_settings_full'] = $this->language->get('warning_app_settings_full');
+
+        $data['text_app_id'] = $this->language->get('text_app_id');
+        $data['text_app_secret'] = $this->language->get('text_app_secret');
+        $data['text_app_key'] = $this->language->get('text_app_key');
+        $data['text_app_scope'] = $this->language->get('text_app_scope');
+        $data['text_sort_order'] = $this->language->get('text_sort_order');
+        $data['text_app_settings'] = $this->language->get('text_app_settings');
+        $data['text_image_manager'] = $this->language->get('text_image_manager');
+        $data['text_browse'] = $this->language->get('text_browse');
+        $data['text_clear'] = $this->language->get('text_clear');
+
+        // Instructions
+        $data['text_instructions_full'] = $this->language->get('text_instructions_full');
+        $data['text_instructions_tabs'] = $this->language->get('text_instructions_tabs');
+        $data['text_debug_file_into'] = $this->language->get('text_debug_file_into');
+        $data['entry_debug_file'] = $this->language->get('entry_debug_file');
+        return $data;
     }
 }
 

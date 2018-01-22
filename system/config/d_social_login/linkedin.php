@@ -9,5 +9,6 @@ $_['d_social_login_linkedin'] = array(
         "icon" => 'dsl-linkedin',
         "background_color" => '#2a72b6',
         "background_color_active" => '#21588d',
+        "background_color_hover" => '#21588d',
     )
 );

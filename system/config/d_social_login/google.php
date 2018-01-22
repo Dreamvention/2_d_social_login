@@ -10,5 +10,6 @@ $_['d_social_login_google'] = array(
         "icon" => 'dsl-google-plus',
         "background_color" => '#dd4b39',
         "background_color_active" => '#be3e2e',
+        "background_color_hover" => '#be3e2e',
     )
 );

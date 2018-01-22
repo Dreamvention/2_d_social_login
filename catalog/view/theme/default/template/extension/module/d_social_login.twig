@@ -3,10 +3,16 @@
     <style>
         {% for provider in providers %}
         #dsl_{{ provider['id'] }}_button{
-          background:  {{ provider['background_color'] }}
+          background-color: {{ provider['background_color'] }}
+        }
+        #dsl_{{ provider['id'] }}_button:hover{
+            background-color: {{ provider['background_color_hover'] }}
+        }
+        #dsl_{{ provider['id'] }}_button:active{
+            background-color: {{ provider['background_color_active'] }}
         }
         #dsl_google_button:active{
-          background: {{ provider['background_color_active'] }};
+            background-color: {{ provider['background_color_active'] }};
         }
         {% endfor %}
 
