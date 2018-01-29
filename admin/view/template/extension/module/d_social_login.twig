@@ -271,6 +271,15 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="form-group">
+                                {% for key,size in setting['sizes'] %}
+                                    {% for keyattr,attrs in size %}
+                                        <input type="hidden"
+                                               name="{{ id }}_setting[sizes][{{ key }}][{{ keyattr }}]"
+                                               value="{{ attrs }}"/>
+                                    {% endfor %}
+                                {% endfor %}
+                            </div>
                         </div>
 
                         <div id="setting_field" class="tab-pane">

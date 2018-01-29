@@ -1,137 +1,120 @@
-
 {% if not islogged %}
-    <style>
-        {% for provider in providers %}
-        #dsl_{{ provider['id'] }}_button{
-          background-color: {{ provider['background_color'] }}
-        }
-        #dsl_{{ provider['id'] }}_button:hover{
-            background-color: {{ provider['background_color_hover'] }}
-        }
-        #dsl_{{ provider['id'] }}_button:active{
-            background-color: {{ provider['background_color_active'] }}
-        }
-        #dsl_google_button:active{
-            background-color: {{ provider['background_color_active'] }};
-        }
-        {% endfor %}
+    <div class="dsl-wrap">
+        <style>
+            {% for provider in providers %}
+            .dsl_{{ provider['id'] }}_button {
+                background-color: {{ provider['background_color'] }}
+            }
 
-        #d_social_login .dsl-button{
-          font-size: 16px;
-          text-decoration: none;
-          color: #fff;
-          display: inline-block;
-          box-sizing: border-box;
-          -webkit-border-radius: 3px;
-          -moz-border-radius: 3px;
-          border-radius: 3px;
-          box-shadow: 0 1px 0 rgba(0,0,0,0.10);
-          margin: 2px;
-          margin-bottom: 10px;
-          padding:0px;
-        }
-        #d_social_login  .dsl-button:hover{
-          text-decoration: none;
-          box-shadow: inset 0 -2px 0 rgba(0,0,0,0.20);
-        }
-        #d_social_login .dsl-button:active{
-          box-shadow: inset 0 2px 0 rgba(0,0,0,0.20);
-        }
-        #d_social_login .dsl-button.dsl-button-medium .l-side,
-        #d_social_login .dsl-button .l-side{
-          padding: 5px 5px 0px 5px;
-          border-right: 1px solid rgba(255,255,255,0.3);
-          color: #fff;
-          display: inline-block;
-          font-size: 17px;
-          vertical-align: middle;
-          box-sizing: border-box;
-          text-shadow: 0px -1px 0px rgba(0, 0, 0, 0.3);
-          position: relative;
-        }
-        #d_social_login .dsl-button.dsl-button-medium .r-side,
-        #d_social_login .dsl-button .r-side{
-          padding: 6px 10px 6px 10px;
-          color: #fff;
-          display: inline-block;
-          font-size: 12px;
-          vertical-align: middle;
-          box-sizing: border-box;
-          text-shadow: 0px -1px 0px rgba(0, 0, 0, 0.3);
-        }
-        #d_social_login .dsl-button.dsl-button-huge .l-side {
-          font-size: 26px;
-          padding: 8px 10px 8px 8px;
-        }
-        #d_social_login .dsl-button.dsl-button-huge .r-side {
-          font-size: 15px;
-          padding: 12px 20px 11px 20px;
-        }
-        #d_social_login .dsl-button.dsl-button-large .l-side {
-          font-size: 20px;
-          padding: 6px 6px 0px 6px;
-        }
-        #d_social_login .dsl-button.dsl-button-large .r-side {
-          font-size: 13px;
-          padding: 8px 16px 7px 16px;
-        }
-        #d_social_login .dsl-button.dsl-button-small .l-side {
-          font-size: 14px;
-          padding: 4px 4px 0px 4px;
-        }
-        #d_social_login .dsl-button.dsl-button-small .r-side {
-          font-size: 10px;
-          padding: 4px 5px 3px 5px;
-        }
+            .{{ provider['id'] }}_icon {
+                background-image: url('catalog/view/theme/default/stylesheet/d_social_login/icons/{{ provider['id'] }}.svg');
+            }
 
-        #d_social_login .dsl-button.dsl-button-icons .l-side {
-          font-size: 17px;
-          padding: 5px 5px 0px 5px;
-          border: none;
-        }
-        #d_social_login .dsl-button.dsl-button-icons .r-side {
-          display: none;
-        }
-        a [class*="dsl-icon-"],
-        [class*="dsl-icon-"],
-        [class*="dsl-icon-"]:before{
-          margin:0px !important;
-          background-image:none !important;
-        }
-        .dsl-label {
-          display: none;
-          vertical-align: middle;
-        }
-        .dsl-label-icons{
-          display: inline-block;
-        }
-        .dsl-hide-icon{
-          opacity: 0
-        }
-    </style>
+            .dsl_{{ provider['id'] }}_button:hover {
+                background-color: {{ provider['background_color_hover'] }}
+            }
 
-    <div id="d_social_login">
+            .dsl_{{ provider['id'] }}_button:active {
+                background-color: {{ provider['background_color_active'] }}
+            }
+
+            {% endfor %}
+            /*//get values forom config*/
+            {% for class,size in sizes %}
+            .{{ class }} .r-side, .dsl-label.{{ class }} {
+                font-size: {{ size['font-size'] }};
+                padding: {{ size.padding }}{#{% for keyattr,attr_value in size %}{{ keyattr }}:{{ attr_value }};{% endfor %}#}
+            }
+
+            .{{ class }} .l-side {
+                padding-top: {{ size.width/4 }}px;
+                padding-bottom: {{ size.width/4 }}px;
+                padding-right: {{ size.width/8 }}px;
+                padding-left: {{ size.width/8 }}px;
+                width: {{ size.width }};
+            }
+
+            {% if class=='icons' %}
+            .{{ class }} .r-side {
+                display: none;
+            }
+
+            .{{ class }} .l-side {
+                padding: {{ size.padding }};;
+                width: {{ size.width }};
+            }
+
+            {% if size['border-radius'] %}
+            #d_social_login .dsl-button {
+            / / border-radius: {{ size['border-radius'] }}
+            }
+
+            {% endif %}
+            {% endif %}
+            {% endfor %}
+            #d_social_login > * {
+                margin: 2px;
+                margin-bottom: 10px;
+            }
+
+            /*into css*/
+            .dsl-button:hover {
+                box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.20);
+                color: #fff;
+            }
+
+            .dsl-button {
+                color: #fff;
+                display: flex;
+                -webkit-border-radius: 3px;
+                -moz-border-radius: 3px;
+                border-radius: 3px;
+                box-shadow: 0 1px 0 rgba(0, 0, 0, 0.10);
+                -webkit-transition: all .4s ease;
+                -moz-transition: all .4s ease;
+                -ms-transition: all .4s ease;
+                -o-transition: all .4s ease;
+                transition: all .4s ease;
+            }
+
+            .l-side {
+                border-right: 1px solid rgba(255, 255, 255, 0.3);
+            }
+
+            .r-side {
+                align-self: center;
+            }
+
+            .dsl-icon {
+                display: inline-block;
+                -webkit-background-size: contain;
+                background-size: contain;
+                background-repeat: no-repeat;
+                background-position: center;
+                height: 100%;
+                width: 100%;
+
+            }
+
+            #d_social_login {
+                display: flex;
+                flex-wrap: wrap;
+            }
+
+        </style>
         {% if (error) %}
-        <div class="alert alert-warning">{{ error }}</div>
+            <div class="alert alert-warning">{{ error }}</div>
         {% endif %}
-        <span class="dsl-label dsl-label-{{ size }}">{{ button_sign_in }}</span>
-
-        {% for key,provider in providers %}
-        {% if (provider['enabled']) %}
-            <a id="dsl_{{ provider['id'] }}_button" class="dsl-button dsl-button-{{ size }}" href="index.php?route=extension/module/d_social_login/login&provider={{ key }}"><span class="l-side"><span class="dsl-icon {{ provider['icon'] }}"></span></span><span class="r-side">{{ provider['heading'] }}</span></a>
-        {% endif %}
-        {% endfor %}
+        <div id="d_social_login">
+            <span class="dsl-label {{ size }}">{{ button_sign_in }}</span>
+            {% for key,provider in providers %}
+                {% if (provider['enabled']) %}
+                    <a class="dsl-button dsl_{{ provider['id'] }}_button {{ size }} "
+                       href="index.php?route=extension/module/d_social_login/login&provider={{ key }}">
+        <span class="l-side">   <span class="dsl-icon {{ provider['id'] }}_icon "></span>
+        </span> <span class="r-side">{{ provider['heading'] }}</span></a>
+                {% endif %}
+            {% endfor %}
+        </div>
     </div>
-
-    <script>
-        $( document ).ready(function() {
-          $('.dsl-button').on('click', function(){
-            $('.dsl-button').find('.l-side').spin(false);
-            $(this).find('.l-side').spin('{{size}}', '#fff');
-
-            $('.dsl-button').find('.dsl-icon').removeClass('dsl-hide-icon');
-            $(this).find('.dsl-icon').addClass('dsl-hide-icon');
-          })
-        })
-    </script>
 {% endif %}

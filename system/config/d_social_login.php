@@ -22,6 +22,35 @@ $_['d_social_login'] = array(
         'confirm' => array('id' => 'confirm', 'enabled' => true, 'required' => false, 'sort_order' => 14, 'type' => 'password')
     ),
     "size" => "icon",
+    "sizes" => array(
+        'icons' => array(
+            "padding" => '11px 4px',
+            "font-size" => '20px',
+            "width" => '40px',
+            "border-radius"=>'100%',
+        ),
+        'small' => array(
+            "padding" => '4px 5px 3px 5px',
+            "font-size" => '10px',
+            "width" => '20px',
+        ),
+        'medium' => array(
+            "padding" => '6px 10px 6px 10px',
+            "font-size" => '12px',
+            "width" => '25px',
+            ),
+        'large' => array(
+            "padding" => '8px 16px 7px 16px',
+            "font-size" => '13px',
+            "width" => '30px',
+
+        ),
+        'huge' => array(
+            "padding" => '12px 20px 11px 20px',
+            "font-size" => '15px',
+            "width" => '40px',
+            ),
+        ),
     "return_page_url" => "",
     "customer_group" => 1,
     "newsletter" => 1,

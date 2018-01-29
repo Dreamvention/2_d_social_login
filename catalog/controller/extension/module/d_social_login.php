@@ -10,6 +10,7 @@ class ControllerExtensionModuleDSocialLogin extends Controller
     private $id = 'd_social_login';
     private $setting = array();
     private $sl_redirect = '';
+    private $last_route = '';
 
     public function __construct($registry)
     {
@@ -25,16 +26,20 @@ class ControllerExtensionModuleDSocialLogin extends Controller
     public function index()
     {
         $this->setup();
-
-        $this->document->addStyle('catalog/view/theme/default/stylesheet/d_social_login/styles.css');
-        $this->document->addScript('catalog/view/javascript/d_social_login/spin.min.js');
-
         $setting = $this->config->get($this->id . '_setting');
-
+        if (isset($this->session->data['provider'])) {
+            $customer_data = (isset($this->request->post['customer_data'])) ? $this->request->post['customer_data'] : '';
+            $authentication_data = (isset($this->request->post['customer_data'])) ? $this->request->post['customer_data'] : '';
+            return $this->form($customer_data, $authentication_data);
+        }
         $data['heading_title'] = $this->language->get('heading_title');
         $data['button_sign_in'] = $this->language->get('button_sign_in');
         $data['size'] = $setting['size'];
-        $data['islogged'] = $this->customer->isLogged();
+        $data['sizes'] = $setting['sizes'];
+        $data['islogged'] = ($this->customer->isLogged()) ? $this->customer->isLogged() : false;
+        $this->document->addStyle('catalog/view/theme/default/stylesheet/d_social_login/styles.css');
+        $this->document->addScript('catalog/view/javascript/d_social_login/spin.min.js');
+
 
         $providers = $setting['providers'];
         $sort_order = array();
@@ -54,12 +59,13 @@ class ControllerExtensionModuleDSocialLogin extends Controller
             unset($this->session->data['d_social_login_error']);
         }
 
-        $this->session->data['sl_redirect'] = ($setting['return_page_url']) ? $setting['return_page_url'] : $this->getCurrentUrl();
+        if (!isset($this->session->data['sl_redirect'])) {
+            $this->session->data['sl_redirect'] = ($setting['return_page_url']) ? $setting['return_page_url'] : $this->getCurrentUrl();
+        }
 
         // facebook fix
         unset($this->session->data['HA::CONFIG']);
         unset($this->session->data['HA::STORE']);
-
         if (VERSION >= '2.2.0.0') {
             return $this->model_extension_d_opencart_patch_load->view($this->route, $data);
         } else {
@@ -73,8 +79,8 @@ class ControllerExtensionModuleDSocialLogin extends Controller
 
     public function login()
     {
-        $this->setup();
         // multistore fix
+        $this->setup();
         $this->load->model('setting/store');
         $stores = $this->model_setting_store->getStores();
         $store_id = $this->config->get('config_store_id');
@@ -92,7 +98,6 @@ class ControllerExtensionModuleDSocialLogin extends Controller
 
         $this->setting['base_url'] = $this->config->get('config_secure') ? $httpServer . 'index.php?route=extension/d_social_login/callback' : $httpServer . 'index.php?route=extension/d_social_login/callback';
         $this->setting['debug_file'] = DIR_LOGS . $this->setting['debug_file'];
-        $this->setting['debug_mode'] = (bool)$this->setting['debug_mode'];
 
         if (isset($this->request->get['provider'])) {
             $this->session->data['provider'] = $this->setting['provider'] = $this->request->get['provider'];
@@ -113,13 +118,25 @@ class ControllerExtensionModuleDSocialLogin extends Controller
         }
 
         try {
-            $res = $this->model_extension_module_d_social_login->remoteLogin($this->setting, $this->sl_redirect);
+            $res = $this->model_extension_module_d_social_login->remoteLogin($this->setting, $this->sl_redirect);// result from hybrid
             if ($res == 'redirect') {
                 $this->response->redirect($this->sl_redirect);
+            }
+            $this->document->addScript('catalog/view/javascript/jquery/jquery-2.1.1.min.js');
+            $res['scripts'] = $this->document->getScripts();
+            $res['url'] = $this->getCurrentUrl(false);
+            $view = $this->model_extension_d_opencart_patch_load->view($this->id . '/auth', $res);
+            if (VERSION >= '2.2.0.0') {
+                $this->response->setOutput($view);
             } else {
-                $this->form($res['customer_data'], $res['authentication_data']);
+                if ($this->config->get('config_template')) {
+                    $this->response->setOutput($this->model_extension_d_opencart_patch_load->view($this->config->get('config_template') . '/template/' . $this->route, $res));
+                } else {
+                    $this->response->setOutput($this->model_extension_d_opencart_patch_load->view('default/template/' . $this->route, $res));
+                }
             }
         } catch (Exception $e) {
+            unset($this->session->data['provider']);
             switch ($e->getCode()) {
                 case 0 :
                     $error = $this->language->get('unspecified_error');//"Unspecified error";
@@ -156,9 +173,7 @@ class ControllerExtensionModuleDSocialLogin extends Controller
             if (isset($adapter)) {
                 $adapter->logout();
             }
-
             $this->session->data['d_social_login_error'] = $error;
-
             $error .= "\n\nHybridAuth Error: " . $e->getMessage();
             $error .= "\n\nTrace:\n " . $e->getTraceAsString();
             $this->log->write($error);
@@ -168,9 +183,14 @@ class ControllerExtensionModuleDSocialLogin extends Controller
 
     private function form($customer_data, $authentication_data)
     {
+        $data['pre_loader'] = html_entity_decode($this->model_extension_module_d_social_login->getPreloader('clip-rotate'), ENT_QUOTES, 'UTF-8');
+        $this->document->addStyle('catalog/view/theme/default/stylesheet/d_social_login/pre_loader/' . 'clip-rotate' . '.css');
+        $this->document->addStyle('catalog/view/theme/default/stylesheet/d_social_login/form.css');
+        $this->document->addScript('catalog/view/javascript/d_social_login/jquery.validate.js');
+        $this->document->addScript('catalog/view/javascript/d_social_login/jquery.maskedinput.min.js');
+        $data['debug'] = $this->setting['debug_mode'] = (bool)$this->setting['debug_mode'];
         $this->session->data['customer_data'] = $customer_data;
         $this->session->data['authentication_data'] = $authentication_data;
-        $data['provider'] = $this->setting['provider'];
         $data['customer_data'] = $customer_data;
         $data['authentication_data'] = $authentication_data;
         $data['button_sign_in_mail'] = $this->language->get('button_sign_in_mail');
@@ -188,19 +208,15 @@ class ControllerExtensionModuleDSocialLogin extends Controller
         $data['text_country_id'] = $this->language->get('text_country_id');
         $data['text_zone_id'] = $this->language->get('text_zone_id');
         $data['text_company'] = $this->language->get('text_company');
+        $data['text_wait_provider'] = $this->language->get('text_wait_provider');
         // $data['text_company_id'] = $this->language->get('text_company_id');
         // $data['text_tax_id'] = $this->language->get('text_tax_id');
         $data['text_password'] = $this->language->get('text_password');
         $data['text_confirm'] = $this->language->get('text_confirm');
         $data['text_email_intro'] = $this->language->get('text_email_intro');
 
-        $data['background_img'] = $this->setting['background_img'];
-        $data['background_color'] = $this->setting['providers'][ucfirst($this->setting['provider'])]['background_color'];
-        if ($this->setting['iframe']) {
-            $data['iframe'] = $this->sl_redirect;
-        } else {
-            $data['iframe'] = false;
-        }
+//        $data['background_img'] = $this->setting['background_img'];
+//        $data['background_color'] = $this->setting['providers'][ucfirst($this->setting['provider'])]['background_color'];
 
         $sort_order = array();
         foreach ($this->setting['fields'] as $key => $value) {
@@ -215,17 +231,16 @@ class ControllerExtensionModuleDSocialLogin extends Controller
         $data['countries'] = $this->model_localisation_country->getCountries();
 
         if (VERSION >= '2.2.0.0') {
-            $this->response->setOutput($this->load->view('d_social_login/form', $data));
+            return $this->load->view('d_social_login/form', $data);
         } elseif (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/d_social_login/form.tpl')) {
-            $this->response->setOutput($this->load->view($this->config->get('config_template') . '/template/d_social_login/form.tpl', $data));
+            return $this->load->view($this->config->get('config_template') . '/template/d_social_login/form.tpl', $data);
         } else {
-            $this->response->setOutput($this->load->view('default/template/d_social_login/form.tpl', $data));
+            return $this->load->view('default/template/d_social_login/form.tpl', $data);
         }
     }
 
     public function register()
     {
-        $this->setup();
 
         if ($this->request->server['REQUEST_METHOD'] != 'POST') {
             return false;
@@ -239,7 +254,7 @@ class ControllerExtensionModuleDSocialLogin extends Controller
         if ($this->validate_email($customer_data['email'])) {
             $customer_id = $this->model_extension_module_d_social_login->getCustomerByEmail($customer_data['email']);
             if ($customer_id) {
-                if (!$this->model_extension_module_d_social_login->checkAuthentication($customer_id, $this->session->data['provider'])) {
+                if (!$this->model_extension_module_d_social_login->checkAuthentication($customer_id, $this->request->post['provider'])) {
                     $authentication_data['customer_id'] = (int)$customer_id;
                     $this->model_extension_module_d_social_login->addAuthentication($authentication_data);
                 } else {
@@ -258,7 +273,7 @@ class ControllerExtensionModuleDSocialLogin extends Controller
                         $json['error']['confirm'] = $this->language->get('error_password_and_confirm_different');
                     }
                 }
-                if ($this->request->post[$field['id']] == "") {
+                if ($this->request->post[$field['id']] == "" && isset($field['required']) && $field['required']) {
                     $json['error'][$field['id']] = $this->language->get('error_fill_all_fields');
                 }
             }
@@ -289,11 +304,11 @@ class ControllerExtensionModuleDSocialLogin extends Controller
 
     public function validate_email($email)
     {
-        if (preg_match('/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,3})$/', $email)) {
+        //if (preg_match('/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,3})$/', $email)) {
             return true;
-        } else {
-            return false;
-        }
+       // } else {
+        //    return false;
+       // }
     }
 
     private function password($length = 8)
@@ -331,6 +346,8 @@ class ControllerExtensionModuleDSocialLogin extends Controller
         } else {
             $this->sl_redirect = $this->url->link('account/account', '', 'SSL');
         }
+
+
     }
 
     private function getCountryId($profile)
@@ -346,7 +363,8 @@ class ControllerExtensionModuleDSocialLogin extends Controller
         return $this->config->get('config_country_id');
     }
 
-    public function getCurrentUrl($request_uri = true)
+    //todo move to model
+    public function getCurrentUrl($request_uri = true, $reset_uri = false)
     {
         if (
             isset($_SERVER['HTTPS']) && ($_SERVER['HTTPS'] == 'on' || $_SERVER['HTTPS'] == 1) || isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https'
@@ -363,7 +381,11 @@ class ControllerExtensionModuleDSocialLogin extends Controller
         }
 
         if ($request_uri) {
-            $url .= $_SERVER['REQUEST_URI'];
+            if ($reset_uri) {
+                $url .= $_SERVER['HTTP_REFERER'];
+            } else {
+                $url .= $_SERVER['REQUEST_URI'];
+            }
         } else {
             $url .= $_SERVER['PHP_SELF'];
         }
@@ -372,4 +394,10 @@ class ControllerExtensionModuleDSocialLogin extends Controller
         return $url;
     }
 
+    public function reset()
+    {
+        unset($this->session->data['provider']);
+        $this->response->addHeader('Content-Type: application/html');
+        $this->response->setOutput($this->index());
+    }
 }

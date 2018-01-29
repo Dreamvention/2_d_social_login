@@ -403,4 +403,9 @@ class ModelExtensionModuleDSocialLogin extends Model
 
     }
 
+    public function getPreloader($pre_loader_code = 'clip-rotate')
+    {
+        return '<div class="la-ball-clip-rotate"><div></div></div>';
+    }
+
 }

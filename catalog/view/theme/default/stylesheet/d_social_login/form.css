@@ -1,0 +1,56 @@
+
+.holder{
+    padding:2rem;
+}
+input.error, select.error {
+    background: #f2dede;
+    border: 1px solid #ebccd1
+}
+
+#dsl_submit {
+    padding: 6px 12px;
+    font-size: 14px;
+    line-height: 1.42857143;
+    width: 150px;
+}
+
+.wait {
+    position: absolute;
+    margin: 5px;
+}
+
+#dsl_intro {
+    color: #333;
+    text-align: justify;
+}
+
+.dsl_error {
+    padding: 15px;
+    margin-bottom: 20px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    box-sizing: border-box;
+    background-color: #f2dede;
+    border-color: #ebccd1;
+    color: #a94442;
+}
+
+#dsl_profile_image {
+    height: 32px;
+    vertical-align: middle;
+    border: 1px solid #ccc;
+    margin-right: 4px;
+    border-radius: 5px;
+}
+
+.pre_loader{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+    z-index:1055;
+}
+
+.d_social_login-modal{
+
+}
