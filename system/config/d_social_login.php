@@ -6,6 +6,7 @@ $_['d_social_login'] = array(
     //system/logs/d_social_login.txt
     "debug_file" => "d_social_login.txt",
     'fields' => array(
+        'email' => array('id' => 'email', 'enabled' => true, 'required' => true, 'sort_order' => 0, 'type' => 'email'),
         'firstname' => array('id' => 'firstname', 'enabled' => true, 'required' => true, 'sort_order' => 1, 'type' => 'text'),
         'lastname' => array('id' => 'lastname', 'enabled' => true, 'required' => true, 'sort_order' => 2, 'type' => 'text'),
         'telephone' => array('id' => 'telephone', 'enabled' => true, 'required' => true, 'sort_order' => 3, 'type' => 'text', 'mask' => '9(999) 9999-9999?9'),

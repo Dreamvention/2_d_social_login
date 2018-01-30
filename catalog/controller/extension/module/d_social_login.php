@@ -10,7 +10,7 @@ class ControllerExtensionModuleDSocialLogin extends Controller
     private $id = 'd_social_login';
     private $setting = array();
     private $sl_redirect = '';
-    private $last_route = '';
+    private $error = array();
 
     public function __construct($registry)
     {
@@ -29,8 +29,10 @@ class ControllerExtensionModuleDSocialLogin extends Controller
         $setting = $this->config->get($this->id . '_setting');
         if (isset($this->session->data['provider'])) {
             $customer_data = (isset($this->request->post['customer_data'])) ? $this->request->post['customer_data'] : '';
-            $authentication_data = (isset($this->request->post['customer_data'])) ? $this->request->post['customer_data'] : '';
-            return $this->form($customer_data, $authentication_data);
+            $authentication_data = (isset($this->request->post['authentication_data'])) ? $this->request->post['authentication_data'] : '';
+            if (!empty($customer_data)&& !empty($authentication_data)){
+                return $this->form($customer_data, $authentication_data);
+            }
         }
         $data['heading_title'] = $this->language->get('heading_title');
         $data['button_sign_in'] = $this->language->get('button_sign_in');
@@ -60,7 +62,7 @@ class ControllerExtensionModuleDSocialLogin extends Controller
         }
 
         if (!isset($this->session->data['sl_redirect'])) {
-            $this->session->data['sl_redirect'] = ($setting['return_page_url']) ? $setting['return_page_url'] : $this->getCurrentUrl();
+            $this->session->data['sl_redirect'] = ($setting['return_page_url']) ? $setting['return_page_url'] : $this->model_extension_module_d_social_login->getCurrentUrl();
         }
 
         // facebook fix
@@ -124,7 +126,7 @@ class ControllerExtensionModuleDSocialLogin extends Controller
             }
             $this->document->addScript('catalog/view/javascript/jquery/jquery-2.1.1.min.js');
             $res['scripts'] = $this->document->getScripts();
-            $res['url'] = $this->getCurrentUrl(false);
+            $res['url'] = $this->model_extension_module_d_social_login->getCurrentUrl(false);
             $view = $this->model_extension_d_opencart_patch_load->view($this->id . '/auth', $res);
             if (VERSION >= '2.2.0.0') {
                 $this->response->setOutput($view);
@@ -183,6 +185,7 @@ class ControllerExtensionModuleDSocialLogin extends Controller
 
     private function form($customer_data, $authentication_data)
     {
+        $data['islogged'] = ($this->customer->isLogged()) ? $this->customer->isLogged() : false;
         $data['pre_loader'] = html_entity_decode($this->model_extension_module_d_social_login->getPreloader('clip-rotate'), ENT_QUOTES, 'UTF-8');
         $this->document->addStyle('catalog/view/theme/default/stylesheet/d_social_login/pre_loader/' . 'clip-rotate' . '.css');
         $this->document->addStyle('catalog/view/theme/default/stylesheet/d_social_login/form.css');
@@ -241,15 +244,23 @@ class ControllerExtensionModuleDSocialLogin extends Controller
 
     public function register()
     {
-
-        if ($this->request->server['REQUEST_METHOD'] != 'POST') {
-            return false;
-        }
-
-        $json = array();
-        $customer_data = array_merge($this->session->data['customer_data'], $this->request->post);
+        $customer_data = array_merge(($this->session->data['customer_data'] != '') ? $this->session->data['customer_data'] : array(), $this->request->post);
         $authentication_data = $this->session->data['authentication_data'];
-
+        if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validateRegistration($customer_data)) {//all have to be fine after validation
+            $this->prepare_data_registration($customer_data);
+            $customer_id = $this->model_extension_module_d_social_login->addCustomer($customer_data);
+            $authentication_data['customer_id'] = (int)$customer_id;
+            $this->model_extension_module_d_social_login->addAuthentication($authentication_data);//login
+            $this->model_extension_module_d_social_login->login($customer_id);
+            $json['redirect'] = $this->sl_redirect;
+            unset($this->session->data['provider']);//($this->url->link('account/success'));
+        }
+        if (count($this->error)) {
+            $json = $this->error;
+        }
+        $this->response->addHeader('Content-Type: application/json');
+        $this->response->setOutput(json_encode($json));
+        return;
         // check email
         if ($this->validate_email($customer_data['email'])) {
             $customer_id = $this->model_extension_module_d_social_login->getCustomerByEmail($customer_data['email']);
@@ -302,26 +313,42 @@ class ControllerExtensionModuleDSocialLogin extends Controller
         $this->response->setOutput(json_encode($json));
     }
 
-    public function validate_email($email)
+    private function validateRegistration($customer_data)
     {
-        //if (preg_match('/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,3})$/', $email)) {
-            return true;
-       // } else {
-        //    return false;
-       // }
+        foreach ($this->setting['fields'] as $field) {
+            if ($field['enabled'] && isset($field['required']) && $field['required']) {
+                if ($field['id'] == 'confirm') {
+                    if (($customer_data['password'] != $customer_data['confirm'])) {
+                        $this->error['error']['confirm'] = $this->language->get('error_password_and_confirm_different');
+                    }
+                }
+                if ($this->request->post[$field['id']] == "" && isset($field['required']) && $field['required']) {
+                    $this->error['error'][$field['id']] = $this->language->get('error_fill_all_fields');
+                }
+            }
+        }
+        if (isset($customer_data['email']) && $this->model_extension_module_d_social_login->validate_email($customer_data['email'])) {
+            $customer_id = $this->model_extension_module_d_social_login->getCustomerByEmail($customer_data['email']);
+            if ($customer_id) {
+                if ($this->model_extension_module_d_social_login->checkAuthentication($customer_id, $this->request->post['provider'])) {
+                    $this->error['error']['email'] = $this->language->get('error_email_taken');
+                }
+            }
+        } else {
+            $this->error['error']['email'] = $this->language->get('error_email_incorrect');
+        }
+        return !$this->error;
+
     }
 
-    private function password($length = 8)
+    private function prepare_data_registration(&$data)
     {
-        $chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-        $count = strlen($chars);
-
-        for ($i = 0, $result = ''; $i < $length; $i++) {
-            $index = rand(0, $count - 1);
-            $result .= substr($chars, $index, 1);
+        $keys = array_keys($data);
+        foreach ($this->setting['fields'] as $field) {
+            if (!in_array($field['id'], $keys)) {
+                $data[$field['id']] = '';
+            }
         }
-
-        return $result;
     }
 
     private function setup()
@@ -361,37 +388,6 @@ class ControllerExtensionModuleDSocialLogin extends Controller
         }
 
         return $this->config->get('config_country_id');
-    }
-
-    //todo move to model
-    public function getCurrentUrl($request_uri = true, $reset_uri = false)
-    {
-        if (
-            isset($_SERVER['HTTPS']) && ($_SERVER['HTTPS'] == 'on' || $_SERVER['HTTPS'] == 1) || isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https'
-        ) {
-            $protocol = 'https://';
-        } else {
-            $protocol = 'http://';
-        }
-
-        $url = $protocol . $_SERVER['HTTP_HOST'];
-
-        if (isset($_SERVER['SERVER_PORT']) && strpos($url, ':' . $_SERVER['SERVER_PORT']) === FALSE) {
-            $url .= ($protocol === 'http://' && $_SERVER['SERVER_PORT'] != 80 && !isset($_SERVER['HTTP_X_FORWARDED_PROTO'])) || ($protocol === 'https://' && $_SERVER['SERVER_PORT'] != 443 && !isset($_SERVER['HTTP_X_FORWARDED_PROTO'])) ? ':' . $_SERVER['SERVER_PORT'] : '';
-        }
-
-        if ($request_uri) {
-            if ($reset_uri) {
-                $url .= $_SERVER['HTTP_REFERER'];
-            } else {
-                $url .= $_SERVER['REQUEST_URI'];
-            }
-        } else {
-            $url .= $_SERVER['PHP_SELF'];
-        }
-
-        // return current url
-        return $url;
     }
 
     public function reset()

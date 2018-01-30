@@ -136,7 +136,6 @@ class ModelExtensionModuleDSocialLogin extends Model
 
     public function addCustomer($data)
     {
-
         $this->db->query("INSERT INTO " . DB_PREFIX . "customer SET
             store_id = '" . (int)$this->config->get('config_store_id') . "',
             firstname = '" . $this->db->escape($data['firstname']) . "',
@@ -313,14 +312,10 @@ class ModelExtensionModuleDSocialLogin extends Model
 
         if ($customer_id) {
             Hybrid_Auth::$logger->info('d_social_login: getCustomerByIdentifier success.');
-
-            $this->load->model('extension/module/d_social_login');
             $this->login($customer_id);
-
             // redirect
             return 'redirect';
         }
-        $this->load->model('extension/module/d_social_login');
         $customer_id = $this->getCustomerByIdentifierOld($setting['provider'], $setting['profile']['identifier']);
 
         // check by email
@@ -387,7 +382,6 @@ class ModelExtensionModuleDSocialLogin extends Model
                 return array('customer_data' => $customer_data, 'authentication_data' => $authentication_data);
             }
         }
-
         if ($customer_id) {
             Hybrid_Auth::$logger->info('d_social_login: customer_id found');
             $authentication_data['customer_id'] = (int)$customer_id;
@@ -406,6 +400,59 @@ class ModelExtensionModuleDSocialLogin extends Model
     public function getPreloader($pre_loader_code = 'clip-rotate')
     {
         return '<div class="la-ball-clip-rotate"><div></div></div>';
+    }
+
+    public function validate_email($email)
+    {
+        if(preg_match('/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,3})$/', $email)){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    public function password($length = 8)
+    {
+        $chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        $count = strlen($chars);
+
+        for ($i = 0, $result = ''; $i < $length; $i++) {
+            $index = rand(0, $count - 1);
+            $result .= substr($chars, $index, 1);
+        }
+
+        return $result;
+    }
+
+    //moved to model
+    public function getCurrentUrl($request_uri = true, $reset_uri = false)
+    {
+        if (
+            isset($_SERVER['HTTPS']) && ($_SERVER['HTTPS'] == 'on' || $_SERVER['HTTPS'] == 1) || isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https'
+        ) {
+            $protocol = 'https://';
+        } else {
+            $protocol = 'http://';
+        }
+
+        $url = $protocol . $_SERVER['HTTP_HOST'];
+
+        if (isset($_SERVER['SERVER_PORT']) && strpos($url, ':' . $_SERVER['SERVER_PORT']) === FALSE) {
+            $url .= ($protocol === 'http://' && $_SERVER['SERVER_PORT'] != 80 && !isset($_SERVER['HTTP_X_FORWARDED_PROTO'])) || ($protocol === 'https://' && $_SERVER['SERVER_PORT'] != 443 && !isset($_SERVER['HTTP_X_FORWARDED_PROTO'])) ? ':' . $_SERVER['SERVER_PORT'] : '';
+        }
+
+        if ($request_uri) {
+            if ($reset_uri) {
+                $url .= $_SERVER['HTTP_REFERER'];
+            } else {
+                $url .= $_SERVER['REQUEST_URI'];
+            }
+        } else {
+            $url .= $_SERVER['PHP_SELF'];
+        }
+
+        // return current url
+        return $url;
     }
 
 }

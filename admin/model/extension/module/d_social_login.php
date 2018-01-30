@@ -132,7 +132,6 @@ class ModelExtensionModuleDSocialLogin extends Model
 
     }
 
-
     /*
     *	Mbooth
     */
