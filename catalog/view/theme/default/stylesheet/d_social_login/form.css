@@ -1,7 +1,8 @@
 
-.holder{
-    padding:2rem;
+.holder {
+    padding: 2rem;
 }
+
 input.error, select.error {
     background: #f2dede;
     border: 1px solid #ebccd1
@@ -43,14 +44,14 @@ input.error, select.error {
     border-radius: 5px;
 }
 
-.pre_loader{
+.pre_loader {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translateX(-50%) translateY(-50%);
-    z-index:1055;
+    z-index: 1056;
 }
 
-.d_social_login-modal{
-
+#d_social_login .modal-dialog {
+    transform: scale(1);
 }

@@ -28,22 +28,22 @@ $_['d_social_login'] = array(
             "padding" => '11px 4px',
             "font-size" => '20px',
             "width" => '40px',
-            "border-radius"=>'100%',
+            "border-radius"=>'3px',
         ),
         'small' => array(
-            "padding" => '4px 5px 3px 5px',
+            "padding" => '3px',
             "font-size" => '10px',
-            "width" => '20px',
+            "width" => '25px',
         ),
         'medium' => array(
-            "padding" => '6px 10px 6px 10px',
+            "padding" => '6px 4px',
             "font-size" => '12px',
-            "width" => '25px',
+            "width" => '30px',
             ),
         'large' => array(
-            "padding" => '8px 16px 7px 16px',
+            "padding" => '7px 5px',
             "font-size" => '13px',
-            "width" => '30px',
+            "width" => '35px',
 
         ),
         'huge' => array(

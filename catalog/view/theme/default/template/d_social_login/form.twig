@@ -53,12 +53,11 @@
                             </div>
                         </div>
                     </div>
-                    <div class="pre_loader hide">{{ pre_loader }}</div>
                 </div>
             </div>
         </div>
     </div>
-
+    <div class="pre_loader hide">{{ pre_loader }}</div>
     <script>
         $(document).ready(function () {
             $('.d_social_login-modal').modal('show');
@@ -71,22 +70,18 @@
             })
         })
     </script>
-
-
     <script>
         $(document).ready(function () {
             function log(text) {
                 {% if(debug) %}
-                console.log(text);
+                    console.log(text);
                 {% endif %}
             }
-
             $("#dsl_form").validate({
                 submitHandler: function (form, e) {
                     sendForm(e);
                 }
             });
-
             function sendForm(e) {
                 e.preventDefault();
                 log($('#dsl_form').serialize());
@@ -98,21 +93,26 @@
                     beforeSend: function () {
                         $('#dsl_submit').prop('disabled', true);
                         $('#dsl_submit').after('<span class="wait fa fa-refresh fa-spin"></span>');
+                        $('.pre_loader').toggleClass('hide');
+                        $('#d_social_login .modal-dialog').css('transform', 'scale(0)')
                     },
                     complete: function () {
                         $('#dsl_submit').prop('disabled', false);
                         $('.wait').remove();
+                        $('.pre_loader').toggleClass('hide');
+                        $('#d_social_login .modal-dialog').css('transform', 'scale(1)')
                     },
                     success: function (json) {
                         log(json);
                         $('#dsl_error').remove()
                         $('.error').removeClass('error')
                         if (!json['error']) {
-                            if (json['redirect']) {
-                                window.location.replace(json['redirect']);
+                            if (json['success']) {
+                                $("#d_social_login .holder").html(json['success'])
+                                setTimeout(function () {
+                                    location.reload();
+                                },200)
                             }
-                            $('.d_social_login-modal').modal('hide');
-                            location.reload();
                         } else {
                             $.each(json['error'], function (id, error) {
                                 $("#" + id).addClass('has-error');
@@ -126,8 +126,7 @@
                     }
                 });
             }
-        })
-
+        });
         $('#dsl_form select[name=\'country_id\']').bind('change', function () {
             if (this.value == '') return;
             $.ajax({
@@ -161,4 +160,13 @@
         });
         $('#dsl_form select[name=\'country_id\']').trigger('change');
     </script>
+    {% if (background) %}
+        <script>
+            $(document).ready(function () {
+                $('.modal-backdrop.fade.in').css('background-image', "url('{{ background_img_thumb }}')");
+                $('.modal-backdrop.fade.in').css('opacity', "1");
+            });
+        </script>
+    {% endif %}
+
 {% endif %}

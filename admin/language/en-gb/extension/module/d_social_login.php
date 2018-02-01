@@ -71,10 +71,10 @@ $_['text_instructions'] = array(
 $_['text_background_color']     = 'Button color';
 $_['text_background_color_active'] = 'on Push';
 $_['text_background_color_hover'] = 'on Hover   ';
-$_['text_icon']                 = 'Icons';
 
 
 $_['entry_fields_sort_order']   = 'Sort and activate fields for the popup screen for the first social login action, which is the registration of a new customer. (email is not present because its activated by default) ';
+$_['text_email']                = 'Email';
 $_['text_firstname']            = 'First name';
 $_['text_lastname']             = 'Last name';
 $_['text_telephone']            = 'Telephone';

@@ -25,7 +25,13 @@
                 font-size: {{ size['font-size'] }};
                 padding: {{ size.padding }}{#{% for keyattr,attr_value in size %}{{ keyattr }}:{{ attr_value }};{% endfor %}#}
             }
+            .{{ class }} .l-side {
+                padding:{{ size.padding }};
+                width: {{ size.width }};
+            }
 
+
+            {% if class=='icons' %}
             .{{ class }} .l-side {
                 padding-top: {{ size.width/4 }}px;
                 padding-bottom: {{ size.width/4 }}px;
@@ -33,8 +39,6 @@
                 padding-left: {{ size.width/8 }}px;
                 width: {{ size.width }};
             }
-
-            {% if class=='icons' %}
             .{{ class }} .r-side {
                 display: none;
             }

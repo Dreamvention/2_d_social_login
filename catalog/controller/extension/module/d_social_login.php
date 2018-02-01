@@ -30,7 +30,7 @@ class ControllerExtensionModuleDSocialLogin extends Controller
         if (isset($this->session->data['provider'])) {
             $customer_data = (isset($this->request->post['customer_data'])) ? $this->request->post['customer_data'] : '';
             $authentication_data = (isset($this->request->post['authentication_data'])) ? $this->request->post['authentication_data'] : '';
-            if (!empty($customer_data)&& !empty($authentication_data)){
+            if (!empty($customer_data) && !empty($authentication_data)) {
                 return $this->form($customer_data, $authentication_data);
             }
         }
@@ -68,15 +68,7 @@ class ControllerExtensionModuleDSocialLogin extends Controller
         // facebook fix
         unset($this->session->data['HA::CONFIG']);
         unset($this->session->data['HA::STORE']);
-        if (VERSION >= '2.2.0.0') {
-            return $this->model_extension_d_opencart_patch_load->view($this->route, $data);
-        } else {
-            if ($this->config->get('config_template')) {
-                return $this->model_extension_d_opencart_patch_load->view($this->config->get('config_template') . '/template/' . $this->route, $data);
-            } else {
-                return $this->model_extension_d_opencart_patch_load->view('default/template/' . $this->route, $data);
-            }
-        }
+        return $this->model_extension_d_opencart_patch_load->view($this->route, $data);
     }
 
     public function login()
@@ -97,10 +89,8 @@ class ControllerExtensionModuleDSocialLogin extends Controller
             $httpsServer = HTTPS_SERVER;
             $httpServer = HTTP_SERVER;
         }
-
         $this->setting['base_url'] = $this->config->get('config_secure') ? $httpServer . 'index.php?route=extension/d_social_login/callback' : $httpServer . 'index.php?route=extension/d_social_login/callback';
         $this->setting['debug_file'] = DIR_LOGS . $this->setting['debug_file'];
-
         if (isset($this->request->get['provider'])) {
             $this->session->data['provider'] = $this->setting['provider'] = $this->request->get['provider'];
         } else {
@@ -118,7 +108,6 @@ class ControllerExtensionModuleDSocialLogin extends Controller
         if ($this->setting['provider'] == 'Live') {
             $this->setting['base_url'] = $this->config->get('config_secure') ? $httpsServer . 'd_social_login_live.php' : $httpServer . 'index.php?route=extension/d_social_login/callback_live';
         }
-
         try {
             $res = $this->model_extension_module_d_social_login->remoteLogin($this->setting, $this->sl_redirect);// result from hybrid
             if ($res == 'redirect') {
@@ -127,48 +116,40 @@ class ControllerExtensionModuleDSocialLogin extends Controller
             $this->document->addScript('catalog/view/javascript/jquery/jquery-2.1.1.min.js');
             $res['scripts'] = $this->document->getScripts();
             $res['url'] = $this->model_extension_module_d_social_login->getCurrentUrl(false);
+            // goes to auth page
             $view = $this->model_extension_d_opencart_patch_load->view($this->id . '/auth', $res);
-            if (VERSION >= '2.2.0.0') {
-                $this->response->setOutput($view);
-            } else {
-                if ($this->config->get('config_template')) {
-                    $this->response->setOutput($this->model_extension_d_opencart_patch_load->view($this->config->get('config_template') . '/template/' . $this->route, $res));
-                } else {
-                    $this->response->setOutput($this->model_extension_d_opencart_patch_load->view('default/template/' . $this->route, $res));
-                }
-            }
         } catch (Exception $e) {
             unset($this->session->data['provider']);
             switch ($e->getCode()) {
                 case 0 :
-                    $error = $this->language->get('unspecified_error');//"Unspecified error";
+                    $error = $this->language->get('unspecified_error');
                     break;
                 case 1 :
-                    $error = $this->language->get('hybriauth_error');//"Hybriauth configuration error.";
+                    $error = $this->language->get('hybriauth_error');
                     break;
                 case 2 :
-                    $error = $this->language->get('provider_not_configured_error');//"Provider not properly configured.";
+                    $error = $this->language->get('provider_not_configured_error');
                     break;
                 case 3 :
-                    $error = $this->language->get('disabled_provider_error');//"Unknown or disabled provider.";
+                    $error = $this->language->get('disabled_provider_error');
                     break;
                 case 4 :
-                    $error = $this->language->get('missing_provider_error');// "Missing provider application credentials.";
+                    $error = $this->language->get('missing_provider_error');
                     break;
                 case 5 :
-                    $error = $this->language->get('auth_fail_error');//"Authentication failed. The user has canceled the authentication or the provider refused the connection.";
+                    $error = $this->language->get('auth_fail_error');
                     break;
                 case 6 :
-                    $error = $this->language->get('profile_request_error');// "User profile request failed. Most likely the user is not connected to the provider and he should to authenticate again.";
+                    $error = $this->language->get('profile_request_error');
                     if (isset($adapter)) {
                         $adapter->logout();
                     }
                     break;
                 case 7 :
-                    $error = $this->language->get('user_no_provider_error');// "User not connected to the provider.";
+                    $error = $this->language->get('user_no_provider_error');
                     break;
                 case 8 :
-                    $error = $this->language->get('no_feature_provider_error');//"Provider does not support this feature.";
+                    $error = $this->language->get('no_feature_provider_error');
                     break;
             }
 
@@ -183,12 +164,39 @@ class ControllerExtensionModuleDSocialLogin extends Controller
         }
     }
 
+    public function register()
+    {
+        $customer_data = array_merge(($this->session->data['customer_data'] != '') ? $this->session->data['customer_data'] : array(), $this->request->post);
+        $authentication_data = $this->session->data['authentication_data'];
+        if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validateRegistration($customer_data)) {//all have to be fine after validation
+            $this->model_extension_module_d_social_login->prepareDataRegistration($customer_data, $this->setting['fields']);
+            $customer_id = $this->model_extension_module_d_social_login->addCustomer($customer_data);
+            $authentication_data['customer_id'] = (int)$customer_id;
+            $this->model_extension_module_d_social_login->addAuthentication($authentication_data);//login
+            $this->model_extension_module_d_social_login->login($customer_id);
+            $json['success'] = $this->getConfirmMessageView();
+            unset($this->session->data['provider']);//($this->url->link('account/success'));
+        }
+        if (count($this->error)) {
+            $json = $this->error;
+        }
+        $this->response->addHeader('Content-Type: application/json');
+        $this->response->setOutput(json_encode($json));
+    }
+
+    public function reset()
+    {
+        unset($this->session->data['provider']);
+        $this->response->addHeader('Content-Type: application/html');
+        $this->response->setOutput($this->index());
+    }
+
     private function form($customer_data, $authentication_data)
     {
         $data['islogged'] = ($this->customer->isLogged()) ? $this->customer->isLogged() : false;
         $data['pre_loader'] = html_entity_decode($this->model_extension_module_d_social_login->getPreloader('clip-rotate'), ENT_QUOTES, 'UTF-8');
         $this->document->addStyle('catalog/view/theme/default/stylesheet/d_social_login/pre_loader/' . 'clip-rotate' . '.css');
-        $this->document->addStyle('catalog/view/theme/default/stylesheet/d_social_login/form.css');
+        $this->document->addStyle('catalog/view/theme/default/stylesheet/d_social_login/form.css' . '?' . rand());
         $this->document->addScript('catalog/view/javascript/d_social_login/jquery.validate.js');
         $this->document->addScript('catalog/view/javascript/d_social_login/jquery.maskedinput.min.js');
         $data['debug'] = $this->setting['debug_mode'] = (bool)$this->setting['debug_mode'];
@@ -217,9 +225,17 @@ class ControllerExtensionModuleDSocialLogin extends Controller
         $data['text_password'] = $this->language->get('text_password');
         $data['text_confirm'] = $this->language->get('text_confirm');
         $data['text_email_intro'] = $this->language->get('text_email_intro');
-
-//        $data['background_img'] = $this->setting['background_img'];
-//        $data['background_color'] = $this->setting['providers'][ucfirst($this->setting['provider'])]['background_color'];
+        $data['background'] = $is_background = !$this->setting['iframe'];
+        $background_image = $this->setting['background_img'];
+        // no need $background_color = $this->setting['providers'][ucfirst($this->setting['provider'])]['background_color'];
+        if ($is_background) {
+            $this->load->model('tool/image');
+            if (isset($background_image) && $background_image && file_exists(DIR_IMAGE . $background_image) && is_file(DIR_IMAGE . $background_image)) {
+                $data['background_img_thumb'] = $this->model_tool_image->resize($background_image, 300, 300);
+            } else {
+                $data['background_img_thumb'] = $this->model_tool_image->resize('no_image.jpg', 300, 300);
+            }
+        }
 
         $sort_order = array();
         foreach ($this->setting['fields'] as $key => $value) {
@@ -232,85 +248,14 @@ class ControllerExtensionModuleDSocialLogin extends Controller
 
         $this->load->model('localisation/country');
         $data['countries'] = $this->model_localisation_country->getCountries();
-
-        if (VERSION >= '2.2.0.0') {
-            return $this->load->view('d_social_login/form', $data);
-        } elseif (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/d_social_login/form.tpl')) {
-            return $this->load->view($this->config->get('config_template') . '/template/d_social_login/form.tpl', $data);
-        } else {
-            return $this->load->view('default/template/d_social_login/form.tpl', $data);
-        }
+        //is problem still relevant?
+        return $this->model_extension_d_opencart_patch_load->view($this->id . '/form', $data);
     }
 
-    public function register()
+    private function getConfirmMessageView()
     {
-        $customer_data = array_merge(($this->session->data['customer_data'] != '') ? $this->session->data['customer_data'] : array(), $this->request->post);
-        $authentication_data = $this->session->data['authentication_data'];
-        if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validateRegistration($customer_data)) {//all have to be fine after validation
-            $this->prepare_data_registration($customer_data);
-            $customer_id = $this->model_extension_module_d_social_login->addCustomer($customer_data);
-            $authentication_data['customer_id'] = (int)$customer_id;
-            $this->model_extension_module_d_social_login->addAuthentication($authentication_data);//login
-            $this->model_extension_module_d_social_login->login($customer_id);
-            $json['redirect'] = $this->sl_redirect;
-            unset($this->session->data['provider']);//($this->url->link('account/success'));
-        }
-        if (count($this->error)) {
-            $json = $this->error;
-        }
-        $this->response->addHeader('Content-Type: application/json');
-        $this->response->setOutput(json_encode($json));
-        return;
-        // check email
-        if ($this->validate_email($customer_data['email'])) {
-            $customer_id = $this->model_extension_module_d_social_login->getCustomerByEmail($customer_data['email']);
-            if ($customer_id) {
-                if (!$this->model_extension_module_d_social_login->checkAuthentication($customer_id, $this->request->post['provider'])) {
-                    $authentication_data['customer_id'] = (int)$customer_id;
-                    $this->model_extension_module_d_social_login->addAuthentication($authentication_data);
-                } else {
-                    $json['error']['email'] = $this->language->get('error_email_taken');
-                }
-            }
-        } else {
-            $json['error']['email'] = $this->language->get('error_email_incorrect');
-        }
-
-        // fields
-        foreach ($this->setting['fields'] as $field) {
-            if ($field['enabled']) {
-                if ($field['id'] == 'confirm') {
-                    if (($customer_data['password'] != $customer_data['confirm'])) {
-                        $json['error']['confirm'] = $this->language->get('error_password_and_confirm_different');
-                    }
-                }
-                if ($this->request->post[$field['id']] == "" && isset($field['required']) && $field['required']) {
-                    $json['error'][$field['id']] = $this->language->get('error_fill_all_fields');
-                }
-            }
-        }
-
-
-        if (empty($json['error'])) {
-
-            if (!$this->setting['fields']['password']['enabled']) {
-                $customer_data['password'] = $this->password();
-            }
-
-            $customer_id = $this->model_extension_module_d_social_login->addCustomer($customer_data);
-
-            $authentication_data['customer_id'] = (int)$customer_id;
-            $this->model_extension_module_d_social_login->addAuthentication($authentication_data);
-
-            //login
-            $this->model_extension_module_d_social_login->login($customer_id);
-
-            //redirect
-            $json['redirect'] = $this->sl_redirect;
-        }
-
-        $this->response->addHeader('Content-Type: application/json');
-        $this->response->setOutput(json_encode($json));
+        $data['text_confirm'] = $this->language->get('text_confirm_finish');
+        return $this->model_extension_d_opencart_patch_load->view($this->id . '/confirm', $data);
     }
 
     private function validateRegistration($customer_data)
@@ -327,28 +272,21 @@ class ControllerExtensionModuleDSocialLogin extends Controller
                 }
             }
         }
-        if (isset($customer_data['email']) && $this->model_extension_module_d_social_login->validate_email($customer_data['email'])) {
-            $customer_id = $this->model_extension_module_d_social_login->getCustomerByEmail($customer_data['email']);
-            if ($customer_id) {
-                if ($this->model_extension_module_d_social_login->checkAuthentication($customer_id, $this->request->post['provider'])) {
-                    $this->error['error']['email'] = $this->language->get('error_email_taken');
+        if (isset($customer_data['email']) && isset($this->setting['fields']['email']['required']) && $this->setting['fields']['email']['required']) {
+            if ($this->model_extension_module_d_social_login->validate_email($customer_data['email'])) {
+                $customer_id = $this->model_extension_module_d_social_login->getCustomerByEmail($customer_data['email']);
+                if ($customer_id) {
+                    if ($this->model_extension_module_d_social_login->checkAuthentication($customer_id, $this->request->post['provider'])) {
+                        $this->error['error']['email'] = $this->language->get('error_email_taken');
+                    }
                 }
+            } else {
+                $this->error['error']['email'] = $this->language->get('error_email_incorrect');
             }
-        } else {
-            $this->error['error']['email'] = $this->language->get('error_email_incorrect');
+
         }
         return !$this->error;
 
-    }
-
-    private function prepare_data_registration(&$data)
-    {
-        $keys = array_keys($data);
-        foreach ($this->setting['fields'] as $field) {
-            if (!in_array($field['id'], $keys)) {
-                $data[$field['id']] = '';
-            }
-        }
     }
 
     private function setup()
@@ -377,23 +315,5 @@ class ControllerExtensionModuleDSocialLogin extends Controller
 
     }
 
-    private function getCountryId($profile)
-    {
-        if ($profile['country']) {
-            return $this->model_extension_module_d_social_login->getCountryIdByName($profile['country']);
-        }
 
-        if ($profile['region']) {
-            return $this->model_extension_module_d_social_login->getCountryIdByName($profile['region']);
-        }
-
-        return $this->config->get('config_country_id');
-    }
-
-    public function reset()
-    {
-        unset($this->session->data['provider']);
-        $this->response->addHeader('Content-Type: application/html');
-        $this->response->setOutput($this->index());
-    }
 }

@@ -404,9 +404,9 @@ class ModelExtensionModuleDSocialLogin extends Model
 
     public function validate_email($email)
     {
-        if(preg_match('/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,3})$/', $email)){
+        if (preg_match('/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,3})$/', $email)) {
             return true;
-        }else{
+        } else {
             return false;
         }
     }
@@ -454,5 +454,14 @@ class ModelExtensionModuleDSocialLogin extends Model
         // return current url
         return $url;
     }
-
+    //can be moved into model
+    private function prepareDataRegistration(&$data,$fields)
+    {
+        $keys = array_keys($data);
+        foreach ($fields as $field) {
+            if (!in_array($field['id'], $keys)) {
+                $data[$field['id']] = '';
+            }
+        }
+    }
 }

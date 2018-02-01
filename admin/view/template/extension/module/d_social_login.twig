@@ -197,7 +197,7 @@
                                             <div class="well well-sm clearfix sort-item"
                                                  data-sort="{{ provider['sort_order'] }}">
                                                 <div class="row">
-                                                    <div class="col-sm-2">
+                                                    <div class="col-sm-3">
                                                     <span for="d_social_login_modules_providers_{{ key }}_enabled">
                                                         <label><i class="{{ provider['icon'] }}"></i> {{ provider['id'] }}</label><br/>
                                                         <input type="hidden"
@@ -216,7 +216,7 @@
                                                                class="sort-value" value="{{ provider['sort_order'] }}"/><span
                                                                 class="dsl-icon-{{ provider['id'] }}"></span>
                                                     </div>
-                                                    <div class="col-sm-2">
+                                                    <div class="col-sm-3">
                                                         <label>{{ text_background_color }}</label>
                                                         <div class="input-group color-picker">
                                                             <input type="text"
@@ -226,7 +226,7 @@
                                                             <span class="input-group-addon"><i></i></span>
                                                         </div>
                                                     </div>
-                                                    <div class="col-sm-2">
+                                                    <div class="col-sm-3">
                                                         <label>{{ text_background_color_active }}</label>
                                                         <div class="input-group color-picker">
                                                             <input type="text"
@@ -236,7 +236,7 @@
                                                             <span class="input-group-addon"><i></i></span>
                                                         </div>
                                                     </div>
-                                                    <div class="col-sm-2">
+                                                    <div class="col-sm-3">
                                                         <label>{{ text_background_color_hover }}</label>
                                                         <div class="input-group color-picker">
                                                             <input type="text"
@@ -245,17 +245,6 @@
                                                                    value="{{ provider['background_color_hover'] }}"/>
                                                             <span class="input-group-addon"><i></i></span>
 
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="col-sm-2">
-                                                        <label>{{ text_icon }}</label>
-                                                        <div class="input-group">
-                                                            <span class="input-group-addon"><i
-                                                                        class="{{ provider['icon'] }}"></i></span>
-                                                            <input type="text"
-                                                                   name="{{ id }}_setting[providers][{{ key }}][icon]"
-                                                                   class="form-control" value="{{ provider['icon'] }}"/>
                                                         </div>
                                                     </div>
                                                     <span class="icon-drag"></span>
@@ -287,19 +276,18 @@
                                 <label class="col-sm-2 control-label">{{ entry_fields_sort_order }}</label>
                                 <div class="col-sm-10">
                                     <div class="sortable">
-
                                         {% for field in setting['fields'] %}
                                             <div class="well well-sm clearfix sort-item"
                                                  data-sort="{{ field['sort_order'] }}">
                                                 <div class="row">
-                                                    <div class="col-sm-5 ">
+                                                    <div class="col-md-6 col-sm-7">
                                                         <div class="row">
                                                             <input type="hidden"
                                                                    name="{{ id }}_setting[fields][{{ field['id'] }}][enabled]"
                                                                    value="0"/>
-                                                            <label class="col-sm-3"
+                                                            <label class="col-sm-4"
                                                                    for="{{ id }}_setting_fields_{{ field['id'] }}_enabled">{{ attribute(_context, 'text_' ~ field['id']) }}</label>
-                                                            <div class="col-sm-6">
+                                                            <div class="col-sm-8">
                                                                 <input type="checkbox"
                                                                        class="col-sm-3"
                                                                        name="{{ id }}_setting[fields][{{ field['id'] }}][enabled]" {{ field['enabled']? 'checked="checked"':'' }}
@@ -325,15 +313,20 @@
                                                                    value="{{ field['id'] }}"/>
                                                         </div>
                                                     </div>
-                                                    {% if (field['mask'] is defined) %}
-                                                        <label class="col-sm-2">
-                                                            {{ text_mask }}
-                                                        </label>
-                                                        <div class="col-sm-3"><input type="text"
-                                                                                     name="{{ id }}_setting[fields][{{ field['id'] }}][mask]"
-                                                                                     value="{{ field['mask'] }}"
-                                                                                     class="form-control"></div>
-                                                    {% endif %}
+                                                    <div class="col-md-6 col-sm-5">
+                                                        <div class="row">
+                                                            {% if (field['mask'] is defined) %}
+                                                                <label class="col-sm-12 col-md-4">
+                                                                    {{ text_mask }}
+                                                                </label>
+                                                                <div class="col-sm-12 col-md-8">
+                                                                    <input type="text"
+                                                                                             name="{{ id }}_setting[fields][{{ field['id'] }}][mask]"
+                                                                                             value="{{ field['mask'] }}"
+                                                                                             class="form-control"></div>
+                                                            {% endif %}</div>
+                                                    </div>
+
                                                     <span class="icon-drag"></span>
                                                 </div>
                                             </div>

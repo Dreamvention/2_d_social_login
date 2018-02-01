@@ -122,9 +122,7 @@ class ControllerExtensionModuleDSocialLogin extends Controller
         $data['token'] = $this->model_extension_d_opencart_patch_user->getUrlToken();
         $data['d_shopunity'] = $this->d_shopunity;
         $data['entry_get_update'] = sprintf($this->language->get('entry_get_update'), $data['version']);
-
         $data = array_merge($data, $this->getTextFields());
-
         // Buttons
         $data['button_save'] = $this->language->get('button_save');
         $data['button_save_and_stay'] = $this->language->get('button_save_and_stay');
@@ -277,7 +275,6 @@ class ControllerExtensionModuleDSocialLogin extends Controller
         $data['text_instruction'] = $this->language->get('text_instruction');
 
         // Modules
-        $data['text_icons'] = $this->language->get('text_icons');
         $data['text_small'] = $this->language->get('text_small');
         $data['text_medium'] = $this->language->get('text_medium');
         $data['text_large'] = $this->language->get('text_large');
