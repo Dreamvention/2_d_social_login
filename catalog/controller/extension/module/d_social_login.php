@@ -27,11 +27,12 @@ class ControllerExtensionModuleDSocialLogin extends Controller
     {
         $this->setup();
         $setting = $this->config->get($this->id . '_setting');
+        //load data from provider into form popup
         if (isset($this->session->data['provider'])) {
             $customer_data = (isset($this->request->post['customer_data'])) ? $this->request->post['customer_data'] : '';
             $authentication_data = (isset($this->request->post['authentication_data'])) ? $this->request->post['authentication_data'] : '';
             if (!empty($customer_data) && !empty($authentication_data)) {
-                return $this->form($customer_data, $authentication_data);
+                return $this->getForm($customer_data, $authentication_data);
             }
         }
         $data['heading_title'] = $this->language->get('heading_title');
@@ -41,8 +42,8 @@ class ControllerExtensionModuleDSocialLogin extends Controller
         $data['islogged'] = ($this->customer->isLogged()) ? $this->customer->isLogged() : false;
         $this->document->addStyle('catalog/view/theme/default/stylesheet/d_social_login/styles.css');
         $this->document->addScript('catalog/view/javascript/d_social_login/spin.min.js');
-
         $providers = $setting['providers'];
+        //sorting providers in order wich admin set
         $sort_order = array();
         foreach ($providers as $key => $value) {
             if (isset($value['sort_order'])) {
@@ -108,22 +109,21 @@ class ControllerExtensionModuleDSocialLogin extends Controller
             $this->setting['base_url'] = $this->config->get('config_secure') ? $httpsServer . 'd_social_login_live.php' : $httpServer . 'index.php?route=extension/d_social_login/callback_live';
         }
         try {
-            $res = $this->model_extension_module_d_social_login->remoteLogin($this->setting, $this->sl_redirect);// result from hybrid
-            if ($res == 'redirect') {
+            $remoteLoginResponce = $this->model_extension_module_d_social_login->remoteLogin($this->setting, $this->sl_redirect);// result from hybrid
+            if ($remoteLoginResponce == 'redirect') {
                 $this->response->redirect($this->sl_redirect);
             }
+            //load data into auth page redirecting
             $this->document->addScript('catalog/view/javascript/jquery/jquery-2.1.1.min.js');
-            $res['scripts'] = $this->document->getScripts();
-            $res['url'] = $this->model_extension_module_d_social_login->getCurrentUrl(false);
-            // goes to auth page
-            $view = $this->model_extension_d_opencart_patch_load->view($this->id . '/auth', $res);
+            $remoteLoginResponce['scripts'] = $this->document->getScripts();
+            $remoteLoginResponce['url'] = $this->model_extension_module_d_social_login->getCurrentUrl(false);
+            $view = $this->model_extension_d_opencart_patch_load->view($this->id . '/auth', $remoteLoginResponce);
             $this->response->setOutput($view);
-
         } catch (Exception $e) {
             unset($this->session->data['provider']);
             switch ($e->getCode()) {
                 case 0 :
-                    $error = $this->language->get('unspecified_error') . $e->getMessage();
+                    $error = $this->language->get('unspecified_error');
                     break;
                 case 1 :
                     $error = $this->language->get('hybriauth_error');
@@ -192,7 +192,7 @@ class ControllerExtensionModuleDSocialLogin extends Controller
         $this->response->setOutput($this->index());
     }
 
-    private function form($customer_data, $authentication_data)
+    private function getForm($customer_data, $authentication_data)
     {
         $data['islogged'] = ($this->customer->isLogged()) ? $this->customer->isLogged() : false;
         $data['pre_loader'] = html_entity_decode($this->model_extension_module_d_social_login->getPreloader('clip-rotate'), ENT_QUOTES, 'UTF-8');
@@ -261,7 +261,7 @@ class ControllerExtensionModuleDSocialLogin extends Controller
             }
         }
         if (isset($customer_data['email']) && isset($this->setting['fields']['email']['required']) && $this->setting['fields']['email']['required']) {
-            if ($this->model_extension_module_d_social_login->validate_email($customer_data['email'])) {
+            if ($this->model_extension_module_d_social_login->validateEmail($customer_data['email'])) {
                 $customer_id = $this->model_extension_module_d_social_login->getCustomerByEmail($customer_data['email']);
                 if ($customer_id) {
                     if ($this->model_extension_module_d_social_login->checkAuthentication($customer_id, $this->request->post['provider'])) {

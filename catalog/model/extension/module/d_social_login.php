@@ -375,7 +375,7 @@ class ModelExtensionModuleDSocialLogin extends Model
 
             if (!$form) {
                 Hybrid_Auth::$logger->info('d_social_login: adding customer with customer_data');
-                $customer_data['password'] = $this->password();
+                $customer_data['password'] = $this->generateNewPassword();
                 $customer_id = $this->addCustomer($customer_data);
             } else {
                 Hybrid_Auth::$logger->info('d_social_login: need to use form');
@@ -402,7 +402,7 @@ class ModelExtensionModuleDSocialLogin extends Model
         return '<div class="la-ball-clip-rotate"><div></div></div>';
     }
 
-    public function validate_email($email)
+    public function validateEmail($email)
     {
         if (preg_match('/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,3})$/', $email)) {
             return true;
@@ -411,7 +411,7 @@ class ModelExtensionModuleDSocialLogin extends Model
         }
     }
 
-    public function password($length = 8)
+    public function generateNewPassword($length = 8)
     {
         $chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
         $count = strlen($chars);
@@ -424,7 +424,6 @@ class ModelExtensionModuleDSocialLogin extends Model
         return $result;
     }
 
-    //moved to model
     public function getCurrentUrl($request_uri = true, $reset_uri = false)
     {
         if (
@@ -454,8 +453,8 @@ class ModelExtensionModuleDSocialLogin extends Model
         // return current url
         return $url;
     }
-    //can be moved into model
-    public function prepareDataRegistration($data,$fields)
+
+    public function prepareDataRegistrationFields($data, $fields)
     {
         $keys = array_keys($data);
         foreach ($fields as $field) {
