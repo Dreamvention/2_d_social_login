@@ -65,7 +65,9 @@
         "catalog/model/extension/module/d_social_login.php",
         "catalog/language/en-gb/extension/module/d_social_login.php",
         "catalog/view/theme/default/template/extension/module/d_social_login.twig",
-        "catalog/view/theme/default/template/d_social_login/form.twig"
+        "catalog/view/theme/default/template/d_social_login/form.twig",
+        "catalog/view/theme/default/template/d_social_login/auth.twig",
+        "catalog/view/theme/default/template/d_social_login/confirm.twig"
     ],
     "dirs": [
         "admin/view/image/d_social_login",
@@ -74,9 +76,13 @@
         "image/catalog/d_social_login",
         "catalog/view/javascript/d_social_login",
         "catalog/view/theme/default/stylesheet/d_social_login",
-        "system/d_social_login/library/hybrid"
+        "system/library/d_social_login/hybrid"
     ],
     "changelog": [
+        {
+          "version":"5.0.8",
+          "change": "Rewie of popup and hybrid auth yahoo"
+        },
         {
           "version":"5.0.6",
           "change": "Fix breadcrumbs"
