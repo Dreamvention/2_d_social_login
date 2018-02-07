@@ -76,7 +76,9 @@
         "image/catalog/d_social_login",
         "catalog/view/javascript/d_social_login",
         "catalog/view/theme/default/stylesheet/d_social_login",
-        "system/library/d_social_login/hybrid"
+        "system/library/d_social_login/hybrid",
+        "system/config/d_social_login"
+
     ],
     "changelog": [
         {
