@@ -75,7 +75,7 @@ class Hybrid_Provider_Model_OAuth2 extends Hybrid_Provider_Model {
         }
 
         // include OAuth2 client
-        require_once Hybrid_Auth::$config["path_libraries"] . "OAuth/OAuth2Client.php";
+        require_once Hybrid_Auth::$config["path_libraries"] . "oauth/oauth2client.php";
 
         // create a new OAuth2 client instance
         $this->api = new OAuth2Client($this->config["keys"]["id"], $this->config["keys"]["secret"], $this->endpoint, $this->compressed);
