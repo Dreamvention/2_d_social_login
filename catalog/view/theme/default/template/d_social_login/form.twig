@@ -1,19 +1,21 @@
 {% if not islogged %}
     <div id="d_social_login">
         <div class="modal fade d_social_login-modal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
-            <div class="modal-dialog modal-sm" role="document">
+            <div class="modal-dialog " role="document">
                 <div class="modal-content">
                     <div class="modal-backdrop fade in hide"></div>
                     <div id="dsl_popup">
                         <div class="holder">
                             <div class="popup">
-                                <form id="dsl_form" method="post"
+                                <form id="dsl_form" class="form-horizontal" method="post"
                                       action="index.php?route=extension/module/d_social_login/register">
                                     <div id="dsl_intro" class="alert alert-success">{{ text_email_intro }}</div>
                                     {% for field in fields %}
                                         {% if (field['enabled']) %}
                                             <div class="form-group">
-                                                {% if (field['type'] == "select") %}
+                                                <label for="{{ field['id'] }}_control"
+                                                       class="control-label col-sm-4"> {{ labels_field[field['id']] }} </label>
+                                                <div class="col-sm-8">{% if (field['type'] == "select") %}
                                                     <select id="{{ field['id'] }}" name="{{ field['id'] }}"
                                                             class="form-control">
                                                         {% if (field['id'] == 'country_id') %}
@@ -30,7 +32,8 @@
                                                             {{ field['required'] ? 'required' }}
                                                            placeholder="{{ attribute(_context, 'text_' ~ field['id']) }}"
                                                            autocomplete="off"/>
-                                                {% endif %}
+                                                    {% endif %}</div>
+
                                             </div>
                                         {% if (field['mask'] is defined and field['mask']) %}
                                             <script>
@@ -74,14 +77,16 @@
         $(document).ready(function () {
             function log(text) {
                 {% if(debug) %}
-                    console.log(text);
+                console.log(text);
                 {% endif %}
             }
+
             $("#dsl_form").validate({
                 submitHandler: function (form, e) {
                     sendForm(e);
                 }
             });
+
             function sendForm(e) {
                 e.preventDefault();
                 log($('#dsl_form').serialize());
@@ -111,7 +116,7 @@
                                 $("#d_social_login .holder").html(json['success'])
                                 setTimeout(function () {
                                     location.reload();
-                                },200)
+                                }, 200)
                             }
                         } else {
                             $.each(json['error'], function (id, error) {

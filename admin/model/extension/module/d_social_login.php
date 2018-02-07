@@ -13,7 +13,7 @@ class ModelExtensionModuleDSocialLogin extends Model
 		  `provider` varchar(55) NOT NULL,
 		  `identifier` varchar(200) NOT NULL,
 		  `web_site_url` varchar(255) NOT NULL,
-		  `profile_url` varchar(255) NOT NULL,
+		  `profile_url` varchar(255) NOT NULL,  
 		  `photo_url` varchar(255) NOT NULL,
 		  `display_name` varchar(255) NOT NULL,
 		  `description` varchar(255) NOT NULL,

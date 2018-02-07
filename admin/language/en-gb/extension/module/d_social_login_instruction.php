@@ -1,6 +1,6 @@
 <?php
-$_['text_instruction']          = 'Instructions';
-$_['text_instructions_full']    = '
+$_['text_instruction'] = 'Instructions';
+$_['text_instructions_full'] = '
     <p>Social login lets you implement login buttons of the most popular social networks in the world. With the new version you get more options. When updating, check the instructions manual.</p>
     <h2>Set up buttons</h2>
     <ol>
@@ -27,13 +27,13 @@ $_['text_instructions_full']    = '
 
             <div class="bs-callout bs-callout-warning">
                 <h4>Important if Updating from older versions!</h4>
-                <p>We have rethought the process of logging. This is why we have changed the callback urls which solved alot of issues. But now you must reset the callback urls for some of the social logins. If you social login is not working - its probably the callback url.<br/><br/>'.HTTPS_CATALOG.'<strong>d_social_login.php?</strong>hauth.done=Google<br/><br/> </p>
+                <p>We have rethought the process of logging. This is why we have changed the callback urls which solved alot of issues. But now you must reset the callback urls for some of the social logins. If you social login is not working - its probably the callback url.<br/><br/>' . HTTPS_CATALOG . '<strong>d_social_login.php?</strong>hauth.done=Google<br/><br/> </p>
             </div>
 
             <li>Check that your newly created App is activated. i.e. facebook keeps new apps deactivated and Twitter needs extra checkbox to allow social logins.</li>
 
 
-            <li>Check that you have access to your callback path - visit <a href="'.HTTPS_CATALOG.'d_social_login.php">'.HTTPS_CATALOG.'d_social_login.php</a>. You should see this text HybridAuth Open Source Social Sign On PHP Library. hybridauth.sourceforge.net/. If you do not see it - try adding permissions 755 or 777 to your folder '.HTTPS_CATALOG.'catalog/model/d_social_login/ </li>
+            <li>Check that you have access to your callback path - visit <a href="' . HTTPS_CATALOG . 'd_social_login.php">' . HTTPS_CATALOG . 'd_social_login.php</a>. You should see this text HybridAuth Open Source Social Sign On PHP Library. hybridauth.sourceforge.net/. If you do not see it - try adding permissions 755 or 777 to your folder ' . HTTPS_CATALOG . 'catalog/model/d_social_login/ </li>
             <li>Give it 1 hour to refresh the cache on the social network side and try again.</li>
             <li>Send us a support ticket at <a href="http://dreamvention.com/support">dreamvention.com/support</a></li>
         </ol>
@@ -47,32 +47,30 @@ $_['text_instructions_tabs'] = array(
         <div class="tab-body">
             <ol>
                 <li>Visit the Google Developers console <a href="https://cloud.google.com/console" target="_blank"> https://cloud.google.com/console</a></li>
-                <li>Select "Enable and manage APIs"</li>
-                <img src="view/image/d_social_login/google/01.png" class="img-thumbnail img-responsive" />
-                <li>Select "Library"</li>
-                <img src="view/image/d_social_login/google/02.png" class="img-thumbnail img-responsive" />
-                <li>Click on the "Google+ API"</li>
-                <img src="view/image/d_social_login/google/03.png" class="img-thumbnail img-responsive" />
-                <li>Click "Enable" on the top</li>
-                <img src="view/image/d_social_login/google/04.png" class="img-thumbnail img-responsive" />
-                <li>Then on the top right corner click button "Go to Credentials"</li>
-                <img src="view/image/d_social_login/google/05.png" class="img-thumbnail img-responsive" />
-                <li>Now select "Web browser(Javascript), User data and click button "What credentials do i need?"</li>
-                <img src="view/image/d_social_login/google/06.png" class="img-thumbnail img-responsive" />                
-                <li>Input the Authorized JavaScript origins and Authorized redirect URIs, then click button "Create client ID"</li>
+                <li>Create project to manage logins.</li>
+                <img src="view/image/d_social_login/google/1.png" class="img-thumbnail img-responsive" />
+                <li>After creation go to Api & Services -> "Library"</li>
+                <img src="view/image/d_social_login/google/2.png" class="img-thumbnail img-responsive" />
+                <li>Find "Google+ API" and enable it </li>
+                <img src="view/image/d_social_login/google/3.png" class="img-thumbnail img-responsive" />
+                <img src="view/image/d_social_login/google/4.png" class="img-thumbnail img-responsive" />
+                <li>go to Api & Services -> "Credentials" and give your credential a name</li>
+                <img src="view/image/d_social_login/google/50.png" class="img-thumbnail img-responsive" />
+                <li>Then create a credential secret</li>
+                <img src="view/image/d_social_login/google/51.png" class="img-thumbnail img-responsive" />                
+                <li>Choose OAuth client ID credential</li>
+                <img src="view/image/d_social_login/google/52.png" class="img-thumbnail img-responsive" />                
+                <li>Click Web application radio</li>
+                <img src="view/image/d_social_login/google/53.png" class="img-thumbnail img-responsive" />                
+                <li>Fill fields with next data</li>
+                <li>Input the Authorized JavaScript origins and Authorized redirect URIs, then click button "Create"</li>
                 <div class="bs-callout bs-callout-warning">
                     <h4>Your Redirect URL</h4><p>' . HTTP_CATALOG . 'index.php?route=extension/d_social_login/callback&hauth.done=Google</p><h4>Your Redirect URL for HTTPS</h4>
                     <p>' . HTTPS_CATALOG . 'index.php?route=extension/d_social_login/callback&hauth.done=Google</p>
                 </div>
-                <img src="view/image/d_social_login/google/07.png" class="img-thumbnail img-responsive" />                 
-                <li>Select your email, input the project name and click button "Continue"</li>
-                <img src="view/image/d_social_login/google/08.png" class="img-thumbnail img-responsive" />   
-                <li>Click button "Done"</li>
-                <img src="view/image/d_social_login/google/09.png" class="img-thumbnail img-responsive" />                   
-                <li>Click on the project</li>
-                <img src="view/image/d_social_login/google/10.png" class="img-thumbnail img-responsive" />                  
+                <img src="view/image/d_social_login/google/61.png" class="img-thumbnail img-responsive" />                 
                 <li>Copy Client ID and Client secret and fill in the Client Id and Client Secret in the Social Login settings tab for Google+</li>
-                <img src="view/image/d_social_login/google/11.png" class="img-thumbnail img-responsive" />  
+                <img src="view/image/d_social_login/google/7.png" class="img-thumbnail img-responsive" />  
             </ol>
             <div class="bs-callout bs-callout-warning">
                 <h4>Attention!</h4>

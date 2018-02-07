@@ -53,5 +53,6 @@ input.error, select.error {
 }
 
 #d_social_login .modal-dialog {
+    width: 500px;
     transform: scale(1);
 }

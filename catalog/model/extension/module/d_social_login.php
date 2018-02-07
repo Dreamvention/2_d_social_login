@@ -455,7 +455,7 @@ class ModelExtensionModuleDSocialLogin extends Model
         return $url;
     }
     //can be moved into model
-    private function prepareDataRegistration(&$data,$fields)
+    public function prepareDataRegistration($data,$fields)
     {
         $keys = array_keys($data);
         foreach ($fields as $field) {
@@ -463,5 +463,6 @@ class ModelExtensionModuleDSocialLogin extends Model
                 $data[$field['id']] = '';
             }
         }
+        return $data;
     }
 }

@@ -42,7 +42,6 @@ class ControllerExtensionModuleDSocialLogin extends Controller
         $this->document->addStyle('catalog/view/theme/default/stylesheet/d_social_login/styles.css');
         $this->document->addScript('catalog/view/javascript/d_social_login/spin.min.js');
 
-
         $providers = $setting['providers'];
         $sort_order = array();
         foreach ($providers as $key => $value) {
@@ -118,11 +117,13 @@ class ControllerExtensionModuleDSocialLogin extends Controller
             $res['url'] = $this->model_extension_module_d_social_login->getCurrentUrl(false);
             // goes to auth page
             $view = $this->model_extension_d_opencart_patch_load->view($this->id . '/auth', $res);
+            $this->response->setOutput($view);
+
         } catch (Exception $e) {
             unset($this->session->data['provider']);
             switch ($e->getCode()) {
                 case 0 :
-                    $error = $this->language->get('unspecified_error');
+                    $error = $this->language->get('unspecified_error') . $e->getMessage();
                     break;
                 case 1 :
                     $error = $this->language->get('hybriauth_error');
@@ -169,7 +170,7 @@ class ControllerExtensionModuleDSocialLogin extends Controller
         $customer_data = array_merge(($this->session->data['customer_data'] != '') ? $this->session->data['customer_data'] : array(), $this->request->post);
         $authentication_data = $this->session->data['authentication_data'];
         if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validateRegistration($customer_data)) {//all have to be fine after validation
-            $this->model_extension_module_d_social_login->prepareDataRegistration($customer_data, $this->setting['fields']);
+            $customer_data = $this->model_extension_module_d_social_login->prepareDataRegistration($customer_data, $this->setting['fields']);
             $customer_id = $this->model_extension_module_d_social_login->addCustomer($customer_data);
             $authentication_data['customer_id'] = (int)$customer_id;
             $this->model_extension_module_d_social_login->addAuthentication($authentication_data);//login
@@ -206,25 +207,12 @@ class ControllerExtensionModuleDSocialLogin extends Controller
         $data['authentication_data'] = $authentication_data;
         $data['button_sign_in_mail'] = $this->language->get('button_sign_in_mail');
         $data['button_sign_in'] = $this->language->get('button_sign_in');
-        $data['text_none'] = $this->language->get('text_none');
-        $data['text_select'] = $this->language->get('text_select');
-        $data['text_email'] = $this->language->get('text_email');
-        $data['text_firstname'] = $this->language->get('text_firstname');
-        $data['text_lastname'] = $this->language->get('text_lastname');
-        $data['text_telephone'] = $this->language->get('text_telephone');
-        $data['text_address_1'] = $this->language->get('text_address_1');
-        $data['text_address_2'] = $this->language->get('text_address_1');
-        $data['text_city'] = $this->language->get('text_city');
-        $data['text_postcode'] = $this->language->get('text_postcode');
-        $data['text_country_id'] = $this->language->get('text_country_id');
-        $data['text_zone_id'] = $this->language->get('text_zone_id');
-        $data['text_company'] = $this->language->get('text_company');
-        $data['text_wait_provider'] = $this->language->get('text_wait_provider');
-        // $data['text_company_id'] = $this->language->get('text_company_id');
-        // $data['text_tax_id'] = $this->language->get('text_tax_id');
-        $data['text_password'] = $this->language->get('text_password');
-        $data['text_confirm'] = $this->language->get('text_confirm');
-        $data['text_email_intro'] = $this->language->get('text_email_intro');
+        $labels_fields = array();
+
+        foreach (array_keys($this->setting['fields']) as $key) {
+            $labels_fields[$key] = $this->language->get('text_entry_' . $key);
+        }
+        $data['labels_field'] = $labels_fields;
         $data['background'] = $is_background = !$this->setting['iframe'];
         $background_image = $this->setting['background_img'];
         // no need $background_color = $this->setting['providers'][ucfirst($this->setting['provider'])]['background_color'];

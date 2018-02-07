@@ -3,7 +3,6 @@
 {{ header }}{{ column_left }}
 
 <div id="content">
-
     <div class="page-header">
         <div class="container-fluid">
             <div class="form-inline pull-right">
@@ -46,7 +45,7 @@
                 <form action="{{ action }}" method="post" enctype="multipart/form-data" id="form"
                       class="form-horizontal">
 
-                    <ul class="nav nav-tabs">
+                    <ul class="nav nav-pills">
                         <li class="active"><a href="#setting_basic" data-toggle="tab">
                                 <i class="fa fa-cog"></i>
                                 {{ text_setting_basic }}
@@ -379,7 +378,7 @@
                             {% endfor %}
                         </div>
 
-                        <div class="tab-pane" id="instruction">
+                        <div class="tab-pane " id="instruction" >
                             <div class="tab-body">
                                 <div class="row">
                                     <div class="col-md-6">
@@ -391,7 +390,7 @@
                                     <div class="col-md-6">
                                         <div class="wrap-5">
                                             <h1>How to set up social apps?</h1>
-                                            <ul class="nav nav-tabs">
+                                            <ul class="nav nav-pills">
                                                 {% for key,instruction in text_instructions %}
                                                     <li {% if (key == 'google-plus') %}class="active"{% endif %}><a
                                                                 href="#{{ key }}" data-toggle="tab"><i
