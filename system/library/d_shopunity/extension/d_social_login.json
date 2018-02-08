@@ -53,6 +53,11 @@
         "system/library/d_shopunity/install/d_social_login.xml",
         "system/config/d_social_login.php",
 
+        "system/config/d_social_login/facebook.php",
+        "system/config/d_social_login/google.php",
+        "system/config/d_social_login/linkedin.php",
+        "system/config/d_social_login/yahoo.php",
+
         "admin/controller/extension/module/d_social_login.php",
         "admin/model/extension/module/d_social_login.php",
         "admin/language/en-gb/extension/module/d_social_login.php",
@@ -77,7 +82,7 @@
         "catalog/view/javascript/d_social_login",
         "catalog/view/theme/default/stylesheet/d_social_login",
         "system/library/d_social_login/hybrid",
-        "system/config/d_social_login"
+
 
     ],
     "changelog": [
