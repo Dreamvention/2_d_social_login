@@ -27,6 +27,7 @@ class ControllerExtensionModuleDSocialLogin extends Controller
     {
         $this->setup();
         $setting = $this->config->get($this->id . '_setting');
+
         //load data from provider into form popup
         if (isset($this->session->data['provider'])) {
             $customer_data = (isset($this->request->post['customer_data'])) ? $this->request->post['customer_data'] : '';
@@ -170,7 +171,7 @@ class ControllerExtensionModuleDSocialLogin extends Controller
         $customer_data = array_merge(($this->session->data['customer_data'] != '') ? $this->session->data['customer_data'] : array(), $this->request->post);
         $authentication_data = $this->session->data['authentication_data'];
         if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validateRegistration($customer_data)) {//all have to be fine after validation
-            $customer_data = $this->model_extension_module_d_social_login->prepareDataRegistration($customer_data, $this->setting['fields']);
+            $customer_data = $this->model_extension_module_d_social_login->prepareDataRegistrationFields($customer_data, $this->setting['fields']);
             $customer_id = $this->model_extension_module_d_social_login->addCustomer($customer_data);
             $authentication_data['customer_id'] = (int)$customer_id;
             $this->model_extension_module_d_social_login->addAuthentication($authentication_data);//login
