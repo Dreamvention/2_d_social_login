@@ -241,15 +241,16 @@ class ModelExtensionModuleDSocialLogin extends Model
 
     public function existAddressFields($data)
     {
-        return ($this->db->escape($data['address_1']) != ''
-            || $this->db->escape($data['address_2']) != ''
-            || $this->db->escape($data['city']) != ''
-            || $data['country_id'] != ''
-            || $data['zone_id'] != ''
+        return (($this->db->escape($data['address_1']) != '' && $this->db->escape($data['address_1']))
+            || ($this->db->escape($data['address_2']) != '' && $this->db->escape($data['address_2']))
+            || ($this->db->escape($data['city']) != '' && $this->db->escape($data['city']))
+            || ($data['country_id'] != '' && $data['country_id'])
+            || ($data['zone_id'] != '' && $data['zone_id'])
         ) ? true : false;
 
     }
-        public function getCountryIdByName($country)
+
+    public function getCountryIdByName($country)
     {
         $query = $this->db->query("SELECT * FROM " . DB_PREFIX . "country WHERE LOWER(name) LIKE '" . $this->db->escape(utf8_strtolower($country)) . "' OR iso_code_2 LIKE '" . $this->db->escape($country) . "' OR iso_code_3 LIKE '" . $this->db->escape($country) . "' LIMIT 1");
 
