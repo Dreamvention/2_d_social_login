@@ -15,7 +15,8 @@
                                             <div class="form-group">
                                                 <label for="{{ field['id'] }}_control"
                                                        class="control-label col-sm-4"> {{ labels_field[field['id']] }} </label>
-                                                <div class="col-sm-8">{% if (field['type'] == "select") %}
+                                                <div class="col-sm-8">
+                                                    {% if (field['type'] == "select") %}
                                                     <select id="{{ field['id'] }}" name="{{ field['id'] }}"
                                                             class="form-control">
                                                         {% if (field['id'] == 'country_id') %}
@@ -30,7 +31,7 @@
                                                            name="{{ field['id'] }}"
                                                            value="{{ customer_data[field['id']]!='false' ? customer_data[field['id']] }}"
                                                             {{ field['required'] ? 'required' }}
-                                                           placeholder="{{ attribute(_context, 'text_' ~ field['id']) }}"
+                                                           placeholder="{{ field['required'] ? '*' }} {{ attribute(_context, 'text_' ~ field['id']) }}"
                                                            autocomplete="off"/>
                                                     {% endif %}</div>
 

@@ -284,6 +284,9 @@
                                                             <input type="hidden"
                                                                    name="{{ id }}_setting[fields][{{ field['id'] }}][enabled]"
                                                                    value="0"/>
+                                                            <input type="hidden"
+                                                                   name="{{ id }}_setting[fields][{{ field['id'] }}][required]"
+                                                                   value="0"/>
                                                             <label class="col-sm-4"
                                                                    for="{{ id }}_setting_fields_{{ field['id'] }}_enabled">{{ attribute(_context, 'text_' ~ field['id']) }}</label>
                                                             <div class="col-sm-8">

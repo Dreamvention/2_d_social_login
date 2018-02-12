@@ -150,24 +150,25 @@ class ModelExtensionModuleDSocialLogin extends Model
             date_added = NOW()");
 
         $customer_id = $this->db->getLastId();
+        if ($this->existAddressFields($data)) {
+            $this->db->query("INSERT INTO " . DB_PREFIX . "address SET
+            customer_id = '" . (int)$customer_id . "',
+            firstname = '" . $this->db->escape($data['firstname']) . "',
+            lastname = '" . $this->db->escape($data['lastname']) . "',
+            company = '" . $this->db->escape($data['company']) . "',
+            address_1 = '" . $this->db->escape($data['address_1']) . "',
+            address_2 = '" . $this->db->escape($data['address_2']) . "',
+            city = '" . $this->db->escape($data['city']) . "',
+            postcode = '" . $this->db->escape($data['postcode']) . "',
+            country_id = '" . (int)$data['country_id'] . "',
+            zone_id = '" . (int)$data['zone_id'] . "'");
 
-//        $this->db->query("INSERT INTO " . DB_PREFIX . "address SET
-//            customer_id = '" . (int)$customer_id . "',
-//            firstname = '" . $this->db->escape($data['firstname']) . "',
-//            lastname = '" . $this->db->escape($data['lastname']) . "',
-//            company = '" . $this->db->escape($data['company']) . "',
-//            address_1 = '" . $this->db->escape($data['address_1']) . "',
-//            address_2 = '" . $this->db->escape($data['address_2']) . "',
-//            city = '" . $this->db->escape($data['city']) . "',
-//            postcode = '" . $this->db->escape($data['postcode']) . "',
-//            country_id = '" . (int)$data['country_id'] . "',
-//            zone_id = '" . (int)$data['zone_id'] . "'");
+            $address_id = $this->db->getLastId();
 
-     //   $address_id = $this->db->getLastId();
-
-//        $this->db->query("UPDATE " . DB_PREFIX . "customer SET
-//            address_id = '" . (int)$address_id . "'
-//            WHERE customer_id = '" . (int)$customer_id . "'");
+            $this->db->query("UPDATE " . DB_PREFIX . "customer SET
+            address_id = '" . (int)$address_id . "'
+            WHERE customer_id = '" . (int)$customer_id . "'");
+        }
 
         if (VERSION < '3.0.0.0') {
             $this->language->load('mail/customer');
@@ -238,7 +239,17 @@ class ModelExtensionModuleDSocialLogin extends Model
         return $customer_id;
     }
 
-    public function getCountryIdByName($country)
+    public function existAddressFields($data)
+    {
+        return ($this->db->escape($data['address_1']) != ''
+            || $this->db->escape($data['address_2']) != ''
+            || $this->db->escape($data['city']) != ''
+            || $data['country_id'] != ''
+            || $data['zone_id'] != ''
+        ) ? true : false;
+
+    }
+        public function getCountryIdByName($country)
     {
         $query = $this->db->query("SELECT * FROM " . DB_PREFIX . "country WHERE LOWER(name) LIKE '" . $this->db->escape(utf8_strtolower($country)) . "' OR iso_code_2 LIKE '" . $this->db->escape($country) . "' OR iso_code_3 LIKE '" . $this->db->escape($country) . "' LIMIT 1");
 

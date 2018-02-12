@@ -26,8 +26,8 @@ input.error, select.error {
 }
 
 .dsl_error {
-    padding: 15px;
-    margin-bottom: 20px;
+    padding: 3px;
+    margin-bottom: 0px;
     border: 1px solid transparent;
     border-radius: 4px;
     box-sizing: border-box;
