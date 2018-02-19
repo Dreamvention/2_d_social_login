@@ -45,7 +45,7 @@
                 <form action="{{ action }}" method="post" enctype="multipart/form-data" id="form"
                       class="form-horizontal">
 
-                    <ul class="nav nav-pills">
+                    <ul class="nav nav-tabs">
                         <li class="active"><a href="#setting_basic" data-toggle="tab">
                                 <i class="fa fa-cog"></i>
                                 {{ text_setting_basic }}
@@ -134,7 +134,7 @@
 
                             <div class="form-group">
                                 <label class="col-sm-2 control-label"
-                                       for="input_debug_mode">{{ entry_newsletter }}</label>
+                                       for="input_newsletter">{{ entry_newsletter }}</label>
                                 <div class="col-sm-10">
                                     <input type="hidden" name="{{ id }}_setting[newsletter]" value="0"/>
                                     <input type="checkbox"
