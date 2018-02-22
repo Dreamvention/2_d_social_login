@@ -135,7 +135,7 @@ class Hybrid_Providers_LinkedIn extends Hybrid_Provider_Model {
 
 			if ($data->{'positions'}) {
         $this->user->profile->job_title = (string) $data->{'positions'}->{'position'}->{'title'};
-        $this->user->profile->organization_name = (string) $data->{'positions'}->{'position'}->{'company'}->{'name'};
+        //$this->user->profile->organization_name = (string) $data->{'positions'}->{'position'}->{'company'}->{'name'};
       }
 
 			if (isset($data->{'picture-url'})) {

@@ -2,7 +2,12 @@
 /**************************************************/
 /*                  G E N E R A L                 */
 /**************************************************/
-
+#form .tab-content{
+  padding-top: 10px;
+}
+.bs-callout, .bs-callout-warning{
+  margin-top: 20px;
+}
 /* Panel Default */
 .panel-default {
   font-size: 13px;

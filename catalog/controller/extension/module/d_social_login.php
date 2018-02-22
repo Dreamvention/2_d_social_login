@@ -7,7 +7,7 @@ class ControllerExtensionModuleDSocialLogin extends Controller
 {
 
     private $route = 'extension/module/d_social_login';
-    private $id = 'd_social_login';
+    private $codeaname = 'd_social_login';
     private $setting = array();
     private $sl_redirect = '';
     private $error = array();
@@ -15,7 +15,7 @@ class ControllerExtensionModuleDSocialLogin extends Controller
     public function __construct($registry)
     {
         parent::__construct($registry);
-        $this->setting = $this->config->get($this->id . '_setting');
+        $this->setting = $this->config->get($this->codeaname . '_setting');
         $this->language->load($this->route);
         $this->load->model($this->route);
         $this->load->model('extension/module/d_social_login');
@@ -26,7 +26,7 @@ class ControllerExtensionModuleDSocialLogin extends Controller
     public function index()
     {
         $this->setup();
-        $setting = $this->config->get($this->id . '_setting');
+        $setting = $this->config->get($this->codeaname . '_setting');
 
         //load data from provider into form popup
         if (isset($this->session->data['provider'])) {
@@ -116,9 +116,12 @@ class ControllerExtensionModuleDSocialLogin extends Controller
             }
             //load data into auth page redirecting
             $this->document->addScript('catalog/view/javascript/jquery/jquery-2.1.1.min.js');
+            $this->document->addStyle('catalog/view/theme/default/stylesheet/d_social_login/pre_loader/' . 'clip-rotate' . '.css');
             $remoteLoginResponce['scripts'] = $this->document->getScripts();
+            $remoteLoginResponce['styles'] = $this->document->getStyles();
+            $remoteLoginResponce['pre_loader'] = $this->model_extension_module_d_social_login->getPreloader();
             $remoteLoginResponce['url'] = $this->model_extension_module_d_social_login->getCurrentUrl(false);
-            $view = $this->model_extension_d_opencart_patch_load->view($this->id . '/auth', $remoteLoginResponce);
+            $view = $this->model_extension_d_opencart_patch_load->view($this->codeaname . '/auth', $remoteLoginResponce);
             $this->response->setOutput($view);
         } catch (Exception $e) {
             unset($this->session->data['provider']);
@@ -186,6 +189,11 @@ class ControllerExtensionModuleDSocialLogin extends Controller
         $this->response->setOutput(json_encode($json));
     }
 
+    /*
+     * Called when user close pop up window
+     * this method reset provider so pop up will not be showen with
+     * same  auth data but with same user
+     * */
     public function reset()
     {
         unset($this->session->data['provider']);
@@ -206,23 +214,27 @@ class ControllerExtensionModuleDSocialLogin extends Controller
         $this->session->data['authentication_data'] = $authentication_data;
         $data['customer_data'] = $customer_data;
         $data['authentication_data'] = $authentication_data;
+        $data['text_email_intro'] = $this->language->get('text_email_intro');
         $data['button_sign_in_mail'] = $this->language->get('button_sign_in_mail');
         $data['button_sign_in'] = $this->language->get('button_sign_in');
         $labels_fields = array();
 
         foreach (array_keys($this->setting['fields']) as $key) {
             $labels_fields[$key] = $this->language->get('text_entry_' . $key);
+            $data["text_".$key]=$this->language->get('text_' . $key);//load txt
         }
         $data['labels_field'] = $labels_fields;
         $data['background'] = $is_background = !$this->setting['iframe'];
         $background_image = $this->setting['background_img'];
-        // no need $background_color = $this->setting['providers'][ucfirst($this->setting['provider'])]['background_color'];
         if ($is_background) {
             $this->load->model('tool/image');
-            if (isset($background_image) && $background_image && file_exists(DIR_IMAGE . $background_image) && is_file(DIR_IMAGE . $background_image)) {
-                $data['background_img_thumb'] = $this->model_tool_image->resize($background_image, 300, 300);
+            if (isset($background_image) && $background_image
+                && file_exists(DIR_IMAGE . $background_image) && is_file(DIR_IMAGE . $background_image)) {
+                $data['background_img_thumb'] = $this->model_tool_image->resize($background_image,
+                    $this->setting['background_img']['width'], $background_image, $this->setting['background_img']['height']);
             } else {
-                $data['background_img_thumb'] = $this->model_tool_image->resize('no_image.jpg', 300, 300);
+                $data['background_img_thumb'] = $this->model_tool_image->resize('no_image.jpg',
+                    $this->setting['background_img']['width'], $background_image, $this->setting['background_img']['height']);
             }
         }
 
@@ -238,13 +250,13 @@ class ControllerExtensionModuleDSocialLogin extends Controller
         $this->load->model('localisation/country');
         $data['countries'] = $this->model_localisation_country->getCountries();
         //is problem still relevant?
-        return $this->model_extension_d_opencart_patch_load->view($this->id . '/form', $data);
+        return $this->model_extension_d_opencart_patch_load->view($this->codeaname . '/form', $data);
     }
 
     private function getConfirmMessageView()
     {
         $data['text_confirm'] = $this->language->get('text_confirm_finish');
-        return $this->model_extension_d_opencart_patch_load->view($this->id . '/confirm', $data);
+        return $this->model_extension_d_opencart_patch_load->view($this->codeaname . '/confirm', $data);
     }
 
     private function validateRegistration($customer_data)

@@ -1,5 +1,7 @@
 {% if not islogged %}
     <div id="d_social_login">
+        <div class="pre_loader hide">{{ pre_loader }}</div>
+
         <div class="modal fade d_social_login-modal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
             <div class="modal-dialog " role="document">
                 <div class="modal-content">
@@ -17,22 +19,22 @@
                                                        class="control-label col-sm-4"> {{ labels_field[field['id']] }} </label>
                                                 <div class="col-sm-8">
                                                     {% if (field['type'] == "select") %}
-                                                    <select id="{{ field['id'] }}" name="{{ field['id'] }}"
-                                                            class="form-control">
-                                                        {% if (field['id'] == 'country_id') %}
-                                                            {% for country in countries %}
-                                                                <option value="{{ country['country_id'] }}" {{ country['country_id'] == customer_data[field['id']] ? 'selected="selected"' : '' }}>{{ country['name'] }}</option>
-                                                            {% endfor %}
-                                                        {% endif %}
-                                                    </select>
-                                                {% else %}
-                                                    <input class="form-control"
-                                                           type="{{ field['type'] }}" id="{{ field['id'] }}"
-                                                           name="{{ field['id'] }}"
-                                                           value="{{ customer_data[field['id']]!='false' ? customer_data[field['id']] }}"
-                                                            {{ field['required'] ? 'required' }}
-                                                           placeholder="{{ field['required'] ? '*' }} {{ attribute(_context, 'text_' ~ field['id']) }}"
-                                                           autocomplete="off"/>
+                                                        <select id="{{ field['id'] }}" name="{{ field['id'] }}"
+                                                                class="form-control">
+                                                            {% if (field['id'] == 'country_id') %}
+                                                                {% for country in countries %}
+                                                                    <option value="{{ country['country_id'] }}" {{ country['country_id'] == customer_data[field['id']] ? 'selected="selected"' : '' }}>{{ country['name'] }}</option>
+                                                                {% endfor %}
+                                                            {% endif %}
+                                                        </select>
+                                                    {% else %}
+                                                        <input class="form-control"
+                                                               type="{{ field['type'] }}" id="{{ field['id'] }}"
+                                                               name="{{ field['id'] }}"
+                                                               value="{{ customer_data[field['id']]!='false' ? customer_data[field['id']] }}"
+                                                                {{ field['required'] ? 'required' }}
+                                                               placeholder="{{ field['required'] ? '*' }} {{ attribute(_context, 'text_' ~ field['id']) }}"
+                                                               autocomplete="off"/>
                                                     {% endif %}</div>
 
                                             </div>
@@ -61,7 +63,6 @@
             </div>
         </div>
     </div>
-    <div class="pre_loader hide">{{ pre_loader }}</div>
     <script>
         $(document).ready(function () {
             $('.d_social_login-modal').modal('show');
@@ -85,9 +86,17 @@
             $("#dsl_form").validate({
                 submitHandler: function (form, e) {
                     sendForm(e);
+                },
+                highlight: function(element, errorClass, validClass) {
+                    $(element).addClass(errorClass).removeClass(validClass);
+                    $(element).parent().parent().addClass(errorClass);
+
+                },
+                unhighlight: function(element, errorClass, validClass) {
+                    $(element).removeClass(errorClass).addClass(validClass);
+                    $(element).parent().parent().removeClass(errorClass);
                 }
             });
-
             function sendForm(e) {
                 e.preventDefault();
                 log($('#dsl_form').serialize());
@@ -110,13 +119,13 @@
                     },
                     success: function (json) {
                         log(json);
-                        $('#dsl_error').remove()
-                        $('.error').removeClass('error')
+                        $('#dsl_error').remove();
+                        $('.error').removeClass('error');
                         if (!json['error']) {
                             if (json['success']) {
-                                $("#d_social_login .holder").html(json['success'])
+                                $("#d_social_login .holder").html(json['success']);
                                 setTimeout(function () {
-                                    location.reload();
+                                   // location.reload();
                                 }, 200)
                             }
                         } else {

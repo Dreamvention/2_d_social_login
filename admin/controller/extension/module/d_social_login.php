@@ -2,7 +2,7 @@
 
 class ControllerExtensionModuleDSocialLogin extends Controller
 {
-    private $id = 'd_social_login';
+    private $codename = 'd_social_login';
     private $route = 'extension/module/d_social_login';
     private $error = array();
 
@@ -21,7 +21,7 @@ class ControllerExtensionModuleDSocialLogin extends Controller
 
         $this->d_shopunity = (file_exists(DIR_SYSTEM . 'library/d_shopunity/extension/d_shopunity.json'));
         $this->d_opencart_patch = (file_exists(DIR_SYSTEM . 'library/d_shopunity/extension/d_opencart_patch.json'));
-        $this->extension = json_decode(file_get_contents(DIR_SYSTEM . 'library/d_shopunity/extension/' . $this->id . '.json'), true);
+        $this->extension = json_decode(file_get_contents(DIR_SYSTEM . 'library/d_shopunity/extension/' . $this->codename . '.json'), true);
         $this->d_twig_manager = (file_exists(DIR_SYSTEM . 'library/d_shopunity/extension/d_twig_manager.json'));
 
         $this->store_id = (isset($this->request->get['store_id'])) ? $this->request->get['store_id'] : 0;
@@ -31,7 +31,7 @@ class ControllerExtensionModuleDSocialLogin extends Controller
     {
         if ($this->d_shopunity) {
             $this->load->model('extension/d_shopunity/mbooth');
-            $this->model_extension_d_shopunity_mbooth->validateDependencies($this->id);
+            $this->model_extension_d_shopunity_mbooth->validateDependencies($this->codename);
         }
 
         if ($this->d_twig_manager) {
@@ -73,15 +73,15 @@ class ControllerExtensionModuleDSocialLogin extends Controller
             // 3.x fix
             if (VERSION >= '3.0.0.0') {
                 $sl_post_array = array();
-                if ($this->request->post[$this->id . '_status'] == 0) {
-                    $sl_post_array['module_' . $this->id . '_status'] = 0;
-                } elseif ($this->request->post[$this->id . '_status'] == 1) {
-                    $sl_post_array['module_' . $this->id . '_status'] = 1;
+                if ($this->request->post[$this->codename . '_status'] == 0) {
+                    $sl_post_array['module_' . $this->codename . '_status'] = 0;
+                } elseif ($this->request->post[$this->codename . '_status'] == 1) {
+                    $sl_post_array['module_' . $this->codename . '_status'] = 1;
                 }
-                $this->model_setting_setting->editSetting('module_' . $this->id, $sl_post_array, $store_id);
+                $this->model_setting_setting->editSetting('module_' . $this->codename, $sl_post_array, $store_id);
             }
 
-            $this->model_setting_setting->editSetting($this->id, $this->request->post, $store_id);
+            $this->model_setting_setting->editSetting($this->codename, $this->request->post, $store_id);
 
             $this->session->data['success'] = $this->language->get('text_success');
 
@@ -89,10 +89,10 @@ class ControllerExtensionModuleDSocialLogin extends Controller
         }
 
         // Status
-        if (isset($this->request->post[$this->id . '_status'])) {
-            $data[$this->id . '_status'] = $this->request->post[$this->id . '_status'];
+        if (isset($this->request->post[$this->codename . '_status'])) {
+            $data[$this->codename . '_status'] = $this->request->post[$this->codename . '_status'];
         } else {
-            $data[$this->id . '_status'] = $this->config->get($this->id . '_status');
+            $data[$this->codename . '_status'] = $this->config->get($this->codename . '_status');
         }
 
         // Error
@@ -114,7 +114,7 @@ class ControllerExtensionModuleDSocialLogin extends Controller
         $data['text_edit'] = $this->language->get('text_edit');
 
         // Variable
-        $data['id'] = $this->id;
+        $data['id'] = $this->codename;
         $data['route'] = $this->route;
         $data['store_id'] = $store_id;
         $data['stores'] = $this->model_extension_module_d_social_login->getStores();
@@ -139,13 +139,13 @@ class ControllerExtensionModuleDSocialLogin extends Controller
 
         // Setting
         //load  config from config dir
-        $this->config->load($this->id);
-        $config = $this->config->get($this->id);
-        $config['providers'] = $this->model_extension_module_d_social_login->loadProviders($this->id);
+        $this->config->load($this->codename);
+        $config = $this->config->get($this->codename);
+        $config['providers'] = $this->model_extension_module_d_social_login->loadProviders($this->codename);
         //check if exist config in db
-        if ($this->model_setting_setting->getSetting($this->id)) {
-            $setting = $this->model_setting_setting->getSetting($this->id);
-            $data['setting'] = ($setting) ? $setting[$this->id . '_setting'] : array();
+        if ($this->model_setting_setting->getSetting($this->codename)) {
+            $setting = $this->model_setting_setting->getSetting($this->codename);
+            $data['setting'] = ($setting) ? $setting[$this->codename . '_setting'] : array();
         } else {
             $data['setting'] = array();
         }
@@ -226,7 +226,7 @@ class ControllerExtensionModuleDSocialLogin extends Controller
     {
         if ($this->d_shopunity) {
             $this->load->model('extension/d_shopunity/mbooth');
-            $this->model_extension_d_shopunity_mbooth->installDependencies($this->id);
+            $this->model_extension_d_shopunity_mbooth->installDependencies($this->codename);
         }
 
         $this->load->model($this->route);
@@ -306,6 +306,7 @@ class ControllerExtensionModuleDSocialLogin extends Controller
         $data['text_instructions'] = $this->language->get('text_instructions');
 
         $data['entry_fields_sort_order'] = $this->language->get('entry_fields_sort_order');
+        $data['text_email'] = $this->language->get('text_email');
         $data['text_firstname'] = $this->language->get('text_firstname');
         $data['text_lastname'] = $this->language->get('text_lastname');
         $data['text_telephone'] = $this->language->get('text_telephone');

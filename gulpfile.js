@@ -15,11 +15,11 @@ gulp.task('browser-sync', function() {
 
 // Компиляция stylesheet.css
 gulp.task('sass', function() {
-    return gulp.src('admin/view/theme/default/stylesheet/d_social_share/styles.scss')
+    return gulp.src('admin/view/theme/default/stylesheet/d_social_login/styles.scss')
         .pipe(autoprefixer(['last 15 versions']))
         .pipe(sass().on('error', sass.logError))
         .pipe(cleanCSS())
-        .pipe(gulp.dest('catalog/view/theme/default/stylesheet/d_social_share'))
+        .pipe(gulp.dest('catalog/view/theme/default/stylesheet/d_social_login'))
         .pipe(browserSync.reload({stream: true}))
 });
 

@@ -46,10 +46,8 @@ $_['text_wait_provider'] = '<strong>We are waiting results from your provider</s
 $_['text_email_intro'] = '<strong>You are almost done.</strong> Please fill in the required information below to complete the registration. You can edit it later from your shop account page.';
 
 //confirm text
-$_['text_confirm_finish'] = '<div style="padding: 1rem;"><div style="padding:1rem;transform: scale(1.4)"><i class="fa fa-check" style="color:white;background-color: greenyellow;padding: 2px;border-radius: 100%; display:block;margin:auto; width: 17px;height: 17px;"></i></div>
-    <h2 style="text-align: center">Thanks you!</h2>
-    <p style="text-align: center">We have received your registration information and set up your account. Thanks for registration, and welcome. </p>
-    </div></i>';
+$_['text_confirm_finish'] = '<h2 >Thanks you!</h2>
+    <p>We have received your registration information and set up your account. Thanks for registration, and welcome. </p>';
 
 //errors
 $_['error_email_taken'] = 'Sorry, This email is taken.';

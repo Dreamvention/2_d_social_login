@@ -1,9 +1,18 @@
-
+#dsl_popup
 .holder {
     padding: 2rem;
 }
-
-input.error, select.error {
+#dsl_popup .error label.error{
+    position: absolute;
+}
+#dsl_popup .error label{
+    color: #c51c38;
+}
+#dsl_popup .form-group{
+    padding-bottom: 5px;
+}
+#dsl_popupinput.error,#dsl_popup select.error,#dsl_popup .error input{
+    transition: all ease .5s;
     background: #f2dede;
     border: 1px solid #ebccd1
 }
@@ -15,9 +24,10 @@ input.error, select.error {
     width: 150px;
 }
 
-.wait {
+#dsl_popup .wait {
     position: absolute;
     margin: 5px;
+    z-index: 5;
 }
 
 #dsl_intro {
@@ -44,7 +54,7 @@ input.error, select.error {
     border-radius: 5px;
 }
 
-.pre_loader {
+#d_social_login .pre_loader {
     position: absolute;
     top: 50%;
     left: 50%;
