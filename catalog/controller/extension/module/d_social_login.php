@@ -7,7 +7,7 @@ class ControllerExtensionModuleDSocialLogin extends Controller
 {
 
     private $route = 'extension/module/d_social_login';
-    private $codeaname = 'd_social_login';
+    private $codename = 'd_social_login';
     private $setting = array();
     private $sl_redirect = '';
     private $error = array();
@@ -15,7 +15,7 @@ class ControllerExtensionModuleDSocialLogin extends Controller
     public function __construct($registry)
     {
         parent::__construct($registry);
-        $this->setting = $this->config->get($this->codeaname . '_setting');
+        $this->setting = $this->config->get($this->codename . '_setting');
         $this->language->load($this->route);
         $this->load->model($this->route);
         $this->load->model('extension/module/d_social_login');
@@ -25,8 +25,11 @@ class ControllerExtensionModuleDSocialLogin extends Controller
 
     public function index()
     {
-        $this->setup();
-        $setting = $this->config->get($this->codeaname . '_setting');
+        $this->document->addStyle('catalog/view/theme/default/stylesheet/d_social_login/styles.css');
+        $this->document->addScript('catalog/view/javascript/d_social_login/spin.min.js');
+
+        $this->initializeSlRedirect();
+        $setting = $this->config->get($this->codename . '_setting');
 
         //load data from provider into form popup
         if (isset($this->session->data['provider'])) {
@@ -36,13 +39,14 @@ class ControllerExtensionModuleDSocialLogin extends Controller
                 return $this->getForm($customer_data, $authentication_data);
             }
         }
+
         $data['heading_title'] = $this->language->get('heading_title');
         $data['button_sign_in'] = $this->language->get('button_sign_in');
+
         $data['size'] = $setting['size'];
         $data['sizes'] = $setting['sizes'];
         $data['islogged'] = ($this->customer->isLogged()) ? $this->customer->isLogged() : false;
-        $this->document->addStyle('catalog/view/theme/default/stylesheet/d_social_login/styles.css');
-        $this->document->addScript('catalog/view/javascript/d_social_login/spin.min.js');
+
         $providers = $setting['providers'];
         //sorting providers in order wich admin set
         $sort_order = array();
@@ -56,6 +60,7 @@ class ControllerExtensionModuleDSocialLogin extends Controller
         foreach ($providers as $key => $val) {
             $data['providers'][$key]['heading'] = $this->language->get('text_sign_in_with_' . $val['id']);
         }
+
         $data['error'] = false;
         if (isset($this->session->data['d_social_login_error'])) {
             $data['error'] = $this->session->data['d_social_login_error'];
@@ -75,7 +80,7 @@ class ControllerExtensionModuleDSocialLogin extends Controller
     public function login()
     {
         // multistore fix
-        $this->setup();
+        $this->initializeSlRedirect();
         $this->load->model('setting/store');
         $stores = $this->model_setting_store->getStores();
         $store_id = $this->config->get('config_store_id');
@@ -121,7 +126,7 @@ class ControllerExtensionModuleDSocialLogin extends Controller
             $remoteLoginResponce['styles'] = $this->document->getStyles();
             $remoteLoginResponce['pre_loader'] = $this->model_extension_module_d_social_login->getPreloader();
             $remoteLoginResponce['url'] = $this->model_extension_module_d_social_login->getCurrentUrl(false);
-            $view = $this->model_extension_d_opencart_patch_load->view($this->codeaname . '/auth', $remoteLoginResponce);
+            $view = $this->model_extension_d_opencart_patch_load->view($this->codename . '/auth', $remoteLoginResponce);
             $this->response->setOutput($view);
         } catch (Exception $e) {
             unset($this->session->data['provider']);
@@ -173,15 +178,20 @@ class ControllerExtensionModuleDSocialLogin extends Controller
     {
         $customer_data = array_merge(($this->session->data['customer_data'] != '') ? $this->session->data['customer_data'] : array(), $this->request->post);
         $authentication_data = $this->session->data['authentication_data'];
-        if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validateRegistration($customer_data)) {//all have to be fine after validation
+        if (($this->request->server['REQUEST_METHOD'] == 'POST')
+            && $this->validateRegistration($customer_data)) { //all have to be fine after validation
+
             $customer_data = $this->model_extension_module_d_social_login->prepareDataRegistrationFields($customer_data, $this->setting['fields']);
             $customer_id = $this->model_extension_module_d_social_login->addCustomer($customer_data);
             $authentication_data['customer_id'] = (int)$customer_id;
+
             $this->model_extension_module_d_social_login->addAuthentication($authentication_data);//login
             $this->model_extension_module_d_social_login->login($customer_id);
+
             $json['success'] = $this->getConfirmMessageView();
             unset($this->session->data['provider']);//($this->url->link('account/success'));
         }
+
         if (count($this->error)) {
             $json = $this->error;
         }
@@ -203,20 +213,24 @@ class ControllerExtensionModuleDSocialLogin extends Controller
 
     private function getForm($customer_data, $authentication_data)
     {
-        $data['islogged'] = ($this->customer->isLogged()) ? $this->customer->isLogged() : false;
-        $data['pre_loader'] = html_entity_decode($this->model_extension_module_d_social_login->getPreloader('clip-rotate'), ENT_QUOTES, 'UTF-8');
         $this->document->addStyle('catalog/view/theme/default/stylesheet/d_social_login/pre_loader/' . 'clip-rotate' . '.css');
         $this->document->addStyle('catalog/view/theme/default/stylesheet/d_social_login/form.css' . '?' . rand());
         $this->document->addScript('catalog/view/javascript/d_social_login/jquery.validate.js');
         $this->document->addScript('catalog/view/javascript/d_social_login/jquery.maskedinput.min.js');
+
         $data['debug'] = $this->setting['debug_mode'] = (bool)$this->setting['debug_mode'];
+        $data['islogged'] = ($this->customer->isLogged()) ? $this->customer->isLogged() : false;
+        $data['pre_loader'] = html_entity_decode($this->model_extension_module_d_social_login->getPreloader('clip-rotate'), ENT_QUOTES, 'UTF-8');
+
         $this->session->data['customer_data'] = $customer_data;
         $this->session->data['authentication_data'] = $authentication_data;
+
         $data['customer_data'] = $customer_data;
         $data['authentication_data'] = $authentication_data;
         $data['text_email_intro'] = $this->language->get('text_email_intro');
         $data['button_sign_in_mail'] = $this->language->get('button_sign_in_mail');
         $data['button_sign_in'] = $this->language->get('button_sign_in');
+
         $labels_fields = array();
 
         foreach (array_keys($this->setting['fields']) as $key) {
@@ -249,14 +263,13 @@ class ControllerExtensionModuleDSocialLogin extends Controller
 
         $this->load->model('localisation/country');
         $data['countries'] = $this->model_localisation_country->getCountries();
-        //is problem still relevant?
-        return $this->model_extension_d_opencart_patch_load->view($this->codeaname . '/form', $data);
+        return $this->model_extension_d_opencart_patch_load->view($this->codename . '/form', $data);
     }
 
     private function getConfirmMessageView()
     {
         $data['text_confirm'] = $this->language->get('text_confirm_finish');
-        return $this->model_extension_d_opencart_patch_load->view($this->codeaname . '/confirm', $data);
+        return $this->model_extension_d_opencart_patch_load->view($this->codename . '/confirm', $data);
     }
 
     private function validateRegistration($customer_data)
@@ -290,7 +303,7 @@ class ControllerExtensionModuleDSocialLogin extends Controller
 
     }
 
-    private function setup()
+    private function initializeSlRedirect()
     {
         // correct &amp; in url
         if (isset($this->request->get)) {
