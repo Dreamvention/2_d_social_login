@@ -66,7 +66,8 @@
                                 <i class="fa fa-graduation-cap"></i>
                                 {{ text_instruction }}
                             </a></li>
-                        <li><a href="#debug" data-toggle="tab">
+                        <li><a id="debug_btn" href="#debug" data-toggle="tab"
+                               class="{{ not setting['debug_mode']? 'hide' }}">
                                 <i class="fa fa-bug"></i>
                                 {{ text_debug }}
                             </a></li>
@@ -152,8 +153,16 @@
                                            value="{{ setting['return_page_url'] }}" class="form-control"/>
                                 </div>
                             </div>
-
                             <div class="form-group">
+                                <label class="col-sm-2 control-label" for="input_iframe">{{ entry_iframe }}</label>
+                                <div class="col-sm-10">
+                                    <input type="hidden" name="{{ id }}_setting[iframe]" value="0"/>
+                                    <input type="checkbox"
+                                           name="{{ id }}_setting[iframe]" {{ setting['iframe'] ? 'checked="checked"' : '' }}
+                                           value="1" id="input_iframe"/>
+                                </div>
+                            </div>
+                            <div id="iframe-img" class="form-group  {{ setting['iframe'] ? 'hide' }}">
                                 <label class="col-sm-2 control-label"
                                        for="select_return_url">{{ entry_background_img }}</label>
                                 <div class="col-sm-10">
@@ -161,16 +170,6 @@
                                                 src="{{ background_img_thumb }}" alt="" title=""/></a>
                                     <input type="hidden" name="{{ id }}_setting[background_img]"
                                            value="{{ setting['background_img'] }}" id="input-image"/>
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="col-sm-2 control-label" for="input_iframe">{{ entry_iframe }}</label>
-                                <div class="col-sm-10">
-                                    <input type="hidden" name="{{ id }}_setting[iframe]" value="0"/>
-                                    <input type="checkbox"
-                                           name="{{ id }}_setting[iframe]" {{ setting['iframe']? 'checked="checked"' : '' }}
-                                           value="1" id="input_iframe"/>
                                 </div>
                             </div>
 
@@ -279,7 +278,7 @@
                                             <div class="well well-sm clearfix sort-item"
                                                  data-sort="{{ field['sort_order'] }}">
                                                 <div class="row">
-                                                    <div class="col-md-6 col-sm-7"  >
+                                                    <div class="col-md-6 col-sm-7">
                                                         <div class="row">
                                                             <input type="hidden"
                                                                    name="{{ id }}_setting[fields][{{ field['id'] }}][enabled]"
@@ -323,9 +322,9 @@
                                                                 </label>
                                                                 <div class="col-sm-12 col-md-8">
                                                                     <input type="text"
-                                                                                             name="{{ id }}_setting[fields][{{ field['id'] }}][mask]"
-                                                                                             value="{{ field['mask'] }}"
-                                                                                             class="form-control"></div>
+                                                                           name="{{ id }}_setting[fields][{{ field['id'] }}][mask]"
+                                                                           value="{{ field['mask'] }}"
+                                                                           class="form-control"></div>
                                                             {% endif %}</div>
                                                     </div>
 
@@ -381,7 +380,7 @@
                             {% endfor %}
                         </div>
 
-                        <div class="tab-pane " id="instruction" >
+                        <div class="tab-pane " id="instruction">
                             <div class="tab-body">
                                 <div class="row">
                                     <div class="col-md-6">
@@ -488,6 +487,20 @@
             'onColor': 'success',
             'onText': 'YES',
             'offText': 'NO',
+        });
+        $("#input_debug_mode").on('switchChange.bootstrapSwitch', function (event, state) {
+            if (state) {
+                $('#debug_btn').removeClass('hide');
+            } else {
+                $('#debug_btn').addClass('hide');
+            }
+        });
+        $("#input_iframe").on('switchChange.bootstrapSwitch', function (event, state) {
+            if (!state) {
+                $('#iframe-img').removeClass('hide');
+            } else {
+                $('#iframe-img').addClass('hide');
+            }
         });
 
         $(".sortable").sortable({
