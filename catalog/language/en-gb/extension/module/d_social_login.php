@@ -43,7 +43,8 @@ $_['text_company'] = 'Enter company name';
 $_['text_password'] = 'Enter you password';
 $_['text_confirm'] = 'Confirm you password';
 $_['text_wait_provider'] = '<strong>We are waiting results from your provider</strong>';
-$_['text_email_intro'] = '<strong>You are almost done.</strong> Please fill in the required information below to complete the registration. You can edit it later from your shop account page.';
+$_['text_email_intro'] = 'You are almost done. Please fill in the required information below to complete the registration. You can edit it later from your shop account page.';
+$_['text_help_required'] = '* — fields are required';
 
 //confirm text
 $_['text_confirm_finish'] = '<h2 >Thanks you!</h2>

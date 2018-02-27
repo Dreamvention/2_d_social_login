@@ -431,7 +431,7 @@
                                 <div class="form-group">
                                     <div class="col-sm-10 col-sm-offset-2">
                                         <a class="btn btn-danger"
-                                           id="clear_debug_file">{{ button_clear_debug_file }}</a>
+                                           id="clear_debug_file" data-value="{{ clear_debug_file }}">{{ button_clear_debug_file }}</a>
                                     </div>
                                 </div>
                             </div>
@@ -469,7 +469,6 @@
 
     }
 </style>
-
 <script type="text/javascript">
 
     $('#select_config_submit').on('click', function () {
@@ -537,10 +536,10 @@
             }
         });
     });
+
 </script>
 
 <script type="text/javascript">
-
     $(function () {
         $('body').on('click', '#save_and_stay', function () {
             $.ajax({
@@ -559,9 +558,10 @@
             });
         });
 
-        $('body').on('click', '#clear_debug_file', function () {
+        $('body').on('click', '#clear_debug_file', function (e) {
+            console.log(e)
             $.ajax({
-                url: '{{ clear_debug_file }}',
+                url: e.currentTarget.dataset.value,
                 type: 'post',
                 dataType: 'json',
                 data: 'debug_file={{ debug_file }}',
@@ -573,15 +573,15 @@
                 },
                 success: function (json) {
                     $('.alert').remove();
-//                    console.log(json);
                     if (json['error']) {
                         $('#debug .tab-body').prepend('<div class="alert alert-danger">' + json['error'] + '</div>');
                     }
-
                     if (json['success']) {
                         $('#debug .tab-body').prepend('<div class="alert alert-success">' + json['success'] + '</div>');
                     }
-                }
+                },
+            }).error(function (xth,e) {
+                alert(e)
             });
         });
     });

@@ -15,7 +15,7 @@ gulp.task('browser-sync', function() {
 
 // Компиляция stylesheet.css
 gulp.task('sass', function() {
-    return gulp.src('admin/view/theme/default/stylesheet/d_social_login/styles.scss')
+    return gulp.src('catalog/view/theme/default/stylesheet/d_social_login/form.scss')
         .pipe(autoprefixer(['last 15 versions']))
         .pipe(sass().on('error', sass.logError))
         .pipe(cleanCSS())
@@ -25,7 +25,7 @@ gulp.task('sass', function() {
 
 // Наблюдение за файлами
 gulp.task('watch', ['sass', 'browser-sync'], function() {
-    gulp.watch('catalog/view/theme/default/stylesheet/**/*.scss', ['sass']);
+    gulp.watch('catalog/view/theme/default/stylesheet/d_social_login/*.scss', ['sass']);
     gulp.watch('catalog/view/theme/default/template/**/*.twig', browserSync.reload);
     gulp.watch('catalog/view/theme/default/js/**/*.js', browserSync.reload);
     gulp.watch('catalog/view/theme/default/libs/**/*', browserSync.reload);

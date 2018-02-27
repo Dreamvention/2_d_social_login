@@ -136,7 +136,6 @@ class ControllerExtensionModuleDSocialLogin extends Controller
         $data['action'] = $this->model_extension_d_opencart_patch_url->link($this->route, $url);
         $data['cancel'] = $this->model_extension_d_opencart_patch_url->getExtensionLink('module');
         $data['clear_debug_file'] = $this->model_extension_d_opencart_patch_url->link($this->route . '/clearDebugFile');
-
         // Setting
         //load  config from config dir
         $this->config->load($this->codename);

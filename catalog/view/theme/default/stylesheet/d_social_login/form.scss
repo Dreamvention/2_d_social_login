@@ -1,0 +1,38 @@
+#d_social_login{
+  font-size:16px;
+  color: #6f6f6f;
+  .control-label{  color: #6f6f6f;
+  }
+  .modal-dialog{
+    max-width:450px;
+  }
+  #dsl_popup{
+    padding: 4.5em;
+  }
+  #dsl_intro{
+    line-height: 1.2;
+    font-size: .82em;
+    padding: 1em;
+    margin-top: 1em;
+    margin-bottom:1em;
+    color: #8194b0;
+    background-color: #f0f4f9;
+    border:1px solid #c6d1e3;
+    border-radius: 4px ;
+  }
+  #dsl_submit{
+    width: 100%;
+  }
+
+  .error{
+    margin: 0;
+    color: #bc3d3d;
+    &.form-control{
+      background-color: #fbeded;
+      border:1px solid #e76262;
+    }
+  }
+  label{
+    padding-top: 0;
+  }
+}

@@ -228,6 +228,7 @@ class ControllerExtensionModuleDSocialLogin extends Controller
         $data['customer_data'] = $customer_data;
         $data['authentication_data'] = $authentication_data;
         $data['text_email_intro'] = $this->language->get('text_email_intro');
+        $data['text_help_required'] = $this->language->get('text_help_required');
         $data['button_sign_in_mail'] = $this->language->get('button_sign_in_mail');
         $data['button_sign_in'] = $this->language->get('button_sign_in');
 

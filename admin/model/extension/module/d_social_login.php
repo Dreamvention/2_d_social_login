@@ -79,10 +79,8 @@ class ModelExtensionModuleDSocialLogin extends Model
 
     public function getFileContents($file)
     {
-
         if (file_exists($file)) {
             $size = filesize($file);
-
             if ($size >= 5242880) {
                 $suffix = array(
                     'B',

@@ -1,23 +1,24 @@
 {% if not islogged %}
     <div id="d_social_login">
         <div class="pre_loader hide">{{ pre_loader }}</div>
-
         <div class="modal fade d_social_login-modal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
             <div class="modal-dialog " role="document">
                 <div class="modal-content">
                     <div class="modal-backdrop fade in hide"></div>
                     <div id="dsl_popup">
-                        <div class="holder">
-                            <div class="popup">
-                                <form id="dsl_form" class="form-horizontal" method="post"
-                                      action="index.php?route=extension/module/d_social_login/register">
-                                    <div id="dsl_intro" class="alert alert-success">{{ text_email_intro }}</div>
+                        <div class="popup">
+                            <form id="dsl_form" class="form-horizontal" method="post"
+                                  action="index.php?route=extension/module/d_social_login/register">
+                                <div id="dsl_intro">{{ text_email_intro }}</div>
+                                <div class="col-xs-12">
+                                    <div class="img"> {% if (authentication_data['photo_url']) %}<img
+                                            src="{{ authentication_data['photo_url'] }}"
+                                            id="dsl_profile_image" />{% endif %}</div>
                                     {% for field in fields %}
                                         {% if (field['enabled']) %}
                                             <div class="form-group">
                                                 <label for="{{ field['id'] }}_control"
-                                                       class="control-label col-sm-4"> {{ labels_field[field['id']] }} </label>
-                                                <div class="col-sm-8">
+                                                       class="control-label "> {{ labels_field[field['id']] }}{{ field['required'] ? '*' }} </label>
                                                     {% if (field['type'] == "select") %}
                                                         <select id="{{ field['id'] }}" name="{{ field['id'] }}"
                                                                 class="form-control">
@@ -33,9 +34,9 @@
                                                                name="{{ field['id'] }}"
                                                                value="{{ customer_data[field['id']]!='false' ? customer_data[field['id']] }}"
                                                                 {{ field['required'] ? 'required' }}
-                                                               placeholder="{{ field['required'] ? '*' }} {{ attribute(_context, 'text_' ~ field['id']) }}"
+                                                               placeholder=" {{ attribute(_context, 'text_' ~ field['id']) }}"
                                                                autocomplete="off"/>
-                                                    {% endif %}</div>
+                                                    {% endif %}
 
                                             </div>
                                         {% if (field['mask'] is defined and field['mask']) %}
@@ -47,16 +48,14 @@
                                         {% endif %}
                                         {% endif %}
                                     {% endfor %}
-                                    <input type="hidden" name="provider" value="{{ authentication_data['provider'] }}"/>
-                                    <div class="text-center">
-                                        {% if (authentication_data['photo_url']) %}<img
-                                            src="{{ authentication_data['photo_url'] }}"
-                                            id="dsl_profile_image" />{% endif %}
-                                        <input type="submit" id="dsl_submit" class="btn btn-primary"
-                                               value=" {{ button_sign_in_mail }}"/>
+                                    <div class="form-group"><label class="help control-label  ">{{ text_help_required }}</label>
                                     </div>
-                                </form>
-                            </div>
+                                </div>
+                                <input type="hidden" name="provider" value="{{ authentication_data['provider'] }}"/>
+
+                                <input type="submit" id="dsl_submit" class="btn btn-primary"
+                                       value=" {{ button_sign_in_mail }}"/>
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -87,16 +86,17 @@
                 submitHandler: function (form, e) {
                     sendForm(e);
                 },
-                highlight: function(element, errorClass, validClass) {
+                highlight: function (element, errorClass, validClass) {
                     $(element).addClass(errorClass).removeClass(validClass);
                     $(element).parent().parent().addClass(errorClass);
 
                 },
-                unhighlight: function(element, errorClass, validClass) {
+                unhighlight: function (element, errorClass, validClass) {
                     $(element).removeClass(errorClass).addClass(validClass);
                     $(element).parent().parent().removeClass(errorClass);
                 }
             });
+
             function sendForm(e) {
                 e.preventDefault();
                 log($('#dsl_form').serialize());
@@ -125,7 +125,7 @@
                             if (json['success']) {
                                 $("#d_social_login .holder").html(json['success']);
                                 setTimeout(function () {
-                                   // location.reload();
+                                    // location.reload();
                                 }, 200)
                             }
                         } else {
