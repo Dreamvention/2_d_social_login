@@ -1,17 +1,78 @@
+<script>
+    function log(text) {
+        {% if(debug) %}
+        console.log(text);
+        {% endif %}
+    }
+    function sendForm(e) {
+        e.preventDefault();
+        log($('#dsl_form').serialize());
+        $.ajax({
+            url: 'index.php?route=extension/module/d_social_login/register',
+            type: 'post',
+            data: $('#dsl_form').serialize(),
+            dataType: 'json',
+            beforeSend: function () {
+                $('#dsl_submit').prop('disabled', true);
+                $('#dsl_submit').after('<span class="wait fa fa-refresh fa-spin"></span>');
+                $('.pre_loader').toggleClass('hide');
+                $('#d_social_login .modal-content').css('transform', 'scale(0)')
+            },
+            complete: function () {
+                $('#dsl_submit').prop('disabled', false);
+                $('.wait').remove();
+                $('.pre_loader').toggleClass('hide');
+                $('#d_social_login .modal-content').css('transform', 'scale(1)')
+            },
+            success: function (json) {
+                log(json);
+                $('#dsl_error').remove();
+                $('.error').removeClass('error');
+                if (!json['error']) {
+                    if (json['success']) {
+                        $("#d_social_login .popup").html(json['success']);
+                        setTimeout(function () {
+                            location.reload();
+                        }, 200)
+                    }
+                } else {
+                    $.each(json['error'], function (id, error) {
+                        $("#" + id).addClass('has-error');
+                        $("#" + id).after('<div class="dsl_error">' + error + '</div>');
+                    });
+                }
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                // $("#d_social_login .popup").html(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+                console.log(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+                location.relooad();
+            }
+        });
+    }
+
+</script>
 {% if not islogged %}
     <div id="d_social_login">
-        <div class="pre_loader hide">{{ pre_loader }}</div>
         <div class="modal fade d_social_login-modal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
             <div class="modal-dialog " role="document">
+                <div class="pre_loader hide">{{ pre_loader }}</div>
                 <div class="modal-content">
                     <div class="modal-backdrop fade in hide"></div>
                     <div id="dsl_popup">
-                        <div class="popup">
+                        <div class="holder">
+                            <div class="popup">
                             <form id="dsl_form" class="form-horizontal" method="post"
                                   action="index.php?route=extension/module/d_social_login/register">
-                                <div class="col-xs-12"> {% if (authentication_data['photo_url']) %}<img
-                                        src="{{ authentication_data['photo_url'] }}"
-                                        id="dsl_profile_image" />{% endif %}</div>
+                                {% if (authentication_data['photo_url']) %}
+                                <div class="col-xs-12">
+                                    <div class="img-wrap">
+                                        <img    src="{{ authentication_data['photo_url'] }}"
+                                                id="dsl_profile_image"/>
+                                        <div class="log-small-icon"
+                                             style=" background-image: url('catalog/view/theme/default/stylesheet/d_social_login/icons/{{ authentication_data['provider'] }}.svg')"></div>
+                                    </div>
+                                </div>
+                                {% endif %}
                                 <div id="dsl_intro" class="col-xs-12">{{ text_email_intro }}</div>
                                 <div class="col-xs-12">
                                     {% for field in fields %}
@@ -19,27 +80,56 @@
                                             <div class="form-group">
                                                 <label for="{{ field['id'] }}_control"
                                                        class="control-label "> {{ labels_field[field['id']] }}{{ field['required'] ? '*' }} </label>
-                                                    {% if (field['type'] == "select") %}
-                                                        <select id="{{ field['id'] }}" name="{{ field['id'] }}"
-                                                                class="form-control">
-                                                            {% if (field['id'] == 'country_id') %}
-                                                                {% for country in countries %}
-                                                                    <option value="{{ country['country_id'] }}" {{ country['country_id'] == customer_data[field['id']] ? 'selected="selected"' : '' }}>{{ country['name'] }}</option>
-                                                                {% endfor %}
-                                                            {% endif %}
-                                                        </select>
-                                                    {% else %}
-                                                        <input class="form-control"
-                                                               type="{{ field['type'] }}" id="{{ field['id'] }}"
-                                                               name="{{ field['id'] }}"
-                                                               value="{{ customer_data[field['id']]!='false' ? customer_data[field['id']] }}"
-                                                                {{ field['required'] ? 'required' }}
-                                                               placeholder=" {{ attribute(_context, 'text_' ~ field['id']) }}"
-                                                               autocomplete="off"/>
-                                                    {% endif %}
+                                                {% if (field['type'] == "select") %}
+                                                    <select id="{{ field['id'] }}" name="{{ field['id'] }}"
+                                                            class="form-control">
+                                                        {% if (field['id'] == 'country_id') %}
+                                                            {% for country in countries %}
+                                                                <option value="{{ country['country_id'] }}" {{ country['country_id'] == customer_data[field['id']] ? 'selected="selected"' : '' }}>{{ country['name'] }}</option>
+                                                            {% endfor %}
+                                                        {% endif %}
+                                                    </select>
+                                                {% elseif  (field['id'] == "confirm") %}
+                                                <input class="form-control"
+                                                       type="{{ field['type'] }}" id="{{ field['id'] }}"
+                                                       name="{{ field['id'] }}"
+                                                       value="{{ customer_data[field['id']]!='false' ? customer_data[field['id']] }}"
+                                                        {{ field['required'] ? 'required' }}
+                                                       placeholder=" {{ not mobile ? attribute(_context, 'text_' ~ field['id']) }}"
+                                                       autocomplete="off"/>
+                                                   <script type="text/javascript">
+                                                       $( "#dsl_form" ).validate({
+                                                           rules: {
+                                                               password: "required",
+                                                               confirm: {
+                                                                   equalTo: "#password"
+                                                               }
+                                                           },
+                                                           submitHandler: function (form, e) {
+                                                               sendForm(e);
+                                                           }, //errror highlight
+                                                           highlight: function (element, errorClass, validClass) {
+                                                               $(element).addClass(errorClass).removeClass(validClass);
+                                                               $(element).parent().parent().addClass(errorClass);
+                                                           },
+                                                           unhighlight: function (element, errorClass, validClass) {
+                                                               $(element).removeClass(errorClass).addClass(validClass);
+                                                               $(element).parent().parent().removeClass(errorClass);
+                                                           }
+                                                       });
+                                                   </script>
+                                                {% else %}
+                                                    <input class="form-control"
+                                                           type="{{ field['type'] }}" id="{{ field['id'] }}"
+                                                           name="{{ field['id'] }}"
+                                                           value="{{ customer_data[field['id']]!='false' ? customer_data[field['id']] }}"
+                                                            {{ field['required'] ? 'required' }}
+                                                           placeholder=" {{ not mobile ? attribute(_context, 'text_' ~ field['id']) }}"
+                                                           autocomplete="off"/>
+                                                {% endif %}
 
                                             </div>
-                                        {% if (field['mask'] is defined and field['mask']) %}
+                                            {% if (field['mask'] is defined and field['mask'] and not mobile) %}
                                             <script>
                                                 $(document).ready(function () {
                                                     $("#{{ field['id'] }}").mask("{{ field['mask'] }}");
@@ -48,15 +138,15 @@
                                         {% endif %}
                                         {% endif %}
                                     {% endfor %}
-                                    <div class="form-group"><label class="help control-label  ">{{ text_help_required }}</label>
+                                    <div class="form-group"><label
+                                                class="help control-label  ">{{ text_help_required }}</label>
                                     </div>
                                 </div>
                                 <input type="hidden" name="provider" value="{{ authentication_data['provider'] }}"/>
-
                                 <input type="submit" id="dsl_submit" class="btn btn-primary"
                                        value=" {{ button_sign_in_mail }}"/>
                             </form>
-                        </div>
+                        </div></div>
                     </div>
                 </div>
             </div>
@@ -76,20 +166,16 @@
     </script>
     <script>
         $(document).ready(function () {
-            function log(text) {
-                {% if(debug) %}
-                console.log(text);
-                {% endif %}
-            }
+
 
             $("#dsl_form").validate({
                 submitHandler: function (form, e) {
                     sendForm(e);
                 },
+                //errror highlight
                 highlight: function (element, errorClass, validClass) {
                     $(element).addClass(errorClass).removeClass(validClass);
                     $(element).parent().parent().addClass(errorClass);
-
                 },
                 unhighlight: function (element, errorClass, validClass) {
                     $(element).removeClass(errorClass).addClass(validClass);
@@ -97,49 +183,12 @@
                 }
             });
 
-            function sendForm(e) {
-                e.preventDefault();
-                log($('#dsl_form').serialize());
-                $.ajax({
-                    url: 'index.php?route=extension/module/d_social_login/register',
-                    type: 'post',
-                    data: $('#dsl_form').serialize(),
-                    dataType: 'json',
-                    beforeSend: function () {
-                        $('#dsl_submit').prop('disabled', true);
-                        $('#dsl_submit').after('<span class="wait fa fa-refresh fa-spin"></span>');
-                        $('.pre_loader').toggleClass('hide');
-                        $('#d_social_login .modal-dialog').css('transform', 'scale(0)')
-                    },
-                    complete: function () {
-                        $('#dsl_submit').prop('disabled', false);
-                        $('.wait').remove();
-                        $('.pre_loader').toggleClass('hide');
-                        $('#d_social_login .modal-dialog').css('transform', 'scale(1)')
-                    },
-                    success: function (json) {
-                        log(json);
-                        $('#dsl_error').remove();
-                        $('.error').removeClass('error');
-                        if (!json['error']) {
-                            if (json['success']) {
-                                $("#d_social_login .holder").html(json['success']);
-                                setTimeout(function () {
-                                    // location.reload();
-                                }, 200)
-                            }
-                        } else {
-                            $.each(json['error'], function (id, error) {
-                                $("#" + id).addClass('has-error');
-                                $("#" + id).after('<div class="dsl_error">' + error + '</div>');
-                            });
-                        }
-
-                    },
-                    error: function (xhr, ajaxOptions, thrownError) {
-                        console.log(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
-                    }
-                });
+        });
+        $('input').on('blur keyup', function() {
+            if ($("#dsl_form").valid()) {
+                $('#dsl_submit').prop('disabled', false);
+            } else {
+                $('#dsl_submit').prop('disabled', 'disabled');
             }
         });
         $('#dsl_form select[name=\'country_id\']').bind('change', function () {
@@ -183,5 +232,4 @@
             });
         </script>
     {% endif %}
-
 {% endif %}

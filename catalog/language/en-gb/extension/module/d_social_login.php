@@ -27,7 +27,7 @@ $_['text_sign_in_with_amazon'] = 'Sign in';
 
 //button
 $_['button_sign_in'] = 'Sign in with';
-$_['button_sign_in_mail'] = 'Sign in';
+$_['button_sign_in_mail'] = 'Sign up';
 //placeholder
 $_['text_email'] = 'Enter your email';
 $_['text_firstname'] = 'Enter your firstname';
@@ -47,8 +47,8 @@ $_['text_email_intro'] = 'You are almost done. Please fill in the required infor
 $_['text_help_required'] = '* — fields are required';
 
 //confirm text
-$_['text_confirm_finish'] = '<h2 >Thanks you!</h2>
-    <p>We have received your registration information and set up your account. Thanks for registration, and welcome. </p>';
+$_['text_confirm_finish'] = '<h2 >Thank you!</h2>
+    <p>You are almost done. Please fill in the required information below to complete the registration. You can edit it later from your shop account page.</p>';
 
 //errors
 $_['error_email_taken'] = 'Sorry, This email is taken.';

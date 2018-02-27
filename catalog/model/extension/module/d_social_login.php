@@ -241,12 +241,17 @@ class ModelExtensionModuleDSocialLogin extends Model
 
     public function existAddressFields($data)
     {
-        return (($this->db->escape($data['address_1']) != '' && $this->db->escape($data['address_1']))
-            || ($this->db->escape($data['address_2']) != '' && $this->db->escape($data['address_2']))
-            || ($this->db->escape($data['city']) != '' && $this->db->escape($data['city']))
-            || ($data['country_id'] != '' && $data['country_id'])
-            || ($data['zone_id'] != '' && $data['zone_id'])
-        ) ? true : false;
+        // for some reasons auth give false for field
+        //for aqc 6.6.3 if only one will not be input all address is wrong
+        $condition = $this->db->escape($data['address_1']) != ''
+            && $this->db->escape($data['address_1'])
+            && ($this->db->escape($data['address_2']) != ''
+            && $this->db->escape($data['address_2']))
+            && ($this->db->escape($data['city']) != ''
+            && $this->db->escape($data['city']))
+            && ($data['country_id'] != '' && $data['country_id'])
+            && ($data['zone_id'] != '' && $data['zone_id']);
+        return ($condition) ? true : false;
 
     }
 
