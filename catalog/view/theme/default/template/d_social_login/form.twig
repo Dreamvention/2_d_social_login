@@ -9,12 +9,11 @@
                         <div class="popup">
                             <form id="dsl_form" class="form-horizontal" method="post"
                                   action="index.php?route=extension/module/d_social_login/register">
-                                <div class="img col-xs-12"> {% if (authentication_data['photo_url']) %}<img
+                                <div class="col-xs-12"> {% if (authentication_data['photo_url']) %}<img
                                         src="{{ authentication_data['photo_url'] }}"
                                         id="dsl_profile_image" />{% endif %}</div>
-                                <div id="dsl_intro">{{ text_email_intro }}</div>
+                                <div id="dsl_intro" class="col-xs-12">{{ text_email_intro }}</div>
                                 <div class="col-xs-12">
-
                                     {% for field in fields %}
                                         {% if (field['enabled']) %}
                                             <div class="form-group">
