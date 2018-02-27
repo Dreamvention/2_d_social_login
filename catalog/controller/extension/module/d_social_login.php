@@ -263,7 +263,8 @@ class ControllerExtensionModuleDSocialLogin extends Controller
         }
         array_multisort($sort_order, SORT_ASC, $this->setting['fields']);
         $data['fields'] = $this->setting['fields'];
-
+        $provider=$this->setting['providers'][$this->session->data['provider']];
+        $data['log_style']=' background-image: url(\'catalog/view/theme/default/stylesheet/d_social_login/icons/'.$provider['id'].'.svg\');background-color:'.$provider['background_color'];
         $this->load->model('localisation/country');
         $data['countries'] = $this->model_localisation_country->getCountries();
         return $this->model_extension_d_opencart_patch_load->view($this->codename . '/form', $data);
