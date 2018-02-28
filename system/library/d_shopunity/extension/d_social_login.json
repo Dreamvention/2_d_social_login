@@ -1,6 +1,6 @@
 {
     "codename": "d_social_login",
-    "version": "5.0.8",
+    "version": "5.1.0",
     "name": "Social Login",
     "description": "Social login is a module that addes the ability to create an account in the webshop with a social network account and then login in by simply clicking a button. No need to remeber the password. It has Facebook, Paypal, Google+, Twitter, Linkeding, Vknontakte, Windows live, Tumblr and more",
     "index": "extension/module/d_social_login",
@@ -88,6 +88,9 @@
     ],
     "changelog": [
         {
+          "version":"5.1.0",
+          "change": "Popup design change"
+        },{
           "version":"5.0.8",
           "change": "Rewie of popup and hybrid auth yahoo"
         },
