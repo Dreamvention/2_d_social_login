@@ -459,7 +459,7 @@ class ModelExtensionModuleDSocialLogin extends Model
 
         if ($request_uri) {
             if ($reset_uri) {
-                $url = $_SERVER['HTTP_REFERER'];
+                $url = isset($_SERVER['HTTP_REFERER'])?$_SERVER['HTTP_REFERER']:$_SERVER['REQUEST_URI'];
             } else {
                 $url .= $_SERVER['REQUEST_URI'];
             }
