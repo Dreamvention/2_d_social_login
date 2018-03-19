@@ -10,12 +10,12 @@
         <script type="text/javascript" src="{{ script }}"></script>
     {% endfor %}
     {% for style in styles %}
-        <link type="text/css" href="{{ style.href }}" rel="{{ style.rel }}" media="{{ style.media }}" />
+        <link type="text/css" href="{{ style.href }}" rel="{{ style.rel }}" media="{{ style.media }}"/>
     {% endfor %}
 
 </head>
 <style>
-    .modal-backdrop{
+    .modal-backdrop {
         position: fixed;
         top: 0;
         right: 0;
@@ -43,9 +43,15 @@
             url: "{{ url }}",
             type: 'PUT',
             data: {
-                customer_data: {{ customer_data|json_encode() }}, authentication_data:{{ authentication_data|json_encode() }}
+                customer_data: {{ customer_data|json_encode() }},
+                authentication_data:{{ authentication_data|json_encode() }}
             }
         }).done(function (html) {
+            var protocol = window.location.protocol;
+            var url = decodeURIComponent("{{ url }}");
+            url = url.replace(/(http|https):/, protocol);
+            window.history.pushState("object or string", "Title", url);
+
             document.open();
             document.write(html);
             document.close();

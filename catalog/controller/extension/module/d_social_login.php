@@ -116,8 +116,8 @@ class ControllerExtensionModuleDSocialLogin extends Controller
             $error .= "\n\nHybridAuth Error: " . $e->getMessage();
             $error .= "\n\nTrace:\n " . $e->getTraceAsString();
             $this->log->write($error);
-            $this->response->redirect($this->model_extension_module_d_social_login->getCurrentUrl(1, 1));
-//            $this->response->redirect($this->sl_redirect);
+            $this->response->redirect($this->sl_redirect);
+//            $this->response->redirect($this->model_extension_module_d_social_login->getCurrentUrl(1, 1));
         }
     }
 
@@ -231,7 +231,8 @@ class ControllerExtensionModuleDSocialLogin extends Controller
         $_SERVER['REQUEST_METHOD'] === "PUT" ? parse_str(file_get_contents('php://input', false, null, -1, $_SERVER['CONTENT_LENGTH']), $_PUT) : $_PUT = array();
 
         //load data from provider into form popup
-        if (isset($this->session->data['provider']) && $_SERVER['REQUEST_METHOD'] === "PUT") {
+
+        if (isset($this->session->data['provider']) && $_SERVER['REQUEST_METHOD'] === "PUT" ) {
             $customer_data = $_PUT['customer_data'];
             $authentication_data = $_PUT['authentication_data'];
             if (!empty($customer_data) && !empty($authentication_data)) {
