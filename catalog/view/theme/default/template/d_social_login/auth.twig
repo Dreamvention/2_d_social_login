@@ -41,7 +41,7 @@
     $(document).ready(function () {
         $.ajax({
             url: "{{ url }}",
-            type: 'post',
+            type: 'PUT',
             data: {
                 customer_data: {{ customer_data|json_encode() }}, authentication_data:{{ authentication_data|json_encode() }}
             }

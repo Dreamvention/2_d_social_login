@@ -1,4 +1,4 @@
-#d_social_login {
+.d_social_login {
   font-size: 16px;
   color: #6f6f6f;
   .modal-content{
@@ -92,7 +92,7 @@
 
 }
 @media only screen and (max-width: 500px) {
-  #d_social_login {
+  .d_social_login {
     .modal-dialog {
       max-width: 100%;
     }
