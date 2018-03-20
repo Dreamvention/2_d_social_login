@@ -23,6 +23,7 @@ class ControllerExtensionModuleDSocialLogin extends Controller
         $this->d_opencart_patch = (file_exists(DIR_SYSTEM . 'library/d_shopunity/extension/d_opencart_patch.json'));
         $this->extension = json_decode(file_get_contents(DIR_SYSTEM . 'library/d_shopunity/extension/' . $this->codename . '.json'), true);
         $this->d_twig_manager = (file_exists(DIR_SYSTEM . 'library/d_shopunity/extension/d_twig_manager.json'));
+        $this->d_social_login_pro = (file_exists(DIR_SYSTEM . 'library/d_shopunity/extension/d_social_login_pro.json'));
 
         $this->store_id = (isset($this->request->get['store_id'])) ? $this->request->get['store_id'] : 0;
     }
@@ -109,8 +110,14 @@ class ControllerExtensionModuleDSocialLogin extends Controller
         }
 
         // Heading
-        $this->document->setTitle($this->language->get('heading_title_main'));
-        $data['heading_title'] = $this->language->get('heading_title_main');
+        if ($this->d_social_login_pro){
+            $this->document->setTitle($this->language->get('heading_title_main_pro'));
+            $data['heading_title'] = $this->language->get('heading_title_main_pro');
+        }else{
+            $this->document->setTitle($this->language->get('heading_title_main'));
+            $data['heading_title'] = $this->language->get('heading_title_main');
+
+        }
         $data['text_edit'] = $this->language->get('text_edit');
 
         // Variable
@@ -193,7 +200,7 @@ class ControllerExtensionModuleDSocialLogin extends Controller
         );
 
         $data['breadcrumbs'][] = array(
-            'text' => $this->language->get('heading_title_main'),
+            'text' =>($this->d_social_login_pro)?$this->language->get('heading_title_main_pro'):$this->language->get('heading_title_main'),
             'href' => $this->model_extension_d_opencart_patch_url->link($this->route)
         );
 
