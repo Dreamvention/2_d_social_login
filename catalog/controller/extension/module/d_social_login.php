@@ -136,13 +136,13 @@ class ControllerExtensionModuleDSocialLogin extends Controller
                 $_GET[str_replace('amp;', '', $key)] = $value;
             }
         }
-
-        // set redirect address
-        if (isset($this->session->data['sl_redirect']) && !stripos($this->session->data['sl_redirect'], 'logout')) {
-            $this->sl_redirect = $this->session->data['sl_redirect'];
-        } else {
-            $this->sl_redirect = $this->url->link('account/account', '', 'SSL');
-        }
+        $this->sl_redirect = $this->session->data['redirect_url'];
+//         set redirect address
+//        if (isset($this->session->data['sl_redirect']) && !stripos($this->session->data['sl_redirect'], 'logout')) {
+//            $this->sl_redirect = $this->session->data['sl_redirect'];
+//        } else {
+//            $this->sl_redirect = $this->url->link('account/account', '', 'SSL');
+//        }
 
 
     }
@@ -218,21 +218,25 @@ class ControllerExtensionModuleDSocialLogin extends Controller
     public function reset()
     {
         unset($this->session->data['provider']);
+        $this->session->data['reset']=true;
         $this->response->addHeader('Content-Type: application/html');
         $this->response->setOutput($this->index());
     }
 
     public function index()
     {
+        if (!(isset($this->session->data['reset'])&&$this->session->data['reset'])){
+            $this->session->data['redirect_url'] = $this->model_extension_module_d_social_login->getCurrentUrl();
+        }
         $this->document->addStyle('catalog/view/theme/default/stylesheet/d_social_login/styles.css');
         $this->document->addScript('catalog/view/javascript/d_social_login/spin.min.js');
-
         $setting = $this->config->get($this->codename . '_setting');
-        $_SERVER['REQUEST_METHOD'] === "PUT" ? parse_str(file_get_contents('php://input', false, null, -1, $_SERVER['CONTENT_LENGTH']), $_PUT) : $_PUT = array();
-
+        $method = $_SERVER['REQUEST_METHOD'];
+        if ('PUT' === $method) {
+            parse_str(file_get_contents('php://input'), $_PUT);
+        }
         //load data from provider into form popup
-
-        if (isset($this->session->data['provider']) && $_SERVER['REQUEST_METHOD'] === "PUT" ) {
+        if (isset($this->session->data['provider']) && $_SERVER['REQUEST_METHOD'] === "PUT" && !empty($_PUT)) {
             $customer_data = $_PUT['customer_data'];
             $authentication_data = $_PUT['authentication_data'];
             if (!empty($customer_data) && !empty($authentication_data)) {
@@ -270,7 +274,7 @@ class ControllerExtensionModuleDSocialLogin extends Controller
         if (!isset($this->session->data['sl_redirect'])) {
             $this->session->data['sl_redirect'] = ($setting['return_page_url']) ? $setting['return_page_url'] : $this->model_extension_module_d_social_login->getCurrentUrl();
         }
-        $data['url'] = $this->model_extension_module_d_social_login->getCurrentUrl(1,1);
+        $data['url'] = $this->model_extension_module_d_social_login->getCurrentUrl(1, 1);
 
         // facebook fix
         unset($this->session->data['HA::CONFIG']);
