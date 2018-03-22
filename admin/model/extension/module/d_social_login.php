@@ -52,12 +52,12 @@ class ModelExtensionModuleDSocialLogin extends Model
         if ($stores) {
             $result[] = array(
                 'store_id' => 0,
-                'name' => $this->config->get('config_name')
+                'name'     => $this->config->get('config_name')
             );
             foreach ($stores as $store) {
                 $result[] = array(
                     'store_id' => $store['store_id'],
-                    'name' => $store['name']
+                    'name'     => $store['name']
                 );
             }
         }
@@ -71,11 +71,6 @@ class ModelExtensionModuleDSocialLogin extends Model
     {
         return str_replace('&amp;', '&', $link);
     }
-
-
-    /*
-    *	Debug functions
-    */
 
     public function getFileContents($file)
     {
@@ -108,241 +103,6 @@ class ModelExtensionModuleDSocialLogin extends Model
         }
     }
 
-    public function clearDebugFile()
-    {
-        $this->load->language($this->route);
-        $json = array();
-
-        if (!$this->user->hasPermission('modify', $this->route)) {
-            $json['error'] = $this->language->get('error_permission');
-        } else {
-            $file = DIR_LOGS . $this->request->post['debug_file'];
-
-            $handle = fopen($file, 'w+');
-
-            fclose($handle);
-
-            $json['success'] = $this->language->get('success_clear_debug_file');
-        }
-
-        $this->response->addHeader('Content-Type: application/json');
-        $this->response->setOutput(json_encode($json));
-
-    }
-
-    /*
-    *	Mbooth
-    */
-    public function getVersion($mbooth_xml)
-    {
-        if (file_exists(DIR_SYSTEM . 'mbooth/xml/' . $mbooth_xml)) {
-            $xml = new SimpleXMLElement(file_get_contents(DIR_SYSTEM . 'mbooth/xml/' . $mbooth_xml));
-            return $xml->version;
-        } else {
-            return false;
-        }
-    }
-
-    //todo maybe no need
-    public function getMboothFile($id, $sub_versions)
-    {
-        $full = DIR_SYSTEM . 'mbooth/xml/mbooth_' . $id . '.xml';
-        if (file_exists($full)) {
-            return 'mbooth_' . $id . '.xml';
-        } else {
-            foreach ($sub_versions as $lite) {
-                if (file_exists(DIR_SYSTEM . 'mbooth/xml/mbooth_' . $id . '_' . $lite . '.xml')) {
-                    $this->prefix = '_' . $lite;
-                    return 'mbooth_' . $id . '_' . $lite . '.xml';
-                }
-            }
-        }
-        return false;
-    }
-
-    //todo we got the same methods in model d_sholunity extension-isInstalled,installDepe.. etc
-    public function isInstalled($code)
-    {
-        $extension_data = array();
-        $query = $this->db->query("SELECT * FROM " . DB_PREFIX . "extension WHERE `code` = '" . $this->db->escape($code) . "'");
-        if ($query->row) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    /*
-    *	Get extension info by mbooth from server (Check for update)
-    */
-    public function getUpdateInfo($mbooth_xml, $status = 1)
-    {
-        $result = array();
-
-        $current_version = $this->getVersion($mbooth_xml);
-        $customer_url = HTTP_SERVER;
-        $query = $this->db->query("SELECT * FROM `" . DB_PREFIX . "language` WHERE language_id = " . (int)$this->config->get('config_language_id'));
-        $language_code = $query->row['code'];
-        $ip = $this->request->server['REMOTE_ADDR'];
-
-        $request = 'http://opencart.dreamvention.com/api/1/index.php?route=extension/check&mbooth=' . $mbooth_xml . '&store_url=' . $customer_url . '&module_version=' . $current_version . '&language_code=' . $language_code . '&opencart_version=' . VERSION . '&ip=' . $ip . '&status=' . $status;
-
-        $curl = curl_init();
-        curl_setopt($curl, CURLOPT_URL, $request);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        $result['data'] = curl_exec($curl);
-        $result['code'] = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-        curl_close($curl);
-
-        return $result;
-    }
-
-    /*
-    *	Get the version of this module
-    */
-
-    public function installDependencies($mbooth_xml)
-    {
-        define('DIR_ROOT', substr_replace(DIR_SYSTEM, '/', -8));
-        foreach ($this->getDependencies($mbooth_xml) as $extension) {
-            if (isset($extension['codename'])) {
-                $this->download_extension($extension['codename'], $extension['version']);
-                $this->extract_extension();
-                if (file_exists(DIR_SYSTEM . 'mbooth/xml/' . $mbooth_xml)) {
-                    $result = $this->backup_files_by_mbooth($mbooth_xml, 'update');
-                }
-                $this->move_dir(DIR_DOWNLOAD . 'upload/', DIR_ROOT, $result);
-            }
-        }
-    }
-
-
-    public function getDependencies($mbooth_xml)
-    {
-        if (file_exists(DIR_SYSTEM . 'mbooth/xml/' . $mbooth_xml)) {
-            $xml = new SimpleXMLElement(file_get_contents(DIR_SYSTEM . 'mbooth/xml/' . $mbooth_xml));
-            $result = array();
-            $version = false;
-            foreach ($xml->required as $require) {
-
-                foreach ($require->require->attributes() as $key => $value) {
-                    $version = false;
-                    if ($key == 'version') {
-                        $version = $value;
-                    }
-                }
-                $result[] = array(
-                    'codename' => $require->require,
-                    'version' => $version
-                );
-            }
-            return $result;
-        } else {
-            return false;
-        }
-    }
-
-    public function download_extension($codename, $version, $filename = false)
-    {
-
-        if (!$filename) {
-            $filename = DIR_DOWNLOAD . 'archive.zip';
-        }
-
-        $userAgent = 'Googlebot/2.1 (http://www.googlebot.com/bot.html)';
-        $ch = curl_init();
-        $fp = fopen($filename, "w");
-        curl_setopt($ch, CURLOPT_USERAGENT, $userAgent);
-        curl_setopt($ch, CURLOPT_URL, 'http://opencart.dreamvention.com/api/1/extension/download/?codename=' . $codename . '&opencart_version=' . VERSION . '&extension_version=' . $version);
-        curl_setopt($ch, CURLOPT_FAILONERROR, true);
-        curl_setopt($ch, CURLOPT_HEADER, 0);
-        curl_setopt($ch, CURLOPT_AUTOREFERER, true);
-        curl_setopt($ch, CURLOPT_BINARYTRANSFER, true);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 100);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-        curl_setopt($ch, CURLOPT_FILE, $fp);
-        $page = curl_exec($ch);
-        if (!$page) {
-            exit;
-        }
-        curl_close($ch);
-
-    }
-
-
-    public function extract_extension($filename = false, $location = false)
-    {
-        if (!$filename) {
-            $filename = DIR_DOWNLOAD . 'archive.zip';
-        }
-        if (!$location) {
-            $location = DIR_DOWNLOAD;
-        }
-
-        $result = array();
-        $zip = new ZipArchive;
-        if (!$zip) {
-            $result['error'][] = 'ZipArchive not working.';
-        }
-
-        if ($zip->open($filename) != "true") {
-            $result['error'][] = $filename;
-        }
-        $zip->extractTo($location);
-        $zip->close();
-
-        unlink($filename);
-
-        return $result;
-
-    }
-
-
-    public function get_files_by_mbooth($mbooth_xml)
-    {
-
-        $xml = new SimpleXMLElement(file_get_contents($mbooth_xml));
-
-        if (isset($xml->id)) {
-            $result['file_name'] = basename($mbooth_xml, '');
-            $result['id'] = isset($xml->id) ? (string)$xml->id : '';
-            $result['name'] = isset($xml->name) ? (string)$xml->name : '';
-            $result['description'] = isset($xml->description) ? (string)$xml->description : '';
-            $result['type'] = isset($xml->type) ? (string)$xml->type : '';
-            $result['version'] = isset($xml->version) ? (string)$xml->version : '';
-            $result['mbooth_version'] = isset($xml->mbooth_version) ? (string)$xml->mbooth_version : '';
-            $result['opencart_version'] = isset($xml->opencart_version) ? (string)$xml->opencart_version : '';
-            $result['author'] = isset($xml->author) ? (string)$xml->author : '';
-            $files = $xml->files;
-            $dirs = $xml->dirs;
-            $required = $xml->required;
-            $updates = $xml->update;
-
-            foreach ($files->file as $file) {
-                $result['files'][] = (string)$file;
-            }
-
-            if (!empty($dirs)) {
-
-                $dir_files = array();
-
-                foreach ($dirs->dir as $dir) {
-                    $this->scan_dir(DIR_ROOT . $dir, $dir_files);
-                }
-
-                foreach ($dir_files as $file) {
-                    $file = str_replace(DIR_ROOT, "", $file);
-                    $result['files'][] = (string)$file;
-                }
-            }
-
-            return $result;
-        } else {
-            return false;
-        }
-
-    }
 
     public function backup_files_by_mbooth($mbooth_xml, $action = 'install')
     {
@@ -376,22 +136,6 @@ class ModelExtensionModuleDSocialLogin extends Model
         $zip->close();
         return $result;
 
-    }
-
-    public function scan_dir($dir, &$arr_files)
-    {
-
-        if (is_dir($dir)) {
-            $handle = opendir($dir);
-            while ($file = readdir($handle)) {
-                if ($file == '.' or $file == '..') continue;
-                if (is_file($file)) $arr_files[] = "$dir/$file";
-                else $this->scan_dir("$dir/$file", $arr_files);
-            }
-            closedir($handle);
-        } else {
-            $arr_files[] = $dir;
-        }
     }
 
     public function move_dir($souce, $dest, &$result)
@@ -447,9 +191,8 @@ class ModelExtensionModuleDSocialLogin extends Model
         return $merged;
     }
 
-    public function loadProviders()
+    public function loadProviders($id)
     {
-        $id = 'd_social_login';
         $providers = array();
         $dir_files = array();
         $this->scan_dir(DIR_CONFIG . $id, $dir_files);
@@ -463,5 +206,21 @@ class ModelExtensionModuleDSocialLogin extends Model
 
         }
         return $providers;
+    }
+
+    public function scan_dir($dir, &$arr_files)
+    {
+
+        if (is_dir($dir)) {
+            $handle = opendir($dir);
+            while ($file = readdir($handle)) {
+                if ($file == '.' or $file == '..') continue;
+                if (is_file($file)) $arr_files[] = "$dir/$file";
+                else $this->scan_dir("$dir/$file", $arr_files);
+            }
+            closedir($handle);
+        } else {
+            $arr_files[] = $dir;
+        }
     }
 }

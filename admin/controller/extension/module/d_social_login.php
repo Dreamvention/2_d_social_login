@@ -110,10 +110,10 @@ class ControllerExtensionModuleDSocialLogin extends Controller
         }
 
         // Heading
-        if ($this->d_social_login_pro){
+        if ($this->d_social_login_pro) {
             $this->document->setTitle($this->language->get('heading_title_main_pro'));
             $data['heading_title'] = $this->language->get('heading_title_main_pro');
-        }else{
+        } else {
             $this->document->setTitle($this->language->get('heading_title_main'));
             $data['heading_title'] = $this->language->get('heading_title_main');
 
@@ -148,6 +148,7 @@ class ControllerExtensionModuleDSocialLogin extends Controller
         $this->config->load($this->codename);
         $config = $this->config->get($this->codename);
         $config['providers'] = $this->model_extension_module_d_social_login->loadProviders($this->codename);
+
         //check if exist config in db
         if ($this->model_setting_setting->getSetting($this->codename)) {
             $setting = $this->model_setting_setting->getSetting($this->codename);
@@ -157,6 +158,9 @@ class ControllerExtensionModuleDSocialLogin extends Controller
         }
         //inherit users data
         $data['setting'] = array_replace_recursive($config, $data['setting']);
+        if (!$this->d_social_login_pro) {
+            $data['setting']['providers'] = array_slice($data['setting']['providers'], 0, 4);
+        }
         $data['fields'] = $data['setting']['fields'];
         // Background image size from config
         $this->load->model('tool/image');
@@ -200,7 +204,7 @@ class ControllerExtensionModuleDSocialLogin extends Controller
         );
 
         $data['breadcrumbs'][] = array(
-            'text' =>($this->d_social_login_pro)?$this->language->get('heading_title_main_pro'):$this->language->get('heading_title_main'),
+            'text' => ($this->d_social_login_pro) ? $this->language->get('heading_title_main_pro') : $this->language->get('heading_title_main'),
             'href' => $this->model_extension_d_opencart_patch_url->link($this->route)
         );
 
@@ -226,46 +230,6 @@ class ControllerExtensionModuleDSocialLogin extends Controller
         } else {
             return false;
         }
-    }
-
-    public function install()
-    {
-        if ($this->d_shopunity) {
-            $this->load->model('extension/d_shopunity/mbooth');
-            $this->model_extension_d_shopunity_mbooth->installDependencies($this->codename);
-        }
-
-        $this->load->model($this->route);
-        $this->load->model('extension/d_opencart_patch/modification');
-        $this->model_extension_d_opencart_patch_modification->setModification('d_social_login.xml', 1);
-        $this->model_extension_d_opencart_patch_modification->refreshCache();
-        $this->model_extension_module_d_social_login->installDatabase();
-    }
-
-    public function uninstall()
-    {
-        $this->load->model($this->route);
-        $this->load->model('extension/d_opencart_patch/modification');
-        $this->model_extension_d_opencart_patch_modification->setModification('d_social_login.xml', 0);
-        $this->model_extension_d_opencart_patch_modification->refreshCache();
-        $this->model_extension_module_d_social_login->uninstallDatabase();
-    }
-
-    public function clearDebugFile()
-    {
-        $json = array();
-
-        if (!$this->user->hasPermission('modify', $this->route)) {
-            $json['error'] = $this->language->get('error_permission');
-        } else {
-            $file = DIR_LOGS . $this->request->post['debug_file'];
-            $handle = fopen($file, 'w+');
-            fclose($handle);
-            $json['success'] = $this->language->get('success_clear_debug_file');
-        }
-
-        $this->response->addHeader('Content-Type: application/json');
-        $this->response->setOutput(json_encode($json));
     }
 
     /**
@@ -358,6 +322,46 @@ class ControllerExtensionModuleDSocialLogin extends Controller
         $data['text_debug_file_into'] = $this->language->get('text_debug_file_into');
         $data['entry_debug_file'] = $this->language->get('entry_debug_file');
         return $data;
+    }
+
+    public function install()
+    {
+        if ($this->d_shopunity) {
+            $this->load->model('extension/d_shopunity/mbooth');
+            $this->model_extension_d_shopunity_mbooth->installDependencies($this->codename);
+        }
+
+        $this->load->model($this->route);
+        $this->load->model('extension/d_opencart_patch/modification');
+        $this->model_extension_d_opencart_patch_modification->setModification('d_social_login.xml', 1);
+        $this->model_extension_d_opencart_patch_modification->refreshCache();
+        $this->model_extension_module_d_social_login->installDatabase();
+    }
+
+    public function uninstall()
+    {
+        $this->load->model($this->route);
+        $this->load->model('extension/d_opencart_patch/modification');
+        $this->model_extension_d_opencart_patch_modification->setModification('d_social_login.xml', 0);
+        $this->model_extension_d_opencart_patch_modification->refreshCache();
+        $this->model_extension_module_d_social_login->uninstallDatabase();
+    }
+
+    public function clearDebugFile()
+    {
+        $json = array();
+
+        if (!$this->user->hasPermission('modify', $this->route)) {
+            $json['error'] = $this->language->get('error_permission');
+        } else {
+            $file = DIR_LOGS . $this->request->post['debug_file'];
+            $handle = fopen($file, 'w+');
+            fclose($handle);
+            $json['success'] = $this->language->get('success_clear_debug_file');
+        }
+
+        $this->response->addHeader('Content-Type: application/json');
+        $this->response->setOutput(json_encode($json));
     }
 }
 
