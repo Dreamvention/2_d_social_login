@@ -159,7 +159,7 @@ class ControllerExtensionModuleDSocialLogin extends Controller
         //inherit users data
         $data['setting'] = array_replace_recursive($config, $data['setting']);
         if (!$this->d_social_login_pro) {
-            $data['setting']['providers'] = array_slice($data['setting']['providers'], 0, 4);
+//            $data['setting']['providers'] = array_slice($data['setting']['providers'], 0, 4);
         }
         $data['fields'] = $data['setting']['fields'];
         // Background image size from config

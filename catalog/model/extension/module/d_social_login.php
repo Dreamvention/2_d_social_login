@@ -12,7 +12,7 @@ class ModelExtensionModuleDSocialLogin extends Model
 
         if ($result->num_rows) {
             return true;
-        } else {
+           } else {
             return false;
         }
     }
