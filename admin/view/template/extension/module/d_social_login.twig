@@ -36,7 +36,7 @@
             </div>
         {% endif %}
 
-        <div class="panel panel-default">
+        <div class="panel panel-default panel-resizable">
             <div class="panel-heading">
                 <h3 class="panel-title"><i class="fa fa-pencil"></i> {{ text_edit }}</h3>
             </div>
@@ -44,7 +44,13 @@
             <div class="panel-body">
                 <form action="{{ action }}" method="post" enctype="multipart/form-data" id="form"
                       class="form-horizontal">
+                    <div class="page-header">
+                        {% for key,provider in setting['providers'] %}
+                            {#<h3>{{ key }}<span class="info-window-item" data-href="http://doc.99logins.com/{{ provider['id'] }}"><i class="fa fa-question"></i></span></h3>#}
+                        {% endfor %}
+                        <h3>2<span class="info-window-item" data-href="http://doc.99logins.com/facebook"><i class="fa fa-question"></i></span></h3>
 
+                    </div>
                     <ul class="nav nav-tabs">
                         <li class="active"><a href="#setting_basic" data-toggle="tab">
                                 <i class="fa fa-cog"></i>
@@ -441,9 +447,16 @@
                 </form>
             </div>
         </div>
+        <div class="info-window">
+            <div class="info-window-wrap">
+                <div class="info-window-block">
+                    <div class="info-window-close"><i class="fa fa-close"></i></div>
+                    <div class="info-window-description"></div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
-{#todo shold we transfer this style into .css?#}
 <style>
     .sortable {
         position: relative;
@@ -537,6 +550,50 @@
         });
     });
 
+    var info_window = {
+        'item' : new Array(),
+        'current_url' : ''
+    }
+    $.each($('.info-window-item'), function(key, value) {
+        var url = $(this).attr('data-href');
+        if (url) {
+            console.log(url + '?format=json&callback=?')
+            s=url + '?format=json&callback=?'
+            var jqxhr = $.getScript( {'url': s, dataType: "json",
+                success: function () {
+
+                }} )
+                .done(function(e) {
+                    console.log( "second success" );
+                })
+                .fail(function() {
+                    console.log( "error" );
+                })
+
+
+        }
+    });
+
+    $('.info-window-item').on('click', function() {
+        var url = $(this).attr('data-href');
+
+        if (url == info_window.current_url) {
+            info_window.current_url = '';
+            $('.info-window').removeClass('resized');
+            $('.panel-resizable').removeClass('resized');
+        } else {
+            info_window.current_url = url;
+            $('.info-window .info-window-description').html(info_window.item[url]);
+            $('.panel-resizable').addClass('resized');
+            $('.info-window').addClass('resized');
+        }
+    });
+
+    $('.info-window .info-window-close').on('click', function() {
+        info_window.current_url = '';
+        $('.info-window').removeClass('resized');
+        $('.panel-resizable').removeClass('resized');
+    });
 </script>
 
 <script type="text/javascript">

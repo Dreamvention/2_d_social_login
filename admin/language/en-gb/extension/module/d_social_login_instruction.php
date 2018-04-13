@@ -48,29 +48,29 @@ $_['text_instructions_tabs'] = array(
             <ol>
                 <li>Visit the Google Developers console <a href="https://cloud.google.com/console" target="_blank"> https://cloud.google.com/console</a></li>
                 <li>Create project to manage logins.</li>
-                <img src="view/image/d_social_login/google/1.png" class="img-thumbnail img-responsive" />
+                <img src="http://doc.99logins.com/image/catalog/d_social_login/google/1.png" class="img-thumbnail img-responsive" />
                 <li>After creation go to Api & Services -> "Library"</li>
-                <img src="view/image/d_social_login/google/2.png" class="img-thumbnail img-responsive" />
+                <img src="http://doc.99logins.com/image/catalog/d_social_login/google/2.png" class="img-thumbnail img-responsive" />
                 <li>Find "Google+ API" and enable it </li>
-                <img src="view/image/d_social_login/google/3.png" class="img-thumbnail img-responsive" />
-                <img src="view/image/d_social_login/google/4.png" class="img-thumbnail img-responsive" />
+                <img src="http://doc.99logins.com/image/catalog/d_social_login/google/3.png" class="img-thumbnail img-responsive" />
+                <img src="http://doc.99logins.com/image/catalog/d_social_login/google/4.png" class="img-thumbnail img-responsive" />
                 <li>go to Api & Services -> "Credentials" and give your credential a name</li>
-                <img src="view/image/d_social_login/google/50.png" class="img-thumbnail img-responsive" />
+                <img src="http://doc.99logins.com/image/catalog/d_social_login/google/50.png" class="img-thumbnail img-responsive" />
                 <li>Then create a credential secret</li>
-                <img src="view/image/d_social_login/google/51.png" class="img-thumbnail img-responsive" />                
+                <img src="http://doc.99logins.com/image/catalog/d_social_login/google/51.png" class="img-thumbnail img-responsive" />                
                 <li>Choose OAuth client ID credential</li>
-                <img src="view/image/d_social_login/google/52.png" class="img-thumbnail img-responsive" />                
+                <img src="http://doc.99logins.com/image/catalog/d_social_login/google/52.png" class="img-thumbnail img-responsive" />                
                 <li>Click Web application radio</li>
-                <img src="view/image/d_social_login/google/53.png" class="img-thumbnail img-responsive" />                
+                <img src="http://doc.99logins.com/image/catalog/d_social_login/google/53.png" class="img-thumbnail img-responsive" />                
                 <li>Fill fields with next data</li>
                 <li>Input the Authorized JavaScript origins and Authorized redirect URIs, then click button "Create"</li>
                 <div class="bs-callout bs-callout-warning">
                     <h4>Your Redirect URL</h4><p>' . HTTP_CATALOG . 'index.php?route=extension/d_social_login/callback&hauth.done=Google</p><h4>Your Redirect URL for HTTPS</h4>
                     <p>' . HTTPS_CATALOG . 'index.php?route=extension/d_social_login/callback&hauth.done=Google</p>
                 </div>
-                <img src="view/image/d_social_login/google/61.png" class="img-thumbnail img-responsive" />                 
+                <img src="http://doc.99logins.com/image/catalog/d_social_login/google/61.png" class="img-thumbnail img-responsive" />                 
                 <li>Copy Client ID and Client secret and fill in the Client Id and Client Secret in the Social Login settings tab for Google+</li>
-                <img src="view/image/d_social_login/google/7.png" class="img-thumbnail img-responsive" />  
+                <img src="http://doc.99logins.com/image/catalog/d_social_login/google/7.png" class="img-thumbnail img-responsive" />  
             </ol>
             <div class="bs-callout bs-callout-warning">
                 <h4>Attention!</h4>
@@ -80,7 +80,7 @@ $_['text_instructions_tabs'] = array(
                 <li>Go to App settings in google dev console.</li>
                 <li>Go to tab APIs & auth  and then to Consent Screen</li>
                 <li>Fill the required fields as shown on the image below</li>
-                <img src="view/image/d_social_login/google/12.png" class="img-thumbnail img-responsive" />
+                <img src="http://doc.99logins.com/image/catalog/d_social_login/google/12.png" class="img-thumbnail img-responsive" />
                 <li>Save and wait for several minutes for the Google api to refresh its data then test the login.</li>
             </ol>
         </div>',
