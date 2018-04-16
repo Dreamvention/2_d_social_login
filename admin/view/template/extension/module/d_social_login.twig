@@ -44,13 +44,6 @@
             <div class="panel-body">
                 <form action="{{ action }}" method="post" enctype="multipart/form-data" id="form"
                       class="form-horizontal">
-                    <div class="page-header">
-                        {% for key,provider in setting['providers'] %}
-                            {#<h3>{{ key }}<span class="info-window-item" data-href="http://doc.99logins.com/{{ provider['id'] }}"><i class="fa fa-question"></i></span></h3>#}
-                        {% endfor %}
-                        <h3>2<span class="info-window-item" data-href="http://doc.99logins.com/facebook"><i class="fa fa-question"></i></span></h3>
-
-                    </div>
                     <ul class="nav nav-tabs">
                         <li class="active"><a href="#setting_basic" data-toggle="tab">
                                 <i class="fa fa-cog"></i>
@@ -348,7 +341,9 @@
                                 <p>{{ warning_app_settings_full }}</p></div>
                             {% for key,provider in setting['providers'] %}
                                 <div class="form-group">
-                                    <h4 class="col-sm-12" for="select_return_url"><i
+                                    <h3 class="col-sm-6">{{ key }}<span class="info-window-item" data-href="http://doc.99logins.com/{{ provider['id'] }}"><i class="fa fa-question"></i></span></h3>
+
+                                    <h4 class="col-sm-6" for="select_return_url"><i
                                                 class="{{ provider['icon'] }}"></i> {{ provider['id'] ~ ' ' ~ text_app_settings }}
                                         <input type="hidden" name="{{ id }}_setting[providers][{{ key }}][id]"
                                                value="{{ provider['id'] }}"/></h4>
@@ -549,28 +544,20 @@
             }
         });
     });
-
+</script>
+<script type="text/javascript">
     var info_window = {
         'item' : new Array(),
         'current_url' : ''
     }
+
     $.each($('.info-window-item'), function(key, value) {
         var url = $(this).attr('data-href');
+
         if (url) {
-            console.log(url + '?format=json&callback=?')
-            s=url + '?format=json&callback=?'
-            var jqxhr = $.getScript( {'url': s, dataType: "json",
-                success: function () {
-
-                }} )
-                .done(function(e) {
-                    console.log( "second success" );
-                })
-                .fail(function() {
-                    console.log( "error" );
-                })
-
-
+                $.getJSON(url + '?format=json&callback=?', function(data) {
+                    info_window.item[url] = data['description'];
+                });
         }
     });
 
@@ -594,8 +581,8 @@
         $('.info-window').removeClass('resized');
         $('.panel-resizable').removeClass('resized');
     });
-</script>
 
+</script>
 <script type="text/javascript">
     $(function () {
         $('body').on('click', '#save_and_stay', function () {

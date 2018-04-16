@@ -46,7 +46,9 @@
     "d_bootstrap_extra": ">= 1.0.1",
     "d_bootstrap_switch": ">= 3.3.5",
     "d_bootstrap_colorpicker": ">= 2.5.1",
-    "d_tinysort": ">= 2.3.7"
+    "d_tinysort": ">= 2.3.7",
+    "d_admin_style": ">= 1.0.1"
+
   },
   "files": [
     "system/library/d_shopunity/extension/d_social_login.json",

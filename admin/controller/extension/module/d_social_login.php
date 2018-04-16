@@ -49,7 +49,10 @@ class ControllerExtensionModuleDSocialLogin extends Controller
         } else {
             $this->load->model('sale/customer_group');
         }
-
+/*
+ * <script type="application/javascript">$(document).ready(function() {
+        $('.doc-image').magnificPopup({type:'image'});
+    });</script>*/
         // Scripts
         $this->document->addStyle('view/stylesheet/d_bootstrap_extra/bootstrap.css');
         $this->document->addStyle('view/javascript/d_bootstrap_switch/css/bootstrap-switch.css');
@@ -57,6 +60,8 @@ class ControllerExtensionModuleDSocialLogin extends Controller
         $this->document->addStyle('view/javascript/d_bootstrap_colorpicker/css/bootstrap-colorpicker.css');
         $this->document->addScript('view/javascript/d_bootstrap_colorpicker/js/bootstrap-colorpicker.js');
         $this->document->addScript('view/javascript/d_tinysort/tinysort.js');
+        $this->document->addScript('view/javascript/jquery/magnific/jquery.magnific-popup.min.js');
+        $this->document->addStyle('view/javascript/jquery/magnific/magnific-popup.css');
         $this->document->addScript('view/javascript/d_tinysort/jquery.tinysort.min.js');
         $this->document->addScript('view/javascript/d_social_login/bootstrap-sortable.js');
         $this->document->addStyle('view/stylesheet/d_social_login/styles.css');
@@ -207,6 +212,9 @@ class ControllerExtensionModuleDSocialLogin extends Controller
             'text' => ($this->d_social_login_pro) ? $this->language->get('heading_title_main_pro') : $this->language->get('heading_title_main'),
             'href' => $this->model_extension_d_opencart_patch_url->link($this->route)
         );
+
+        $admin_theme = 'light';
+        $this->document->addStyle('view/stylesheet/d_admin_style/themes/' . $admin_theme . '/styles.css');
 
         $data['header'] = $this->load->controller('common/header');
         $data['column_left'] = $this->load->controller('common/column_left');
