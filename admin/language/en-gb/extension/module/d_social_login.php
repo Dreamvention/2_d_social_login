@@ -16,6 +16,7 @@ $_['entry_customer_group']      = '<span data-toggle="tooltip" title="" data-ori
 $_['entry_newsletter']          = '<span data-toggle="tooltip" title="" data-original-title="You can make every person that regesters with social login accept newsletters by default.">Newsletter</span>';
 $_['entry_status']              = 'Status:';
 
+$_['text_instruction']          = 'Instructions';
 $_['text_icons']                = 'Icons';
 $_['text_small']                = 'Small';
 $_['text_medium']               = 'Medium';

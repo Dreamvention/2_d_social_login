@@ -33,7 +33,7 @@
                         $("#d_social_login .popup").html(json['success']);
                         setTimeout(function () {
                             location.reload();
-                        }, 200)
+                        }, 1000)
                     }
                 } else {
                     $.each(json['error'], function (id, error) {

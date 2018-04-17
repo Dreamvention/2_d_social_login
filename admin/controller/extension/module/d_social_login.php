@@ -219,7 +219,6 @@ class ControllerExtensionModuleDSocialLogin extends Controller
         $data['header'] = $this->load->controller('common/header');
         $data['column_left'] = $this->load->controller('common/column_left');
         $data['footer'] = $this->load->controller('common/footer');
-
         $this->response->setOutput($this->model_extension_d_opencart_patch_load->view($this->route, $data));
     }
 
@@ -253,6 +252,7 @@ class ControllerExtensionModuleDSocialLogin extends Controller
         $data['text_instruction'] = $this->language->get('text_instruction');
 
         // Modules
+        $data['text_icons'] = $this->language->get('text_icons');
         $data['text_small'] = $this->language->get('text_small');
         $data['text_medium'] = $this->language->get('text_medium');
         $data['text_large'] = $this->language->get('text_large');
@@ -281,8 +281,7 @@ class ControllerExtensionModuleDSocialLogin extends Controller
         $data['button_get_update'] = $this->language->get('button_get_update');
 
         $data['entry_sort_order'] = $this->language->get('entry_sort_order');
-        $data['text_instructions'] = $this->language->get('text_instructions');
-
+        $data['url_documentation']='http://doc.99logins.com/documentation';
         $data['entry_fields_sort_order'] = $this->language->get('entry_fields_sort_order');
         $data['text_email'] = $this->language->get('text_email');
         $data['text_firstname'] = $this->language->get('text_firstname');
@@ -326,10 +325,11 @@ class ControllerExtensionModuleDSocialLogin extends Controller
 
         // Instructions
         $data['text_instructions_full'] = $this->language->get('text_instructions_full');
-        $data['text_instructions_tabs'] = $this->language->get('text_instructions_tabs');
         $data['text_debug_file_into'] = $this->language->get('text_debug_file_into');
         $data['entry_debug_file'] = $this->language->get('entry_debug_file');
+
         return $data;
+
     }
 
     public function install()

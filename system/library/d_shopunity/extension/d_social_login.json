@@ -1,6 +1,6 @@
 {
   "codename": "d_social_login",
-  "version": "6.0.1",
+  "version": "6.1.0",
   "name": "Social Login",
   "description": "Social login is a module that addes the ability to create an account in the webshop with a social network account and then login in by simply clicking a button. No need to remeber the password. It has Facebook, Paypal, Google+, Twitter, Linkeding, Vknontakte, Windows live, Tumblr and more",
   "index": "extension/module/d_social_login",
@@ -47,7 +47,7 @@
     "d_bootstrap_switch": ">= 3.3.5",
     "d_bootstrap_colorpicker": ">= 2.5.1",
     "d_tinysort": ">= 2.3.7",
-    "d_admin_style": ">= 1.0.1"
+    "d_admin_style": ">= 1.0.2"
 
   },
   "files": [
@@ -65,7 +65,6 @@
     "admin/controller/extension/module/d_social_login.php",
     "admin/model/extension/module/d_social_login.php",
     "admin/language/en-gb/extension/module/d_social_login.php",
-    "admin/language/en-gb/extension/module/d_social_login_instruction.php",
     "admin/view/template/extension/module/d_social_login.twig",
     "catalog/controller/extension/d_social_login/callback_live.php",
     "catalog/controller/extension/d_social_login/callback.php",
@@ -105,6 +104,10 @@
     "system/library/d_social_login/hybrid/thirdparty"
   ],
   "changelog": [
+    {
+      "version": "6.1.0",
+      "change": "Instruction tab in admin moved to remote server to be always up to date"
+    },
     {
       "version": "6.0.1",
       "change": "Add line.me"

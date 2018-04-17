@@ -341,7 +341,9 @@
                                 <p>{{ warning_app_settings_full }}</p></div>
                             {% for key,provider in setting['providers'] %}
                                 <div class="form-group">
-                                    <h3 class="col-sm-6">{{ key }}<span class="info-window-item" data-href="http://doc.99logins.com/{{ provider['id'] }}"><i class="fa fa-question"></i></span></h3>
+                                    <h3 class="col-sm-6">{{ key }}<span class="info-window-item"
+                                                                        data-href="http://doc.99logins.com/{{ provider['id'] }}"><i
+                                                    class="fa fa-question"></i></span></h3>
 
                                     <h4 class="col-sm-6" for="select_return_url"><i
                                                 class="{{ provider['icon'] }}"></i> {{ provider['id'] ~ ' ' ~ text_app_settings }}
@@ -384,30 +386,10 @@
                         <div class="tab-pane " id="instruction">
                             <div class="tab-body">
                                 <div class="row">
-                                    <div class="col-md-6">
+                                    <div class="col-md-12">
                                         <div class="wrap-5">
                                             <h1>{{ text_instruction }}</h1>
-                                            {{ text_instructions_full }}
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="wrap-5">
-                                            <h1>How to set up social apps?</h1>
-                                            <ul class="nav nav-pills">
-                                                {% for key,instruction in text_instructions %}
-                                                    <li {% if (key == 'google-plus') %}class="active"{% endif %}><a
-                                                                href="#{{ key }}" data-toggle="tab"><i
-                                                                    class="fa fa-{{ key }}"></i> {{ instruction }}</a>
-                                                    </li>
-                                                {% endfor %}
-                                            </ul>
-                                            <div class="tab-content">
-                                                {% for key,tab in text_instructions_tabs %}
-                                                    <div id="{{ key }}"
-                                                         class="tab-pane {{ key == 'google-plus' ? 'active' }}">
-                                                        {{ tab }}
-                                                    </div>
-                                                {% endfor %}
+                                            <div class="instruction_full">
                                             </div>
                                         </div>
                                     </div>
@@ -432,7 +414,8 @@
                                 <div class="form-group">
                                     <div class="col-sm-10 col-sm-offset-2">
                                         <a class="btn btn-danger"
-                                           id="clear_debug_file" data-value="{{ clear_debug_file }}">{{ button_clear_debug_file }}</a>
+                                           id="clear_debug_file"
+                                           data-value="{{ clear_debug_file }}">{{ button_clear_debug_file }}</a>
                                     </div>
                                 </div>
                             </div>
@@ -547,21 +530,21 @@
 </script>
 <script type="text/javascript">
     var info_window = {
-        'item' : new Array(),
-        'current_url' : ''
+        'item': new Array(),
+        'current_url': ''
     }
 
-    $.each($('.info-window-item'), function(key, value) {
+    $.each($('.info-window-item'), function (key, value) {
         var url = $(this).attr('data-href');
 
         if (url) {
-                $.getJSON(url + '?format=json&callback=?', function(data) {
-                    info_window.item[url] = data['description'];
-                });
+            $.getJSON(url + '?format=json&callback=?', function (data) {
+                info_window.item[url] = data['description'];
+            });
         }
     });
 
-    $('.info-window-item').on('click', function() {
+    $('.info-window-item').on('click', function () {
         var url = $(this).attr('data-href');
 
         if (url == info_window.current_url) {
@@ -576,7 +559,7 @@
         }
     });
 
-    $('.info-window .info-window-close').on('click', function() {
+    $('.info-window .info-window-close').on('click', function () {
         info_window.current_url = '';
         $('.info-window').removeClass('resized');
         $('.panel-resizable').removeClass('resized');
@@ -585,6 +568,9 @@
 </script>
 <script type="text/javascript">
     $(function () {
+        $.getJSON('{{ url_documentation }}' + '?format=json&callback=?', function (data) {
+            $('.instruction_full').html(data['description']);
+        });
         $('body').on('click', '#save_and_stay', function () {
             $.ajax({
                 type: 'post',
@@ -624,7 +610,7 @@
                         $('#debug .tab-body').prepend('<div class="alert alert-success">' + json['success'] + '</div>');
                     }
                 },
-            }).error(function (xth,e) {
+            }).error(function (xth, e) {
                 alert(e)
             });
         });
