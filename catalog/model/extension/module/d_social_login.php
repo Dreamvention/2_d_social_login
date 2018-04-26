@@ -47,6 +47,115 @@ class ModelExtensionModuleDSocialLogin extends Model
             "zip = '" . $this->db->escape($data['zip']) . "', " .
             "date_added = NOW()");
     }
+    public function addCustomer($data)
+    {
+        //todo test 2
+        $this->load->model('account/customer');
+        if ($this->model_account_customer->getTotalCustomersByEmail($data['email'])) {
+            return $this->model_account_customer->getCustomerByEmail($data['email'])['customer_id'];
+        }else
+        $this->db->query("INSERT INTO " . DB_PREFIX . "customer SET
+            store_id = '" . (int)$this->config->get('config_store_id') . "',
+            firstname = '" . $this->db->escape($data['firstname']) . "',
+            lastname = '" . $this->db->escape($data['lastname']) . "',
+            email = '" . $this->db->escape($data['email']) . "',
+            telephone = '" . $this->db->escape($data['telephone']) . "',
+            fax = '" . $this->db->escape($data['fax']) . "',
+            password = '" . $this->db->escape(md5($data['password'])) . "',
+            newsletter = '" . (isset($data['newsletter']) ? (int)$data['newsletter'] : 0) . "',
+            customer_group_id = '" . (int)$data['customer_group_id'] . "',
+            status = '1',
+            date_added = NOW()");
+
+        $customer_id = $this->db->getLastId();
+        if ($this->existAddressFields($data)) {
+            $this->db->query("INSERT INTO " . DB_PREFIX . "address SET
+            customer_id = '" . (int)$customer_id . "',
+            firstname = '" . $this->db->escape($data['firstname']) . "',
+            lastname = '" . $this->db->escape($data['lastname']) . "',
+            company = '" . $this->db->escape($data['company']) . "',
+            address_1 = '" . $this->db->escape($data['address_1']) . "',
+            address_2 = '" . $this->db->escape($data['address_2']) . "',
+            city = '" . $this->db->escape($data['city']) . "',
+            postcode = '" . $this->db->escape($data['postcode']) . "',
+            country_id = '" . (int)$data['country_id'] . "',
+            zone_id = '" . (int)$data['zone_id'] . "'");
+
+            $address_id = $this->db->getLastId();
+
+            $this->db->query("UPDATE " . DB_PREFIX . "customer SET
+            address_id = '" . (int)$address_id . "'
+            WHERE customer_id = '" . (int)$customer_id . "'");
+        }
+
+
+        if (VERSION < '3.0.0.0') {
+            $this->language->load('mail/customer');
+            if (!$this->config->get('config_customer_approval')) {
+                $this->db->query("UPDATE " . DB_PREFIX . "customer SET
+                    approved = '1'
+                    WHERE customer_id = '" . (int)$customer_id . "'");
+            }
+        }
+        $this->language->load('mail/register');
+
+        $subject = sprintf($this->language->get('text_subject'), $this->config->get('config_name'));
+
+        $message = sprintf($this->language->get('text_welcome'), $this->config->get('config_name')) . "\n\n";
+
+        if (!$this->config->get('config_customer_approval')) {
+            $message .= $this->language->get('text_login') . "\n";
+        } else {
+            $message .= $this->language->get('text_approval') . "\n";
+        }
+
+        $message .= $this->url->link('account/login', '', 'SSL') . "\n\n";
+        $message .= $this->language->get('text_services') . "\n\n";
+        $message .= $this->language->get('text_thanks') . "\n";
+        $message .= $this->config->get('config_name');
+
+        $mail = new Mail();
+        $mail->protocol = $this->config->get('config_mail_protocol');
+        $mail->parameter = $this->config->get('config_mail_parameter');
+        $mail->smtp_hostname = $this->config->get('config_mail_smtp_hostname');
+        $mail->smtp_username = $this->config->get('config_mail_smtp_username');
+        $mail->smtp_password = html_entity_decode($this->config->get('config_mail_smtp_password'), ENT_QUOTES, 'UTF-8');
+        $mail->smtp_port = $this->config->get('config_mail_smtp_port');
+        $mail->smtp_timeout = $this->config->get('config_mail_smtp_timeout');
+        $mail->hostname = $this->config->get('config_smtp_host');
+        $mail->username = $this->config->get('config_smtp_username');
+        $mail->password = $this->config->get('config_smtp_password');
+        $mail->port = $this->config->get('config_smtp_port');
+        $mail->timeout = $this->config->get('config_smtp_timeout');
+
+        $mail->setFrom($this->config->get('config_email'));
+        $mail->setSender($this->config->get('config_name'));
+        $mail->setSubject($subject);
+        $mail->setText($message);
+
+        if ($data['email']) {
+            $mail->setTo($data['email']);
+            $mail->send();
+        }
+
+        // Send to main admin email if new account email is enabled
+        if ($this->config->get('config_account_mail')) {
+            $mail->setTo($this->config->get('config_email'));
+            $mail->send();
+
+            // Send to additional alert emails if new account email is enabled
+            $emails = explode(',', $this->config->get('config_alert_emails'));
+
+            foreach ($emails as $email) {
+                if (strlen($email) > 0 && preg_match('/^[^\@]+@.*\.[a-z]{2,6}$/i', $email)) {
+                    $mail->setTo($email);
+                    $mail->send();
+                }
+            }
+        }
+
+        return $customer_id;
+    }
 
     public function getCustomer($customer_id)
     {
@@ -306,110 +415,6 @@ class ModelExtensionModuleDSocialLogin extends Model
         return $result;
     }
 
-    public function addCustomer($data)
-    {
-        $this->db->query("INSERT INTO " . DB_PREFIX . "customer SET
-            store_id = '" . (int)$this->config->get('config_store_id') . "',
-            firstname = '" . $this->db->escape($data['firstname']) . "',
-            lastname = '" . $this->db->escape($data['lastname']) . "',
-            email = '" . $this->db->escape($data['email']) . "',
-            telephone = '" . $this->db->escape($data['telephone']) . "',
-            fax = '" . $this->db->escape($data['fax']) . "',
-            password = '" . $this->db->escape(md5($data['password'])) . "',
-            newsletter = '" . (isset($data['newsletter']) ? (int)$data['newsletter'] : 0) . "',
-            customer_group_id = '" . (int)$data['customer_group_id'] . "',
-            status = '1',
-            date_added = NOW()");
-
-        $customer_id = $this->db->getLastId();
-        if ($this->existAddressFields($data)) {
-            $this->db->query("INSERT INTO " . DB_PREFIX . "address SET
-            customer_id = '" . (int)$customer_id . "',
-            firstname = '" . $this->db->escape($data['firstname']) . "',
-            lastname = '" . $this->db->escape($data['lastname']) . "',
-            company = '" . $this->db->escape($data['company']) . "',
-            address_1 = '" . $this->db->escape($data['address_1']) . "',
-            address_2 = '" . $this->db->escape($data['address_2']) . "',
-            city = '" . $this->db->escape($data['city']) . "',
-            postcode = '" . $this->db->escape($data['postcode']) . "',
-            country_id = '" . (int)$data['country_id'] . "',
-            zone_id = '" . (int)$data['zone_id'] . "'");
-
-            $address_id = $this->db->getLastId();
-
-            $this->db->query("UPDATE " . DB_PREFIX . "customer SET
-            address_id = '" . (int)$address_id . "'
-            WHERE customer_id = '" . (int)$customer_id . "'");
-        }
-
-        if (VERSION < '3.0.0.0') {
-            $this->language->load('mail/customer');
-            if (!$this->config->get('config_customer_approval')) {
-                $this->db->query("UPDATE " . DB_PREFIX . "customer SET
-                    approved = '1'
-                    WHERE customer_id = '" . (int)$customer_id . "'");
-            }
-        }
-
-        $this->language->load('mail/register');
-
-        $subject = sprintf($this->language->get('text_subject'), $this->config->get('config_name'));
-
-        $message = sprintf($this->language->get('text_welcome'), $this->config->get('config_name')) . "\n\n";
-
-        if (!$this->config->get('config_customer_approval')) {
-            $message .= $this->language->get('text_login') . "\n";
-        } else {
-            $message .= $this->language->get('text_approval') . "\n";
-        }
-
-        $message .= $this->url->link('account/login', '', 'SSL') . "\n\n";
-        $message .= $this->language->get('text_services') . "\n\n";
-        $message .= $this->language->get('text_thanks') . "\n";
-        $message .= $this->config->get('config_name');
-
-        $mail = new Mail();
-        $mail->protocol = $this->config->get('config_mail_protocol');
-        $mail->parameter = $this->config->get('config_mail_parameter');
-        $mail->smtp_hostname = $this->config->get('config_mail_smtp_hostname');
-        $mail->smtp_username = $this->config->get('config_mail_smtp_username');
-        $mail->smtp_password = html_entity_decode($this->config->get('config_mail_smtp_password'), ENT_QUOTES, 'UTF-8');
-        $mail->smtp_port = $this->config->get('config_mail_smtp_port');
-        $mail->smtp_timeout = $this->config->get('config_mail_smtp_timeout');
-        $mail->hostname = $this->config->get('config_smtp_host');
-        $mail->username = $this->config->get('config_smtp_username');
-        $mail->password = $this->config->get('config_smtp_password');
-        $mail->port = $this->config->get('config_smtp_port');
-        $mail->timeout = $this->config->get('config_smtp_timeout');
-
-        $mail->setFrom($this->config->get('config_email'));
-        $mail->setSender($this->config->get('config_name'));
-        $mail->setSubject($subject);
-        $mail->setText($message);
-
-        if ($data['email']) {
-            $mail->setTo($data['email']);
-            $mail->send();
-        }
-
-        // Send to main admin email if new account email is enabled
-        if ($this->config->get('config_account_mail')) {
-            $mail->setTo($this->config->get('config_email'));
-            $mail->send();
-
-            // Send to additional alert emails if new account email is enabled
-            $emails = explode(',', $this->config->get('config_alert_emails'));
-
-            foreach ($emails as $email) {
-                if (strlen($email) > 0 && preg_match('/^[^\@]+@.*\.[a-z]{2,6}$/i', $email)) {
-                    $mail->setTo($email);
-                    $mail->send();
-                }
-            }
-        }
-
-        return $customer_id;
-    }
 
     public function existAddressFields($data)
     {

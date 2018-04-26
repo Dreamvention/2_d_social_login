@@ -43,9 +43,10 @@ class ControllerExtensionModuleDSocialLogin extends Controller
                 $this->session->data['customer_data'] = $_PUT['customer_data'];
                 $this->session->data['authentication_data'] = $_PUT['authentication_data'];
             }
-
         } else {
-            $this->session->data['redirect_url'] = $this->model_extension_module_d_social_login->getCurrentUrl();
+            if (!(isset($this->session->data['reset']) && $this->session->data['reset'])) {
+                $this->session->data['redirect_url'] = $this->model_extension_module_d_social_login->getCurrentUrl();
+            }
         }
         //load data from provider into form popup
         if (isset($this->session->data['provider']) && $_SERVER['REQUEST_METHOD'] === "PUT" && !empty($_PUT)) {
@@ -201,6 +202,7 @@ class ControllerExtensionModuleDSocialLogin extends Controller
 
             $customer_data = $this->model_extension_module_d_social_login->prepareDataRegistrationFields($customer_data, $this->setting['fields']);
             $customer_id = $this->model_extension_module_d_social_login->addCustomer($customer_data);
+
             $authentication_data['customer_id'] = (int)$customer_id;
 
             $this->model_extension_module_d_social_login->addAuthentication($authentication_data);//login
@@ -335,7 +337,9 @@ class ControllerExtensionModuleDSocialLogin extends Controller
                 $_GET[str_replace('amp;', '', $key)] = $value;
             }
         }
-        $this->sl_redirect = $this->session->data['redirect_url'];
+        $this->sl_redirect = isset($this->session->data['redirect_url'])?
+            $this->session->data['redirect_url']:
+            $this->session->data['redirect_url'] = $this->url->link('account/account');
     }
 
     private function getConfirmMessageView()
