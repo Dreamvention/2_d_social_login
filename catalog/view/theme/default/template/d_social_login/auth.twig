@@ -48,7 +48,12 @@
             }
         }).done(function (html) {
             var protocol = window.location.protocol;
-            var url = decodeURIComponent("{{ url }}");
+            var url = '';
+            if ('{{ url_burn_engine }}') {
+                url = decodeURIComponent("{{ url_burn_engine }}");
+            } else {
+                url = decodeURIComponent("{{ url }}");
+            }
             url = url.replace(/(http|https):/, protocol);
             window.history.pushState("object or string", "Title", url);
 

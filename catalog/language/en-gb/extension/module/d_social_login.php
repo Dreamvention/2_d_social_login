@@ -47,8 +47,7 @@ $_['text_email_intro'] = 'You are almost done. Please fill in the required infor
 $_['text_help_required'] = '* — fields are required';
 
 //confirm text
-$_['text_confirm_finish'] = '<h2 >Thank you!</h2>
-    <p>You are almost done. Please fill in the required information below to complete the registration. You can edit it later from your shop account page.</p>';
+$_['text_confirm_finish'] = '<h2 >Thank you!</h2>';
 
 //errors
 $_['error_email_taken'] = 'Sorry, This email is taken.';

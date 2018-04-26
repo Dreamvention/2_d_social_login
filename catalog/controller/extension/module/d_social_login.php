@@ -11,6 +11,7 @@ class ControllerExtensionModuleDSocialLogin extends Controller
     private $setting = array();
     private $sl_redirect = '';
     private $error = array();
+    private $theme = 'default';
 
     public function __construct($registry)
     {
@@ -20,7 +21,77 @@ class ControllerExtensionModuleDSocialLogin extends Controller
         $this->load->model($this->route);
         $this->load->model('extension/module/d_social_login');
         $this->load->model('extension/d_opencart_patch/load');
+        if (VERSION >= '2.2.0.0') {
+            $this->theme = $this->config->get('config_theme');
+        } else {
+            $this->theme = $this->config->get('config_template');
+        }
+    }
 
+    public function index()
+    {
+
+        $this->document->addStyle('catalog/view/theme/default/stylesheet/d_social_login/styles.css');
+        $this->document->addScript('catalog/view/javascript/d_social_login/spin.min.js');
+        $setting = $this->config->get($this->codename . '_setting');
+        $method = $_SERVER['REQUEST_METHOD'];
+        if ('PUT' === $method) {
+            parse_str(file_get_contents('php://input'), $_PUT);
+            //fix for burn engine
+            if ($this->theme == 'BurnEngine') {
+                $this->session->data['provider'] = $_PUT['provider'];
+                $this->session->data['customer_data'] = $_PUT['customer_data'];
+                $this->session->data['authentication_data'] = $_PUT['authentication_data'];
+            }
+
+        } else {
+            $this->session->data['redirect_url'] = $this->model_extension_module_d_social_login->getCurrentUrl();
+        }
+        //load data from provider into form popup
+        if (isset($this->session->data['provider']) && $_SERVER['REQUEST_METHOD'] === "PUT" && !empty($_PUT)) {
+            $customer_data = $_PUT['customer_data'];
+            $authentication_data = $_PUT['authentication_data'];
+            if (!empty($customer_data) && !empty($authentication_data)) {
+                return $this->getForm($customer_data, $authentication_data);
+            }
+        }
+
+        $data['heading_title'] = $this->language->get('heading_title');
+        $data['button_sign_in'] = $this->language->get('button_sign_in');
+
+        $data['size'] = $setting['size'];
+        $data['sizes'] = $setting['sizes'];
+        $data['islogged'] = ($this->customer->isLogged()) ? $this->customer->isLogged() : false;
+
+        $providers = $setting['providers'];
+        //sorting providers in order wich admin set
+        $sort_order = array();
+        foreach ($providers as $key => $value) {
+            if (isset($value['sort_order'])) {
+                $sort_order[$key] = $value['sort_order'];
+            }
+        }
+        array_multisort($sort_order, SORT_ASC, $providers);
+        $data['providers'] = $providers;
+        foreach ($providers as $key => $val) {
+            $data['providers'][$key]['heading'] = $this->language->get('text_sign_in_with_' . $val['id']);
+        }
+
+        $data['error'] = false;
+        if (isset($this->session->data['d_social_login_error'])) {
+            $data['error'] = $this->session->data['d_social_login_error'];
+            unset($this->session->data['d_social_login_error']);
+        }
+
+        if (!isset($this->session->data['sl_redirect'])) {
+            $this->session->data['sl_redirect'] = ($setting['return_page_url']) ? $setting['return_page_url'] : $this->model_extension_module_d_social_login->getCurrentUrl();
+        }
+        $data['url'] = $this->model_extension_module_d_social_login->getCurrentUrl(1, 1);
+
+        // facebook fix
+        unset($this->session->data['HA::CONFIG']);
+        unset($this->session->data['HA::STORE']);
+        return $this->model_extension_d_opencart_patch_load->view($this->route, $data);
     }
 
     public function login()
@@ -41,8 +112,9 @@ class ControllerExtensionModuleDSocialLogin extends Controller
             $httpsServer = HTTPS_SERVER;
             $httpServer = HTTP_SERVER;
         }
-        $this->setting['base_url'] = $this->config->get('config_secure') ? $httpServer . 'index.php?route=extension/d_social_login/callback' : $httpServer . 'index.php?route=extension/d_social_login/callback';
         $this->setting['debug_file'] = DIR_LOGS . $this->setting['debug_file'];
+
+        $this->setting['base_url'] = $this->config->get('config_secure') ? $httpsServer . 'index.php?route=extension/d_social_login/callback' : $httpServer . 'index.php?route=extension/d_social_login/callback';
         if (isset($this->request->get['provider'])) {
             $this->session->data['provider'] = $this->setting['provider'] = $this->request->get['provider'];
         } else {
@@ -53,10 +125,7 @@ class ControllerExtensionModuleDSocialLogin extends Controller
             // Redirect to the Login Page
             $this->response->redirect($this->sl_redirect);
         }
-        // facebook fix
-        if ($this->setting['provider'] == 'Facebook') {
-            $this->setting['base_url'] = $httpServer . 'index.php?route=extension/d_social_login/callback';
-        }
+
         if ($this->setting['provider'] == 'Live') {
             $this->setting['base_url'] = $this->config->get('config_secure') ? $httpsServer . 'd_social_login_live.php' : $httpServer . 'index.php?route=extension/d_social_login/callback_live';
         }
@@ -71,7 +140,10 @@ class ControllerExtensionModuleDSocialLogin extends Controller
             $remoteLoginResponce['styles'] = $this->document->getStyles();
             $remoteLoginResponce['pre_loader'] = $this->model_extension_module_d_social_login->getPreloader();
             $remoteLoginResponce['url'] = $this->sl_redirect;//fix
-
+            if ($this->theme == 'BurnEngine') {
+                $remoteLoginResponce['url'] = $this->url->link($this->route . '/burn_engine');
+                $remoteLoginResponce['url_burn_engine'] = $this->sl_redirect;
+            }
             $view = $this->model_extension_d_opencart_patch_load->view($this->codename . '/auth', $remoteLoginResponce);
             $this->response->setOutput($view);
         } catch (Exception $e) {
@@ -120,24 +192,6 @@ class ControllerExtensionModuleDSocialLogin extends Controller
         }
     }
 
-    private function initializeSlRedirect()
-    {
-        // correct &amp; in url
-        if (isset($this->request->get)) {
-
-            foreach ($this->request->get as $key => $value) {
-                $this->request->get[str_replace('amp;', '', $key)] = $value;
-            }
-        }
-
-        if (isset($_GET)) {
-            foreach ($_GET as $key => $value) {
-                $_GET[str_replace('amp;', '', $key)] = $value;
-            }
-        }
-        $this->sl_redirect = $this->session->data['redirect_url'];
-    }
-
     public function register()
     {
         $customer_data = array_merge(($this->session->data['customer_data'] != '') ? $this->session->data['customer_data'] : array(), $this->request->post);
@@ -164,114 +218,16 @@ class ControllerExtensionModuleDSocialLogin extends Controller
     }
 
     /*
-     * Called when user close pop up window
-     * this method reset provider so pop up will not be showen with
-     * same  auth data but with same user
-     * */
-
-    private function validateRegistration($customer_data)
-    {
-        foreach ($this->setting['fields'] as $field) {
-            if ($field['enabled'] && isset($field['required']) && $field['required']) {
-                if ($field['id'] == 'confirm') {
-                    if (($customer_data['password'] != $customer_data['confirm'])) {
-                        $this->error['error']['confirm'] = $this->language->get('error_password_and_confirm_different');
-                    }
-                }
-                if ($this->request->post[$field['id']] == "" && isset($field['required']) && $field['required']) {
-                    $this->error['error'][$field['id']] = $this->language->get('error_fill_all_fields');
-                }
-            }
-        }
-        if (isset($customer_data['email']) && isset($this->setting['fields']['email']['required']) && $this->setting['fields']['email']['required']) {
-            if ($this->model_extension_module_d_social_login->validateEmail($customer_data['email'])) {
-                $customer_id = $this->model_extension_module_d_social_login->getCustomerByEmail($customer_data['email']);
-                if ($customer_id) {
-                    if ($this->model_extension_module_d_social_login->checkAuthentication($customer_id, $this->request->post['provider'])) {
-                        $this->error['error']['email'] = $this->language->get('error_email_taken');
-                    }
-                }
-            } else {
-                $this->error['error']['email'] = $this->language->get('error_email_incorrect');
-            }
-
-        }
-        return !$this->error;
-
-    }
-
-    private function getConfirmMessageView()
-    {
-        $data['text_confirm'] = $this->language->get('text_confirm_finish');
-        return $this->model_extension_d_opencart_patch_load->view($this->codename . '/confirm', $data);
-    }
-
+         * Called when user close pop up window
+         * this method reset provider so pop up will not be showen with
+         * same  auth data but with same user
+         * */
     public function reset()
     {
         unset($this->session->data['provider']);
         $this->session->data['reset'] = true;
         $this->response->addHeader('Content-Type: application/html');
         $this->response->setOutput($this->index());
-    }
-
-    public function index()
-    {
-        if (!(isset($this->session->data['reset']) && $this->session->data['reset'])) {
-            //change
-            $this->session->data['redirect_url'] = $this->model_extension_module_d_social_login->getCurrentUrl();
-        }
-        $this->document->addStyle('catalog/view/theme/default/stylesheet/d_social_login/styles.css');
-        $this->document->addScript('catalog/view/javascript/d_social_login/spin.min.js');
-        $setting = $this->config->get($this->codename . '_setting');
-        $method = $_SERVER['REQUEST_METHOD'];
-        if ('PUT' === $method) {
-            parse_str(file_get_contents('php://input'), $_PUT);
-        }
-        //load data from provider into form popup
-        if (isset($this->session->data['provider']) && $_SERVER['REQUEST_METHOD'] === "PUT" && !empty($_PUT)) {
-            $customer_data = $_PUT['customer_data'];
-            $authentication_data = $_PUT['authentication_data'];
-            if (!empty($customer_data) && !empty($authentication_data)) {
-                return $this->getForm($customer_data, $authentication_data);
-            }
-        }
-
-        $data['heading_title'] = $this->language->get('heading_title');
-        $data['button_sign_in'] = $this->language->get('button_sign_in');
-
-        $data['size'] = $setting['size'];
-        $data['sizes'] = $setting['sizes'];
-        $data['islogged'] = ($this->customer->isLogged()) ? $this->customer->isLogged() : false;
-
-        $providers = $setting['providers'];
-        //sorting providers in order wich admin set
-        $sort_order = array();
-        foreach ($providers as $key => $value) {
-            if (isset($value['sort_order'])) {
-                $sort_order[$key] = $value['sort_order'];
-            }
-        }
-        array_multisort($sort_order, SORT_ASC, $providers);
-        $data['providers'] = $providers;
-        foreach ($providers as $key => $val) {
-            $data['providers'][$key]['heading'] = $this->language->get('text_sign_in_with_' . $val['id']);
-        }
-
-        $data['error'] = false;
-        if (isset($this->session->data['d_social_login_error'])) {
-            $data['error'] = $this->session->data['d_social_login_error'];
-            unset($this->session->data['d_social_login_error']);
-        }
-
-        if (!isset($this->session->data['sl_redirect'])) {
-            $this->session->data['sl_redirect'] = ($setting['return_page_url']) ? $setting['return_page_url'] : $this->model_extension_module_d_social_login->getCurrentUrl();
-        }
-        $data['url'] = $this->model_extension_module_d_social_login->getCurrentUrl(1, 1);
-
-        // facebook fix
-        unset($this->session->data['HA::CONFIG']);
-        unset($this->session->data['HA::STORE']);
-        return $this->model_extension_d_opencart_patch_load->view($this->route, $data);
     }
 
     private function getForm($customer_data, $authentication_data)
@@ -333,5 +289,85 @@ class ControllerExtensionModuleDSocialLogin extends Controller
         return $this->model_extension_d_opencart_patch_load->view($this->codename . '/form', $data);
     }
 
+    private function validateRegistration($customer_data)
+    {
+        foreach ($this->setting['fields'] as $field) {
+            if ($field['enabled'] && isset($field['required']) && $field['required']) {
+                if ($field['id'] == 'confirm') {
+                    if (($customer_data['password'] != $customer_data['confirm'])) {
+                        $this->error['error']['confirm'] = $this->language->get('error_password_and_confirm_different');
+                    }
+                }
+                if ($this->request->post[$field['id']] == "" && isset($field['required']) && $field['required']) {
+                    $this->error['error'][$field['id']] = $this->language->get('error_fill_all_fields');
+                }
+            }
+        }
+        if (isset($customer_data['email']) && isset($this->setting['fields']['email']['required']) && $this->setting['fields']['email']['required']) {
+            if ($this->model_extension_module_d_social_login->validateEmail($customer_data['email'])) {
+                $customer_id = $this->model_extension_module_d_social_login->getCustomerByEmail($customer_data['email']);
+                if ($customer_id) {
+                    if ($this->model_extension_module_d_social_login->checkAuthentication($customer_id, $this->request->post['provider'])) {
+                        $this->error['error']['email'] = $this->language->get('error_email_taken');
+                    }
+                }
+            } else {
+                $this->error['error']['email'] = $this->language->get('error_email_incorrect');
+            }
 
+        }
+        return !$this->error;
+
+    }
+
+    private function initializeSlRedirect()
+    {
+        // correct &amp; in url
+        if (isset($this->request->get)) {
+
+            foreach ($this->request->get as $key => $value) {
+                $this->request->get[str_replace('amp;', '', $key)] = $value;
+            }
+        }
+
+        if (isset($_GET)) {
+            foreach ($_GET as $key => $value) {
+                $_GET[str_replace('amp;', '', $key)] = $value;
+            }
+        }
+        $this->sl_redirect = $this->session->data['redirect_url'];
+    }
+
+    private function getConfirmMessageView()
+    {
+        $data['text_confirm'] = $this->language->get('text_confirm_finish');
+        return $this->model_extension_d_opencart_patch_load->view($this->codename . '/confirm', $data);
+    }
+
+    public function burn_engine()
+    {
+        $method = $_SERVER['REQUEST_METHOD'];
+        if ('PUT' === $method) {
+            parse_str(file_get_contents('php://input'), $_PUT);
+        }
+        $this->initializeSlRedirect();
+        //load data from provider into form popup
+        if (isset($this->session->data['provider']) && $_SERVER['REQUEST_METHOD'] === "PUT" && !empty($_PUT)) {
+            $data = array("customer_data" => $_PUT['customer_data'], 'authentication_data' => $_PUT['authentication_data'], 'provider' => $this->session->data['provider']);
+            $this->session->data['customer_data'] = $_PUT['customer_data'];
+            $this->session->data['authentication_data'] = $_PUT['authentication_data'];
+            $url = $this->sl_redirect;
+            $ch = curl_init($url);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
+            curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
+            curl_setopt($ch, CURLOPT_USERAGENT, $_SERVER['HTTP_USER_AGENT']);
+            $response = curl_exec($ch);
+            if (!$response) {
+                return false;
+            }
+            $this->response->setOutput($response);
+        }
+
+    }
 }

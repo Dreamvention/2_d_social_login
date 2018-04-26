@@ -1,6 +1,11 @@
 .d_social_login {
   font-size: 16px;
   color: #6f6f6f;
+  input{
+    display: initial;
+    width:100%;
+  }
+
   .modal-content{
     transition: all ease .4s;
   }
