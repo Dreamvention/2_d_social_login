@@ -18,7 +18,10 @@ class ControllerExtensionModuleDSocialLogin extends Controller
         $this->load->model('extension/d_opencart_patch/url');
         $this->load->model('extension/d_opencart_patch/load');
         $this->load->model('extension/d_opencart_patch/user');
-
+        $this->d_admin_style = (file_exists(DIR_SYSTEM.'library/d_shopunity/extension/d_admin_style.json'));
+        if ($this->d_admin_style){
+            $this->load->model('extension/d_admin_style/style');
+        }
         $this->d_shopunity = (file_exists(DIR_SYSTEM . 'library/d_shopunity/extension/d_shopunity.json'));
         $this->d_opencart_patch = (file_exists(DIR_SYSTEM . 'library/d_shopunity/extension/d_opencart_patch.json'));
         $this->extension = json_decode(file_get_contents(DIR_SYSTEM . 'library/d_shopunity/extension/' . $this->codename . '.json'), true);
@@ -213,8 +216,7 @@ class ControllerExtensionModuleDSocialLogin extends Controller
             'href' => $this->model_extension_d_opencart_patch_url->link($this->route)
         );
 
-        $admin_theme = 'light';
-        $this->document->addStyle('view/stylesheet/d_admin_style/themes/' . $admin_theme . '/styles.css');
+        $this->model_extension_d_admin_style_style->getAdminStyle('light');
 
         $data['header'] = $this->load->controller('common/header');
         $data['column_left'] = $this->load->controller('common/column_left');

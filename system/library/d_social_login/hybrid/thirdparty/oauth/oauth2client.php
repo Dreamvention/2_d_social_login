@@ -79,7 +79,6 @@ class OAuth2Client
     $response = $this->request( $this->token_url, $params, $this->curl_authenticate_method );
 
     $response = $this->parseRequestResult( $response );
-
     if( ! $response || ! isset( $response->access_token ) ){
       throw new Exception( "The Authorization Service has return: " . $response->error );
     }

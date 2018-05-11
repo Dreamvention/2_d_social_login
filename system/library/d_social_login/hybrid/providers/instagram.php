@@ -24,12 +24,17 @@ class Hybrid_Providers_Instagram extends Hybrid_Provider_Model_OAuth2
 		$this->api->api_base_url  = "https://api.instagram.com/v1/";
 		$this->api->authorize_url = "https://api.instagram.com/oauth/authorize/";
 		$this->api->token_url     = "https://api.instagram.com/oauth/access_token";
+        // Override the redirect uri when it's set in the config parameters. This way we prevent
+        // redirect uri mismatches when authenticating with Live.com
+        if (isset($this->config['redirect_uri']) && !empty($this->config['redirect_uri'])) {
+            $this->api->redirect_uri = $this->config['redirect_uri'];
+        }
 	}
 
 	/**
 	* load the user profile from the IDp api client
 	*/
-	function getUserProfile(){ 
+	function getUserProfile(){
 		$data = $this->api->api("users/self/" ); 
 
 		if ( $data->meta->code != 200 ){
@@ -43,7 +48,7 @@ class Hybrid_Providers_Instagram extends Hybrid_Provider_Model_OAuth2
 
 		$this->user->profile->webSiteURL  = $data->data->website; 
 		
-		$this->user->profile->username    = $data->data->username;	
+		$this->user->profile->webSiteURL  = @ $data->data->website;
 
 		return $this->user->profile;
 	}
