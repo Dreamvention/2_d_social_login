@@ -283,7 +283,7 @@ class ControllerExtensionModuleDSocialLogin extends Controller
         $data['button_get_update'] = $this->language->get('button_get_update');
 
         $data['entry_sort_order'] = $this->language->get('entry_sort_order');
-        $data['url_documentation']='http://doc.99logins.com/documentation';
+        $data['url_documentation']='https://doc.99logins.com/documentation';
         $data['entry_fields_sort_order'] = $this->language->get('entry_fields_sort_order');
         $data['text_email'] = $this->language->get('text_email');
         $data['text_firstname'] = $this->language->get('text_firstname');
