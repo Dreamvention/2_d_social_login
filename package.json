@@ -23,5 +23,7 @@
     "gulp-clean-css": "^2.0.12",
     "gulp-sass": "^3.1.0"
   },
-  "dependencies": {}
+  "dependencies": {
+    "social-login": "^0.2.8"
+  }
 }

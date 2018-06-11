@@ -216,7 +216,7 @@ class ControllerExtensionModuleDSocialLogin extends Controller
             'href' => $this->model_extension_d_opencart_patch_url->link($this->route)
         );
 
-        $this->model_extension_d_admin_style_style->getAdminStyle('light');
+        $this->model_extension_d_admin_style_style->getStyles('light');
 
         $data['header'] = $this->load->controller('common/header');
         $data['column_left'] = $this->load->controller('common/column_left');
