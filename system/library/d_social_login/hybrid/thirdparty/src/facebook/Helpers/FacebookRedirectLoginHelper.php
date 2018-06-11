@@ -1,430 +1,333 @@
 <?php
-class ControllerCommonFileManager extends Controller {
-    public function index() {
-        $this->load->language('common/filemanager');
+/**
+ * Copyright 2016 Facebook, Inc.
+ *
+ * You are hereby granted a non-exclusive, worldwide, royalty-free license to
+ * use, copy, modify, and distribute this software in source code or binary
+ * form for use in connection with the web services and APIs provided by
+ * Facebook.
+ *
+ * As with any software that integrates with the Facebook platform, your use
+ * of this software is subject to the Facebook Developer Principles and
+ * Policies [http://developers.facebook.com/policy/]. This copyright notice
+ * shall be included in all copies or substantial portions of the software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+ * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN THE SOFTWARE.
+ *
+ */
+namespace Facebook\Helpers;
 
-        // Find which protocol to use to pass the full image link back
-        if ($this->request->server['HTTPS']) {
-            $server = HTTPS_CATALOG;
-        } else {
-            $server = HTTP_CATALOG;
-        }
+use Facebook\Authentication\AccessToken;
+use Facebook\Authentication\OAuth2Client;
+use Facebook\Exceptions\FacebookSDKException;
+use Facebook\PersistentData\FacebookSessionPersistentDataHandler;
+use Facebook\PersistentData\PersistentDataInterface;
+use Facebook\PseudoRandomString\PseudoRandomStringGeneratorFactory;
+use Facebook\PseudoRandomString\PseudoRandomStringGeneratorInterface;
+use Facebook\Url\FacebookUrlDetectionHandler;
+use Facebook\Url\FacebookUrlManipulator;
+use Facebook\Url\UrlDetectionInterface;
 
-        if (isset($this->request->get['filter_name'])) {
-            $filter_name = rtrim(str_replace('*', '', $this->request->get['filter_name']), '/');
-        } else {
-            $filter_name = null;
-        }
+/**
+ * Class FacebookRedirectLoginHelper
+ *
+ * @package Facebook
+ */
+class FacebookRedirectLoginHelper
+{
+    /**
+     * @const int The length of CSRF string to validate the login link.
+     */
+    const CSRF_LENGTH = 32;
 
-        // Make sure we have the correct directory
-        if (isset($this->request->get['directory'])) {
-            $directory = rtrim(DIR_IMAGE . 'catalog/' . str_replace('*', '', $this->request->get['directory']), '/');
-        } else {
-            $directory = DIR_IMAGE . 'catalog';
-        }
+    /**
+     * @var OAuth2Client The OAuth 2.0 client service.
+     */
+    protected $oAuth2Client;
 
-        if (isset($this->request->get['page'])) {
-            $page = $this->request->get['page'];
-        } else {
-            $page = 1;
-        }
+    /**
+     * @var UrlDetectionInterface The URL detection handler.
+     */
+    protected $urlDetectionHandler;
 
-        $directories = array();
-        $files = array();
+    /**
+     * @var PersistentDataInterface The persistent data handler.
+     */
+    protected $persistentDataHandler;
 
-        $data['images'] = array();
+    /**
+     * @var PseudoRandomStringGeneratorInterface The cryptographically secure pseudo-random string generator.
+     */
+    protected $pseudoRandomStringGenerator;
 
-        $this->load->model('tool/image');
-
-        //if (substr(str_replace('\\', '/', realpath($directory . '/' . $filter_name)), 0, strlen(DIR_IMAGE . 'catalog')) == DIR_IMAGE . 'catalog') {
-        // Get directories
-        $directories = glob($directory . '/' . $filter_name . '*', GLOB_ONLYDIR);
-
-        if (!$directories) {
-            $directories = array();
-        }
-
-        // Get files
-        $files = glob($directory . '/' . $filter_name . '*.{jpg,jpeg,png,gif,JPG,JPEG,PNG,GIF}', GLOB_BRACE);
-
-        if (!$files) {
-            $files = array();
-        }
-        //}
-
-        // Merge directories and files
-        $images = array_merge($directories, $files);
-
-        // Get total number of files and directories
-        $image_total = count($images);
-
-        // Split the array based on current page number and max number of items per page of 10
-        $images = array_splice($images, ($page - 1) * 16, 16);
-
-        foreach ($images as $image) {
-            $name = str_split(basename($image), 14);
-
-            if (is_dir($image)) {
-                $url = '';
-
-                if (isset($this->request->get['target'])) {
-                    $url .= '&target=' . $this->request->get['target'];
-                }
-
-                if (isset($this->request->get['thumb'])) {
-                    $url .= '&thumb=' . $this->request->get['thumb'];
-                }
-
-                $data['images'][] = array(
-                    'thumb' => '',
-                    'name'  => implode(' ', $name),
-                    'type'  => 'directory',
-                    'path'  => utf8_substr($image, utf8_strlen(DIR_IMAGE)),
-                    'href'  => $this->url->link('common/filemanager', 'token=' . $this->session->data['token'] . '&directory=' . urlencode(utf8_substr($image, utf8_strlen(DIR_IMAGE . 'catalog/'))) . $url, true)
-                );
-            } elseif (is_file($image)) {
-                $data['images'][] = array(
-                    'thumb' => $this->model_tool_image->resize(utf8_substr($image, utf8_strlen(DIR_IMAGE)), 100, 100),
-                    'name'  => implode(' ', $name),
-                    'type'  => 'image',
-                    'path'  => utf8_substr($image, utf8_strlen(DIR_IMAGE)),
-                    'href'  => $server . 'image/' . utf8_substr($image, utf8_strlen(DIR_IMAGE))
-                );
-            }
-        }
-
-        $data['heading_title'] = $this->language->get('heading_title');
-
-        $data['text_no_results'] = $this->language->get('text_no_results');
-        $data['text_confirm'] = $this->language->get('text_confirm');
-
-        $data['entry_search'] = $this->language->get('entry_search');
-        $data['entry_folder'] = $this->language->get('entry_folder');
-
-        $data['button_parent'] = $this->language->get('button_parent');
-        $data['button_refresh'] = $this->language->get('button_refresh');
-        $data['button_upload'] = $this->language->get('button_upload');
-        $data['button_folder'] = $this->language->get('button_folder');
-        $data['button_delete'] = $this->language->get('button_delete');
-        $data['button_search'] = $this->language->get('button_search');
-
-        $data['token'] = $this->session->data['token'];
-
-        if (isset($this->request->get['directory'])) {
-            $data['directory'] = urlencode($this->request->get['directory']);
-        } else {
-            $data['directory'] = '';
-        }
-
-        if (isset($this->request->get['filter_name'])) {
-            $data['filter_name'] = $this->request->get['filter_name'];
-        } else {
-            $data['filter_name'] = '';
-        }
-
-        // Return the target ID for the file manager to set the value
-        if (isset($this->request->get['target'])) {
-            $data['target'] = $this->request->get['target'];
-        } else {
-            $data['target'] = '';
-        }
-
-        // Return the thumbnail for the file manager to show a thumbnail
-        if (isset($this->request->get['thumb'])) {
-            $data['thumb'] = $this->request->get['thumb'];
-        } else {
-            $data['thumb'] = '';
-        }
-
-        // Parent
-        $url = '';
-
-        if (isset($this->request->get['directory'])) {
-            $pos = strrpos($this->request->get['directory'], '/');
-
-            if ($pos) {
-                $url .= '&directory=' . urlencode(substr($this->request->get['directory'], 0, $pos));
-            }
-        }
-
-        if (isset($this->request->get['target'])) {
-            $url .= '&target=' . $this->request->get['target'];
-        }
-
-        if (isset($this->request->get['thumb'])) {
-            $url .= '&thumb=' . $this->request->get['thumb'];
-        }
-
-        $data['parent'] = $this->url->link('common/filemanager', 'token=' . $this->session->data['token'] . $url, true);
-
-        // Refresh
-        $url = '';
-
-        if (isset($this->request->get['directory'])) {
-            $url .= '&directory=' . urlencode($this->request->get['directory']);
-        }
-
-        if (isset($this->request->get['target'])) {
-            $url .= '&target=' . $this->request->get['target'];
-        }
-
-        if (isset($this->request->get['thumb'])) {
-            $url .= '&thumb=' . $this->request->get['thumb'];
-        }
-
-        $data['refresh'] = $this->url->link('common/filemanager', 'token=' . $this->session->data['token'] . $url, true);
-
-        $url = '';
-
-        if (isset($this->request->get['directory'])) {
-            $url .= '&directory=' . urlencode(html_entity_decode($this->request->get['directory'], ENT_QUOTES, 'UTF-8'));
-        }
-
-        if (isset($this->request->get['filter_name'])) {
-            $url .= '&filter_name=' . urlencode(html_entity_decode($this->request->get['filter_name'], ENT_QUOTES, 'UTF-8'));
-        }
-
-        if (isset($this->request->get['target'])) {
-            $url .= '&target=' . $this->request->get['target'];
-        }
-
-        if (isset($this->request->get['thumb'])) {
-            $url .= '&thumb=' . $this->request->get['thumb'];
-        }
-
-        $pagination = new Pagination();
-        $pagination->total = $image_total;
-        $pagination->page = $page;
-        $pagination->limit = 16;
-        $pagination->url = $this->url->link('common/filemanager', 'token=' . $this->session->data['token'] . $url . '&page={page}', true);
-
-        $data['pagination'] = $pagination->render();
-
-        $this->response->setOutput($this->load->view('common/filemanager', $data));
+    /**
+     * @param OAuth2Client                              $oAuth2Client          The OAuth 2.0 client service.
+     * @param PersistentDataInterface|null              $persistentDataHandler The persistent data handler.
+     * @param UrlDetectionInterface|null                $urlHandler            The URL detection handler.
+     * @param PseudoRandomStringGeneratorInterface|null $prsg                  The cryptographically secure pseudo-random string generator.
+     */
+    public function __construct(OAuth2Client $oAuth2Client, PersistentDataInterface $persistentDataHandler = null, UrlDetectionInterface $urlHandler = null, PseudoRandomStringGeneratorInterface $prsg = null)
+    {
+        $this->oAuth2Client = $oAuth2Client;
+        $this->persistentDataHandler = $persistentDataHandler ?: new FacebookSessionPersistentDataHandler();
+        $this->urlDetectionHandler = $urlHandler ?: new FacebookUrlDetectionHandler();
+        $this->pseudoRandomStringGenerator = PseudoRandomStringGeneratorFactory::createPseudoRandomStringGenerator($prsg);
     }
 
-    public function upload() {
-        $this->load->language('common/filemanager');
-
-        $json = array();
-
-        // Check user has permission
-        if (!$this->user->hasPermission('modify', 'common/filemanager')) {
-            $json['error'] = $this->language->get('error_permission');
-        }
-
-        // Make sure we have the correct directory
-        if (isset($this->request->get['directory'])) {
-            $directory = rtrim(DIR_IMAGE . 'catalog/' . $this->request->get['directory'], '/');
-        } else {
-            $directory = DIR_IMAGE . 'catalog';
-        }
-
-        // Check its a directory
-        if (!is_dir($directory) || substr(str_replace('\\', '/', realpath($directory)), 0, strlen(DIR_IMAGE . 'catalog')) != DIR_IMAGE . 'catalog') {
-            $json['error'] = $this->language->get('error_directory');
-        }
-
-        if (!$json) {
-            // Check if multiple files are uploaded or just one
-            $files = array();
-
-            if (!empty($this->request->files['file']['name']) && is_array($this->request->files['file']['name'])) {
-                foreach (array_keys($this->request->files['file']['name']) as $key) {
-                    $files[] = array(
-                        'name'     => $this->request->files['file']['name'][$key],
-                        'type'     => $this->request->files['file']['type'][$key],
-                        'tmp_name' => $this->request->files['file']['tmp_name'][$key],
-                        'error'    => $this->request->files['file']['error'][$key],
-                        'size'     => $this->request->files['file']['size'][$key]
-                    );
-                }
-            }
-
-            foreach ($files as $file) {
-                if (is_file($file['tmp_name'])) {
-                    // Sanitize the filename
-                    $filename = basename(html_entity_decode($file['name'], ENT_QUOTES, 'UTF-8'));
-
-                    // Validate the filename length
-                    if ((utf8_strlen($filename) < 3) || (utf8_strlen($filename) > 255)) {
-                        $json['error'] = $this->language->get('error_filename');
-                    }
-
-                    // Allowed file extension types
-                    $allowed = array(
-                        'jpg',
-                        'jpeg',
-                        'gif',
-                        'png'
-                    );
-
-                    if (!in_array(utf8_strtolower(utf8_substr(strrchr($filename, '.'), 1)), $allowed)) {
-                        $json['error'] = $this->language->get('error_filetype');
-                    }
-
-                    // Allowed file mime types
-                    $allowed = array(
-                        'image/jpeg',
-                        'image/pjpeg',
-                        'image/png',
-                        'image/x-png',
-                        'image/gif'
-                    );
-
-                    if (!in_array($file['type'], $allowed)) {
-                        $json['error'] = $this->language->get('error_filetype');
-                    }
-
-                    // Return any upload error
-                    if ($file['error'] != UPLOAD_ERR_OK) {
-                        $json['error'] = $this->language->get('error_upload_' . $file['error']);
-                    }
-                } else {
-                    $json['error'] = $this->language->get('error_upload');
-                }
-
-                if (!$json) {
-                    move_uploaded_file($file['tmp_name'], $directory . '/' . $filename);
-                }
-            }
-        }
-
-        if (!$json) {
-            $json['success'] = $this->language->get('text_uploaded');
-        }
-
-        $this->response->addHeader('Content-Type: application/json');
-        $this->response->setOutput(json_encode($json));
+    /**
+     * Returns the persistent data handler.
+     *
+     * @return PersistentDataInterface
+     */
+    public function getPersistentDataHandler()
+    {
+        return $this->persistentDataHandler;
     }
 
-    public function folder() {
-        $this->load->language('common/filemanager');
-
-        $json = array();
-
-        // Check user has permission
-        if (!$this->user->hasPermission('modify', 'common/filemanager')) {
-            $json['error'] = $this->language->get('error_permission');
-        }
-
-        // Make sure we have the correct directory
-        if (isset($this->request->get['directory'])) {
-            $directory = rtrim(DIR_IMAGE . 'catalog/' . $this->request->get['directory'], '/');
-        } else {
-            $directory = DIR_IMAGE . 'catalog';
-        }
-
-        // Check its a directory
-        if (!is_dir($directory) || substr(str_replace('\\', '/', realpath($directory)), 0, strlen(DIR_IMAGE . 'catalog')) != DIR_IMAGE . 'catalog') {
-            $json['error'] = $this->language->get('error_directory');
-        }
-
-        if ($this->request->server['REQUEST_METHOD'] == 'POST') {
-            // Sanitize the folder name
-            $folder = basename(html_entity_decode($this->request->post['folder'], ENT_QUOTES, 'UTF-8'));
-
-            // Validate the filename length
-            if ((utf8_strlen($folder) < 3) || (utf8_strlen($folder) > 128)) {
-                $json['error'] = $this->language->get('error_folder');
-            }
-
-            // Check if directory already exists or not
-            if (is_dir($directory . '/' . $folder)) {
-                $json['error'] = $this->language->get('error_exists');
-            }
-        }
-
-        if (!isset($json['error'])) {
-            mkdir($directory . '/' . $folder, 0777);
-            chmod($directory . '/' . $folder, 0777);
-
-            @touch($directory . '/' . $folder . '/' . 'index.html');
-
-            $json['success'] = $this->language->get('text_directory');
-        }
-
-        $this->response->addHeader('Content-Type: application/json');
-        $this->response->setOutput(json_encode($json));
+    /**
+     * Returns the URL detection handler.
+     *
+     * @return UrlDetectionInterface
+     */
+    public function getUrlDetectionHandler()
+    {
+        return $this->urlDetectionHandler;
     }
 
-    public function delete() {
-        $this->load->language('common/filemanager');
+    /**
+     * Returns the cryptographically secure pseudo-random string generator.
+     *
+     * @return PseudoRandomStringGeneratorInterface
+     */
+    public function getPseudoRandomStringGenerator()
+    {
+        return $this->pseudoRandomStringGenerator;
+    }
 
-        $json = array();
+    /**
+     * Stores CSRF state and returns a URL to which the user should be sent to in order to continue the login process with Facebook.
+     *
+     * @param string $redirectUrl The URL Facebook should redirect users to after login.
+     * @param array  $scope       List of permissions to request during login.
+     * @param array  $params      An array of parameters to generate URL.
+     * @param string $separator   The separator to use in http_build_query().
+     *
+     * @return string
+     */
+    private function makeUrl($redirectUrl, array $scope, array $params = [], $separator = '&')
+    {
+        $state = $this->persistentDataHandler->get('state') ?: $this->pseudoRandomStringGenerator->getPseudoRandomString(static::CSRF_LENGTH);
+        $this->persistentDataHandler->set('state', $state);
 
-        // Check user has permission
-        if (!$this->user->hasPermission('modify', 'common/filemanager')) {
-            $json['error'] = $this->language->get('error_permission');
+        return $this->oAuth2Client->getAuthorizationUrl($redirectUrl, $state, $scope, $params, $separator);
+    }
+
+    /**
+     * Returns the URL to send the user in order to login to Facebook.
+     *
+     * @param string $redirectUrl The URL Facebook should redirect users to after login.
+     * @param array  $scope       List of permissions to request during login.
+     * @param string $separator   The separator to use in http_build_query().
+     *
+     * @return string
+     */
+    public function getLoginUrl($redirectUrl, array $scope = [], $separator = '&')
+    {
+        return $this->makeUrl($redirectUrl, $scope, [], $separator);
+    }
+
+    /**
+     * Returns the URL to send the user in order to log out of Facebook.
+     *
+     * @param AccessToken|string $accessToken The access token that will be logged out.
+     * @param string             $next        The url Facebook should redirect the user to after a successful logout.
+     * @param string             $separator   The separator to use in http_build_query().
+     *
+     * @return string
+     *
+     * @throws FacebookSDKException
+     */
+    public function getLogoutUrl($accessToken, $next, $separator = '&')
+    {
+        if (!$accessToken instanceof AccessToken) {
+            $accessToken = new AccessToken($accessToken);
         }
 
-        if (isset($this->request->post['path'])) {
-            $paths = $this->request->post['path'];
-        } else {
-            $paths = array();
+        if ($accessToken->isAppAccessToken()) {
+            throw new FacebookSDKException('Cannot generate a logout URL with an app access token.', 722);
         }
 
-        // Loop through each path to run validations
-        foreach ($paths as $path) {
-            // Check path exsists
-            if ($path == DIR_IMAGE . 'catalog' || substr(str_replace('\\', '/', realpath(DIR_IMAGE . $path)), 0, strlen(DIR_IMAGE . 'catalog')) != DIR_IMAGE . 'catalog') {
-                $json['error'] = $this->language->get('error_delete');
+        $params = [
+            'next' => $next,
+            'access_token' => $accessToken->getValue(),
+        ];
 
-                break;
-            }
+        return 'https://www.facebook.com/logout.php?' . http_build_query($params, null, $separator);
+    }
+
+    /**
+     * Returns the URL to send the user in order to login to Facebook with permission(s) to be re-asked.
+     *
+     * @param string $redirectUrl The URL Facebook should redirect users to after login.
+     * @param array  $scope       List of permissions to request during login.
+     * @param string $separator   The separator to use in http_build_query().
+     *
+     * @return string
+     */
+    public function getReRequestUrl($redirectUrl, array $scope = [], $separator = '&')
+    {
+        $params = ['auth_type' => 'rerequest'];
+
+        return $this->makeUrl($redirectUrl, $scope, $params, $separator);
+    }
+
+    /**
+     * Returns the URL to send the user in order to login to Facebook with user to be re-authenticated.
+     *
+     * @param string $redirectUrl The URL Facebook should redirect users to after login.
+     * @param array  $scope       List of permissions to request during login.
+     * @param string $separator   The separator to use in http_build_query().
+     *
+     * @return string
+     */
+    public function getReAuthenticationUrl($redirectUrl, array $scope = [], $separator = '&')
+    {
+        $params = ['auth_type' => 'reauthenticate'];
+
+        return $this->makeUrl($redirectUrl, $scope, $params, $separator);
+    }
+
+    /**
+     * Takes a valid code from a login redirect, and returns an AccessToken entity.
+     *
+     * @param string|null $redirectUrl The redirect URL.
+     *
+     * @return AccessToken|null
+     *
+     * @throws FacebookSDKException
+     */
+    public function getAccessToken($redirectUrl = null)
+    {
+        if (!$code = $this->getCode()) {
+            return null;
         }
 
-        if (!$json) {
-            // Loop through each path
-            foreach ($paths as $path) {
-                $path = rtrim(DIR_IMAGE . $path, '/');
+        $this->validateCsrf();
+        $this->resetCsrf();
 
-                // If path is just a file delete it
-                if (is_file($path)) {
-                    unlink($path);
+        $redirectUrl = $redirectUrl ?: $this->urlDetectionHandler->getCurrentUrl();
+        // At minimum we need to remove the state param
+        $redirectUrl = FacebookUrlManipulator::removeParamsFromUrl($redirectUrl, ['state']);
 
-                    // If path is a directory beging deleting each file and sub folder
-                } elseif (is_dir($path)) {
-                    $files = array();
+        return $this->oAuth2Client->getAccessTokenFromCode($code, $redirectUrl);
+    }
 
-                    // Make path into an array
-                    $path = array($path . '*');
-
-                    // While the path array is still populated keep looping through
-                    while (count($path) != 0) {
-                        $next = array_shift($path);
-
-                        foreach (glob($next) as $file) {
-                            // If directory add to path array
-                            if (is_dir($file)) {
-                                $path[] = $file . '/*';
-                            }
-
-                            // Add the file to the files to be deleted array
-                            $files[] = $file;
-                        }
-                    }
-
-                    // Reverse sort the file array
-                    rsort($files);
-
-                    foreach ($files as $file) {
-                        // If file just delete
-                        if (is_file($file)) {
-                            unlink($file);
-
-                            // If directory use the remove directory function
-                        } elseif (is_dir($file)) {
-                            rmdir($file);
-                        }
-                    }
-                }
-            }
-
-            $json['success'] = $this->language->get('text_delete');
+    /**
+     * Validate the request against a cross-site request forgery.
+     *
+     * @throws FacebookSDKException
+     */
+    protected function validateCsrf()
+    {
+        $state = $this->getState();
+        if (!$state) {
+            throw new FacebookSDKException('Cross-site request forgery validation failed. Required GET param "state" missing.');
+        }
+        $savedState = $this->persistentDataHandler->get('state');
+        if (!$savedState) {
+            throw new FacebookSDKException('Cross-site request forgery validation failed. Required param "state" missing from persistent data.');
         }
 
-        $this->response->addHeader('Content-Type: application/json');
-        $this->response->setOutput(json_encode($json));
+        if (\hash_equals($savedState, $state)) {
+            return;
+        }
+
+        throw new FacebookSDKException('Cross-site request forgery validation failed. The "state" param from the URL and session do not match.');
+    }
+
+    /**
+     * Resets the CSRF so that it doesn't get reused.
+     */
+    private function resetCsrf()
+    {
+        $this->persistentDataHandler->set('state', null);
+    }
+
+    /**
+     * Return the code.
+     *
+     * @return string|null
+     */
+    protected function getCode()
+    {
+        return $this->getInput('code');
+    }
+
+    /**
+     * Return the state.
+     *
+     * @return string|null
+     */
+    protected function getState()
+    {
+        return $this->getInput('state');
+    }
+
+    /**
+     * Return the error code.
+     *
+     * @return string|null
+     */
+    public function getErrorCode()
+    {
+        return $this->getInput('error_code');
+    }
+
+    /**
+     * Returns the error.
+     *
+     * @return string|null
+     */
+    public function getError()
+    {
+        return $this->getInput('error');
+    }
+
+    /**
+     * Returns the error reason.
+     *
+     * @return string|null
+     */
+    public function getErrorReason()
+    {
+        return $this->getInput('error_reason');
+    }
+
+    /**
+     * Returns the error description.
+     *
+     * @return string|null
+     */
+    public function getErrorDescription()
+    {
+        return $this->getInput('error_description');
+    }
+
+    /**
+     * Returns a value from a GET param.
+     *
+     * @param string $key
+     *
+     * @return string|null
+     */
+    private function getInput($key)
+    {
+        return isset($_GET[$key]) ? $_GET[$key] : null;
     }
 }
