@@ -48,7 +48,6 @@ class LightOpenID
 
         $uri = rtrim(preg_replace('#((?<=\?)|&)openid\.[^&]+#', '', $_SERVER['REQUEST_URI']), '?');
         $this->returnUrl = $this->trustRoot . $uri;
-
         $this->data = ($_SERVER['REQUEST_METHOD'] === 'POST') ? $_POST : $_GET;
 
         if(!function_exists('curl_init') && !in_array('https', stream_get_wrappers())) {
@@ -175,7 +174,7 @@ class LightOpenID
     protected function get_realm_protocol()
     {
         if (!empty($_SERVER['HTTPS'])) {
-            $use_secure_protocol = ($_SERVER['HTTPS'] != 'off');
+            $use_secure_protocol = ($_SERVER['HTTPS'] == 'off');
         } else if (isset($_SERVER['HTTP_X_FORWARDED_PROTO'])) {
             $use_secure_protocol = ($_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https');
         } else {
