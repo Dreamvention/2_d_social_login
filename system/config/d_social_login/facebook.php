@@ -10,7 +10,7 @@ $_['d_social_login_facebook'] = array(
         "sort_order" => 2,
         "icon" => 'dsl-facebook',
         "background_color" => '#4864b4',
-        "background_color_active" => '#3a5192',
-        "background_color_hover" => '#7c3232',
+        "background_color_active" => '#112e97',
+        "background_color_hover" => '#112e97',
     )
 );

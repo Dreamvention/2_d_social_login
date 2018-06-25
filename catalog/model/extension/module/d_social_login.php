@@ -12,7 +12,7 @@ class ModelExtensionModuleDSocialLogin extends Model
 
         if ($result->num_rows) {
             return true;
-           } else {
+        } else {
             return false;
         }
     }
@@ -47,14 +47,15 @@ class ModelExtensionModuleDSocialLogin extends Model
             "zip = '" . $this->db->escape($data['zip']) . "', " .
             "date_added = NOW()");
     }
+
     public function addCustomer($data)
     {
         //todo test 2
         $this->load->model('account/customer');
         if ($this->model_account_customer->getTotalCustomersByEmail($data['email'])) {
             return $this->model_account_customer->getCustomerByEmail($data['email'])['customer_id'];
-        }else
-        $this->db->query("INSERT INTO " . DB_PREFIX . "customer SET
+        } else
+            $this->db->query("INSERT INTO " . DB_PREFIX . "customer SET
             store_id = '" . (int)$this->config->get('config_store_id') . "',
             firstname = '" . $this->db->escape($data['firstname']) . "',
             lastname = '" . $this->db->escape($data['lastname']) . "',
@@ -286,7 +287,7 @@ class ModelExtensionModuleDSocialLogin extends Model
             $this->model_extension_module_d_social_login->addAuthentication($authentication_data);
             Hybrid_Auth::$logger->info('d_social_login: addAuthentication');
             // login
-            $this->model_extension_module_d_social_login->login($customer_id);
+            $this->login($customer_id);
 
             // redirect
             return 'redirect';

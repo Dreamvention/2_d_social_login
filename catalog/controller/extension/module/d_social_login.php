@@ -145,7 +145,7 @@ class ControllerExtensionModuleDSocialLogin extends Controller
                 $remoteLoginResponce['url'] = $this->url->link($this->route . '/burn_engine');
                 $remoteLoginResponce['url_burn_engine'] = $this->sl_redirect;
             }
-            $view = $this->model_extension_d_opencart_patch_load->view($this->codename . '/auth', $remoteLoginResponce);
+            $view = $this->model_extension_d_opencart_patch_load->view('extension/'.$this->codename . '/auth', $remoteLoginResponce);
             $this->response->setOutput($view);
         } catch (Exception $e) {
             unset($this->session->data['provider']);
@@ -288,7 +288,7 @@ class ControllerExtensionModuleDSocialLogin extends Controller
         $data['log_style'] = ' background-image: url(\'catalog/view/theme/default/stylesheet/d_social_login/icons/' . $provider['id'] . '.svg\');background-color:' . $provider['background_color'];
         $this->load->model('localisation/country');
         $data['countries'] = $this->model_localisation_country->getCountries();
-        return $this->model_extension_d_opencart_patch_load->view($this->codename . '/form', $data);
+        return $this->model_extension_d_opencart_patch_load->view('extension/'.$this->codename . '/form', $data);
     }
 
     private function validateRegistration($customer_data)
@@ -345,7 +345,7 @@ class ControllerExtensionModuleDSocialLogin extends Controller
     private function getConfirmMessageView()
     {
         $data['text_confirm'] = $this->language->get('text_confirm_finish');
-        return $this->model_extension_d_opencart_patch_load->view($this->codename . '/confirm', $data);
+        return $this->model_extension_d_opencart_patch_load->view('extension/'.$this->codename . '/confirm', $data);
     }
 
     public function burn_engine()

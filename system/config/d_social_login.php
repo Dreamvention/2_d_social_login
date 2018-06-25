@@ -1,63 +1,63 @@
 <?php
 $_['d_social_login'] = array(
-    "base_url" => "",
-    "providers" => array(),
-    "debug_mode" => false,
+    "base_url"            => "",
+    "providers"           => array(),
+    "debug_mode"          => false,
     //system/logs/d_social_login.txt
-    "debug_file" => "d_social_login.txt",
-    'fields' => array(
-        'email' => array('id' => 'email', 'enabled' => true, 'required' => true, 'sort_order' => 0, 'type' => 'email'),
-        'firstname' => array('id' => 'firstname', 'enabled' => true, 'required' => true, 'sort_order' => 1, 'type' => 'text'),
-        'lastname' => array('id' => 'lastname', 'enabled' => true, 'required' => true, 'sort_order' => 2, 'type' => 'text'),
-        'telephone' => array('id' => 'telephone', 'enabled' => true, 'required' => true, 'sort_order' => 3, 'type' => 'text', 'mask' => '9(999) 9999-9999?9'),
-        'address_1' => array('id' => 'address_1', 'enabled' => true, 'required' => false, 'sort_order' => 4, 'type' => 'text'),
-        'address_2' => array('id' => 'address_2', 'enabled' => true, 'required' => false, 'sort_order' => 5, 'type' => 'text'),
-        'city' => array('id' => 'city', 'enabled' => true, 'required' => false, 'sort_order' => 6, 'type' => 'text'),
-        'postcode' => array('id' => 'postcode', 'enabled' => true, 'required' => false, 'sort_order' => 7, 'type' => 'text'),
+    "debug_file"          => "d_social_login.txt",
+    'fields'              => array(
+        'email'      => array('id' => 'email', 'enabled' => true, 'required' => true, 'sort_order' => 0, 'type' => 'email'),
+        'firstname'  => array('id' => 'firstname', 'enabled' => true, 'required' => true, 'sort_order' => 1, 'type' => 'text'),
+        'lastname'   => array('id' => 'lastname', 'enabled' => true, 'required' => true, 'sort_order' => 2, 'type' => 'text'),
+        'telephone'  => array('id' => 'telephone', 'enabled' => true, 'required' => true, 'sort_order' => 3, 'type' => 'text', 'mask' => '9(999) 9999-9999?9'),
+        'address_1'  => array('id' => 'address_1', 'enabled' => true, 'required' => false, 'sort_order' => 4, 'type' => 'text'),
+        'address_2'  => array('id' => 'address_2', 'enabled' => true, 'required' => false, 'sort_order' => 5, 'type' => 'text'),
+        'city'       => array('id' => 'city', 'enabled' => true, 'required' => false, 'sort_order' => 6, 'type' => 'text'),
+        'postcode'   => array('id' => 'postcode', 'enabled' => true, 'required' => false, 'sort_order' => 7, 'type' => 'text'),
         'country_id' => array('id' => 'country_id', 'enabled' => true, 'required' => false, 'sort_order' => 8, 'type' => 'select'),
-        'zone_id' => array('id' => 'zone_id', 'enabled' => true, 'required' => false, 'sort_order' => 9, 'type' => 'select'),
-        'company' => array('id' => 'company', 'enabled' => true, 'required' => false, 'sort_order' => 10, 'type' => 'text'),
+        'zone_id'    => array('id' => 'zone_id', 'enabled' => true, 'required' => false, 'sort_order' => 9, 'type' => 'select'),
+        'company'    => array('id' => 'company', 'enabled' => true, 'required' => false, 'sort_order' => 10, 'type' => 'text'),
         // 'company_id' => array('id' => 'company_id', 'enabled' => true, 'sort_order' => 11, 'type' => 'text'),
         // 'tax_id' => array('id' => 'tax_id', 'enabled' => true, 'sort_order' => 12, 'type' => 'text'),
-        'password' => array('id' => 'password', 'enabled' => true, 'required' => false, 'sort_order' => 13, 'type' => 'password'),
-        'confirm' => array('id' => 'confirm', 'enabled' => true, 'required' => false, 'sort_order' => 14, 'type' => 'password')
+        'password'   => array('id' => 'password', 'enabled' => true, 'required' => false, 'sort_order' => 13, 'type' => 'password'),
+        'confirm'    => array('id' => 'confirm', 'enabled' => true, 'required' => false, 'sort_order' => 14, 'type' => 'password')
     ),
-    "size" => "icon",
-    "sizes" => array(
-        'icons' => array(
-            "padding" => '11px 4px',
-            "font-size" => '20px',
-            "width" => '40px',
-            "border-radius"=>'3px',
+    "size"                => "icon",
+    "sizes"               => array(
+        'icons'  => array(
+            "padding"       => '11px 4px',
+            "font-size"     => '20px',
+            "width"         => '40px',
+            "border-radius" => '3px',
         ),
-        'small' => array(
-            "padding" => '3px',
+        'small'  => array(
+            "padding"   => '3px',
             "font-size" => '10px',
-            "width" => '25px',
+            "width"     => '25px',
         ),
         'medium' => array(
-            "padding" => '6px 4px',
+            "padding"   => '6px 4px',
             "font-size" => '12px',
-            "width" => '30px',
-            ),
-        'large' => array(
-            "padding" => '7px 5px',
+            "width"     => '30px',
+        ),
+        'large'  => array(
+            "padding"   => '7px 5px',
             "font-size" => '13px',
-            "width" => '35px',
+            "width"     => '35px',
 
         ),
-        'huge' => array(
-            "padding" => '12px 20px 11px 20px',
+        'huge'   => array(
+            "padding"   => '12px 20px 11px 20px',
             "font-size" => '15px',
-            "width" => '40px',
-            ),
+            "width"     => '40px',
         ),
-    "return_page_url" => "",
-    "customer_group" => 1,
-    "newsletter" => 1,
-    "iframe" => 1,
+    ),
+    "return_page_url"     => "",
+    "customer_group"      => 1,
+    "newsletter"          => 1,
+    "iframe"              => 1,
     //image/catalog/d_social_login/bg.png
-    "background_img" => "catalog/d_social_login/bg.png",
+    "background_img"      => "catalog/d_social_login/bg.png",
     "background_img_size" => array("width" => 100, 'height' => 100),
 );
 ?>
