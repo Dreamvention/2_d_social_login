@@ -106,7 +106,7 @@
   "changelog": [
     {
       "version": "6.1.1",
-      "change": "Fix for instruction loading from http server in admin"
+      "change": "Fix for instruction loading from http server in admin; Transfer folder on template on catalog/view/theme.... ; Fix steam login on https"
     }, {
       "version": "6.1.0",
       "change": "Instruction tab in admin moved to remote server to be always up to date; fix for burn engine; fix for http htpps servers"
