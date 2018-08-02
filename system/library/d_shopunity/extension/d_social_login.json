@@ -58,6 +58,8 @@
     "system/library/d_social_login/hybrid/providers/google.php",
     "system/config/d_social_login/linkedin.php",
     "system/library/d_social_login/hybrid/providers/linkedin.php",
+    "system/config/d_social_login/steam.php",
+    "system/library/d_social_login/hybrid/providers/steam.php",
     "system/config/d_social_login/yahoo.php",
     "system/library/d_social_login/hybrid/providers/yahoo.php",
     "admin/controller/extension/module/d_social_login.php",
