@@ -28,59 +28,86 @@
     </div>
 
     <div class="container-fluid">
+        {% if not pro %}
+            <div class="notify alert alert-info">{{text_get_pro}}</div>
+        {% endif %}
         {% if (error_warning) %}
             <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> {{ error_warning }}
                 <button type="button" class="close" data-dismiss="alert">&times;</button>
             </div>
         {% endif %}
-
+        {% if success %}
+            <div class="alert alert-success"><i class="fa fa-exclamation-circle"></i> {{ success }}
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+            </div>
+        {% endif %}
+        {% if d_shopunity %}
+            <div class="d_shopunity_update"></div>
+            <script src="view/javascript/d_shopunity/d_shopunity_widget.js" type="text/javascript"></script>
+            <script type="text/javascript">
+			    var d_shopunity_update = jQuery.extend(true, {}, d_shopunity_widget);
+			    d_shopunity_update.init({
+				    class: '.d_shopunity_update',
+				    token: '{{token}}',
+				    extension_id: 'd_social_login',
+				    action: 'loadUpdate'
+			    })
+            </script>
+        {% endif %}
+        {% if not pro and settings and d_shopunity %}
+        <div class="row">
+            <div class="col-md-9">
+        {% endif %}
         <div class="panel panel-default panel-resizable">
             <form action="{{ action }}" method="post" enctype="multipart/form-data" id="form"
                   class="form-horizontal">
                 <div class="panel-heading">
                     <h3 class="panel-title "><i class="fa fa-pencil"></i> {{ text_edit }}</h3>
-                    <div class="status-wrap pull-right d-inline-block">
-                        <label class="" for="input_status">{{ entry_status }}</label>
-                        <input type="hidden" name="{{ id }}_status" value="0"/>
-                        <input type="checkbox" name="{{ id }}_status" class="switcher"
-                               id="input_status" {{ d_social_login_status ? 'checked="checked"' : '' }}
-                               value="1"/>
-                    </div>
+
                 </div>
-
                 <div class="panel-body">
-
-                    <ul class="nav nav-tabs">
-                        <li class="active"><a href="#setting_basic" data-toggle="tab">
-                                <i class="fa fa-cog"></i>
-                                {{ text_setting_basic }}
-                            </a></li>
-                        <li><a href="#setting_button" data-toggle="tab">
-                                <i class="fa fa-bullhorn"></i>
-                                {{ text_setting_button }}
-                            </a></li>
-                        <li><a href="#setting_field" data-toggle="tab">
-                                <i class="fa fa-bars"></i>
-                                {{ text_setting_field }}
-                            </a></li>
-                        <li><a href="#setting_provider" data-toggle="tab">
-                                <i class="fa fa-code"></i>
-                                {{ text_setting_provider }}
-                            </a></li>
-                        <li><a href="#instruction" data-toggle="tab">
-                                <i class="fa fa-graduation-cap"></i>
-                                {{ text_instruction }}
-                            </a></li>
-                        <li><a id="debug_btn" href="#debug" data-toggle="tab"
-                               class="{{ not setting['debug_mode']? 'hide' }}">
-                                <i class="fa fa-bug"></i>
-                                {{ text_debug }}
-                            </a></li>
-                    </ul>
-
-                    <div class="tab-content">
+                    {% if settings %}
+                        <ul class="nav nav-tabs">
+                            <li class="active"><a href="#setting_basic" data-toggle="tab">
+                                    <i class="fa fa-cog"></i>
+                                    {{ text_setting_basic }}
+                                </a></li>
+                            <li><a href="#setting_button" data-toggle="tab">
+                                    <i class="fa fa-bullhorn"></i>
+                                    {{ text_setting_button }}
+                                </a></li>
+                            <li><a href="#setting_field" data-toggle="tab">
+                                    <i class="fa fa-bars"></i>
+                                    {{ text_setting_field }}
+                                </a></li>
+                            <li><a href="#setting_provider" data-toggle="tab">
+                                    <i class="fa fa-code"></i>
+                                    {{ text_setting_provider }}
+                                </a></li>
+                            <li><a href="#instruction" data-toggle="tab">
+                                    <i class="fa fa-graduation-cap"></i>
+                                    {{ text_instruction }}
+                                </a></li>
+                            <li><a id="debug_btn" href="#debug" data-toggle="tab"
+                                   class="{{ not setting['debug_mode']? 'hide' }}">
+                                    <i class="fa fa-bug"></i>
+                                    {{ text_debug }}
+                                </a></li>
+                        </ul>
+                        <div class="tab-content">
 
                         <div id="setting_basic" class="tab-pane active">
+
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label" for="input_status">{{ entry_status }}</label>
+                                <div class="col-sm-10">
+                                    <input type="hidden" name="{{ id }}_status" value="0"/>
+                                    <input type="checkbox" name="{{ id }}_status" class="switcher"
+                                           id="input_status" {{ d_social_login_status ? 'checked="checked"' : '' }}
+                                           value="1"/>
+                                </div>
+                            </div>
+
                             <div class="form-group">
                                 <label class="col-sm-2 control-label" for="select_size">{{ entry_size }}</label>
                                 <div class="col-sm-10">
@@ -416,10 +443,126 @@
                             </div>
                         </div>
                     </div>
+                    {% else %}
+                        <style>
+                            .welcome{
+                                background: url('view/image/d_quickcheckout/bg.svg');
+                                background-position: bottom;
+                                background-repeat: repeat-x;
+                                background-size: 50%;
+                                min-height: 700px;
+                                padding-top: 50px;
+                                padding-bottom: 200px;
+                            }
+                            .welcome-into{
+                                text-align: center;
+                                max-width: 500px;
+                                margin: auto;
+                            }
+                            .welcome-into-logo{
+                                padding-bottom: 15px;
+                            }
+                            .welcome-into-heading{
+                                font-size: 30px;
+                                font-weight: bold;
+                                padding-bottom: 15px;
+                            }
+                            .welcome-into-text{
+                                font-size: 18px;
+                                padding-bottom: 30px;
+                            }
+                            .welcome-into-start{
+                                padding-bottom: 30px;
+                            }
+                            .welcome-features{
+                                padding: 30px;
+                            }
+                            .welcome-features-icon{
+                                padding: 20px;
+                                height: 130px;
+                                text-align: center;
+                            }
+                            .welcome-features-text{
+                                text-align: center;
+                                font-weight: bold;
+                                font-size: 16px;
+                            }
+                            .panel .panel-body{
+                                padding: 0px;
+                            }
+                        </style>
+                        <div class="welcome">
+                            <div class="welcome-into">
+                                <div class="welcome-into-logo"><img src="view/image/d_quickcheckout/logo.svg" /></div>
+                                <div class="welcome-into-heading">Ajax Quick Checkout</div>
+                                <div class="welcome-into-text">You are losing 67% of sales when you use the default checkout. We have developed the best checkout editor for you to customize so that your customers could enjoy buying and you could start selling more.</div>
+
+                                <div class="welcome-into-start">
+                                    <a class="btn btn-primary btn-lg addSetting">Setup</a>
+                                </div>
+                            </div>
+                            <div class="welcome-features">
+                                <div class="row">
+                                    {# <div class="col-md-3">
+                                        <div class="welcome-features-icon"><img src="view/image/d_quickcheckout/icons/customisable.svg" /></div>
+                                        <div class="welcome-features-text">Customisable</div>
+                                    </div> #}
+                                    <div class="col-md-3">
+                                        <div class="welcome-features-icon"><img src="view/image/d_quickcheckout/icons/visual-editor.svg" /></div>
+                                        <div class="welcome-features-text">Customize with <br/>Visual editor</div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="welcome-features-icon"><img src="view/image/d_quickcheckout/icons/extensible.svg" /></div>
+                                        <div class="welcome-features-text">Extend with <br/>plugins</div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="welcome-features-icon"><img src="view/image/d_quickcheckout/icons/mulipage.svg" /></div>
+                                        <div class="welcome-features-text">Add One Page or <br/>Multiple pages</div>
+                                    </div>
+                                    {# <div class="col-md-3">
+                                        <div class="welcome-features-icon"><img src="view/image/d_quickcheckout/icons/github.svg" /></div>
+                                        <div class="welcome-features-text">Opensource</div>
+                                    </div> #}
+                                    {# <div class="col-md-3">
+                                        <div class="welcome-features-icon"><img src="view/image/d_quickcheckout/icons/layout.svg" /></div>
+                                        <div class="welcome-features-text">Layouts</div>
+                                    </div> #}
+
+                                    <div class="col-md-3">
+                                        <div class="welcome-features-icon"><img src="view/image/d_quickcheckout/icons/themes.svg" /></div>
+                                        <div class="welcome-features-text">Add Themes & Layouts</div>
+                                    </div>
+                                    {# <div class="col-md-3">
+                                        <div class="welcome-features-icon"><img src="view/image/d_quickcheckout/icons/updates.svg" /></div>
+                                        <div class="welcome-features-text">Updatable</div>
+                                    </div> #}
+
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
 
             </form>
         </div>
+        {% if not pro and settings and d_shopunity %}
+            </div>
+         <div class="col-md-3">
+            <div class="d_shopunity_widget"></div>
+            <script src="view/javascript/d_shopunity/d_shopunity_widget.js" type="text/javascript"></script>
+            <script type="text/javascript">
+                var d_shopunity_widget = jQuery.extend(true, {}, d_shopunity_widget);
+                d_shopunity_widget.init({
+                    class: '.d_shopunity_widget',
+                    token: '{{token}}',
+                    extension_id: 'd_social_login_pro'
+                })
+            </script>
+        </div>
+         </div>
+         {% endif %}
+
     </div>
+    <div style="text-align: center; padding: 30px;">{{text_powered_by}}</div>
     <div class="info-window">
         <div class="info-window-wrap">
             <div class="info-window-block">

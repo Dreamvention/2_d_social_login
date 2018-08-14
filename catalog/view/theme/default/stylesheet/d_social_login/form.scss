@@ -106,3 +106,7 @@
     }
   }
 }
+//fixing very bad thing with scroll
+.modal-open{
+  overflow: scroll;
+}

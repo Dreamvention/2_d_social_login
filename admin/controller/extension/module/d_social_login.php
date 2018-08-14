@@ -135,6 +135,7 @@ class ControllerExtensionModuleDSocialLogin extends Controller
         $data['stores'] = $this->model_extension_module_d_social_login->getStores();
         $data['version'] = $this->extension['version'];
         $data['token'] = $this->model_extension_d_opencart_patch_user->getUrlToken();
+        $data['pro'] = $this->d_social_login_pro;
         $data['d_shopunity'] = $this->d_shopunity;
         $data['entry_get_update'] = sprintf($this->language->get('entry_get_update'), $data['version']);
         $data = array_merge($data, $this->getTextFields());

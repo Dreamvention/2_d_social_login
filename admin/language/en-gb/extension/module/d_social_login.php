@@ -114,6 +114,8 @@ $_['warning_app_settings']      = 'Creating an App can be tricky';
 $_['warning_app_settings_full'] = 'Be ready that it may not work from the first time. To get it working from the first try you must follow the <a href="#instruction" data-toggle="tab">instructions</a> exactly. If you face some issues, you can read more in our <a href="https://dreamvention.zendesk.com/hc/en-us/sections/201049012-Social-Login" target="_blank">Knowledgebase</a> or ask us to help you out via <a href="http://www.dreamvention.com/support" target="_blank">support</a>. But please remember that creating an app requires access to your Social network personal page, which usually carries personal data and should not be shared, so we can only guide you through the installation that much. You can also find alot of tutorials on the internet on how to create social apps.';
 
 $_['text_debug_file_into']      = '<h4>Debug Mode</h4><p>When the debug mode is on, the system will log the process here.</p>';
+$_['text_powered_by']               = 'Tested with <a href="https://shopunity.net/extension/social-login-pro" target="_blank">Shopunity.net</a> <br> Find more amazing extensions at <a href="https://dreamvention.ee/" target="_blank">Dreamvention.ee</a>';
+$_['text_get_pro']               = 'Get Pro now with 5% discount by follow this <a href="https://dreamvention.ee/social-login-paypal-facebook-instagram-tumbler-etc?tracking=8izVKwxTitns8sI9d9crmn9RsvvvpQByxnadzBotMDl6Q6kpe9DYGwsgMc8VHIbg" target="_blank"> link </a>';
 $_['entry_debug_file']          = 'Debug file';
 $_['text_not_found'] = '<div class="jumbotron">
           <h1>Please install Shopunity</h1>
