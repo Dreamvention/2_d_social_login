@@ -18,6 +18,7 @@ class ControllerExtensionModuleDSocialLogin extends Controller
         $this->load->model('extension/d_opencart_patch/url');
         $this->load->model('extension/d_opencart_patch/load');
         $this->load->model('extension/d_opencart_patch/user');
+        $this->load->model('extension/d_opencart_patch/cache');
         $this->d_admin_style = (file_exists(DIR_SYSTEM.'library/d_shopunity/extension/d_admin_style.json'));
         if ($this->d_admin_style){
             $this->load->model('extension/d_admin_style/style');
@@ -42,20 +43,11 @@ class ControllerExtensionModuleDSocialLogin extends Controller
             $this->load->model('extension/module/d_twig_manager');
             if (!$this->model_extension_module_d_twig_manager->isCompatible()) {
                 $this->model_extension_module_d_twig_manager->installCompatibility();
-                $this->session->data['success'] = $this->language->get('success_twig_compatible');
-                $this->response->redirect($this->model_extension_d_opencart_patch_url->getExtensionLink('module'));
             }
         }
+        $this->model_extension_d_opencart_patch_cache->clearTwig();
 
-        if (VERSION >= '2.1.0.1') {
-            $this->load->model('customer/customer_group');
-        } else {
-            $this->load->model('sale/customer_group');
-        }
-/*
- * <script type="application/javascript">$(document).ready(function() {
-        $('.doc-image').magnificPopup({type:'image'});
-    });</script>*/
+
         // Scripts
         $this->document->addStyle('view/stylesheet/d_bootstrap_extra/bootstrap.css');
         $this->document->addStyle('view/javascript/d_bootstrap_switch/css/bootstrap-switch.css');
@@ -68,17 +60,14 @@ class ControllerExtensionModuleDSocialLogin extends Controller
         $this->document->addScript('view/javascript/d_tinysort/jquery.tinysort.min.js');
         $this->document->addScript('view/javascript/d_social_login/bootstrap-sortable.js');
         $this->document->addStyle('view/stylesheet/d_social_login/styles.css');
-
         // Multistore
         if (isset($this->request->get['store_id'])) {
             $store_id = $this->request->get['store_id'];
         } else {
             $store_id = 0;
         }
-
         // Saving
         if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validate()) {
-
             // 3.x fix
             if (VERSION >= '3.0.0.0') {
                 $sl_post_array = array();
@@ -102,6 +91,10 @@ class ControllerExtensionModuleDSocialLogin extends Controller
             $data[$this->codename . '_status'] = $this->request->post[$this->codename . '_status'];
         } else {
             $data[$this->codename . '_status'] = $this->config->get($this->codename . '_status');
+        }
+        if(isset($this->session->data['success'])){
+            $data['success']=$this->session->data['success'];
+            unset($this->session->data['success']);
         }
 
         // Error
@@ -129,12 +122,14 @@ class ControllerExtensionModuleDSocialLogin extends Controller
         $data['text_edit'] = $this->language->get('text_edit');
 
         // Variable
-        $data['id'] = $this->codename;
+        $data['codename'] = $this->codename;
+        $data['codename_pro'] = $this->codename.'_pro';
         $data['route'] = $this->route;
         $data['store_id'] = $store_id;
         $data['stores'] = $this->model_extension_module_d_social_login->getStores();
         $data['version'] = $this->extension['version'];
-        $data['token'] = $this->model_extension_d_opencart_patch_user->getUrlToken();
+        $data['url_token'] = $this->model_extension_d_opencart_patch_user->getUrlToken();
+        $data['token'] = $this->model_extension_d_opencart_patch_user->getToken();
         $data['pro'] = $this->d_social_login_pro;
         $data['d_shopunity'] = $this->d_shopunity;
         $data['entry_get_update'] = sprintf($this->language->get('entry_get_update'), $data['version']);
@@ -168,7 +163,7 @@ class ControllerExtensionModuleDSocialLogin extends Controller
         //inherit users data
         $data['setting'] = array_replace_recursive($config, $data['setting']);
         if (!$this->d_social_login_pro) {
-//            $data['setting']['providers'] = array_slice($data['setting']['providers'], 0, 4);
+        //            $data['setting']['providers'] = array_slice($data['setting']['providers'], 0, 4);
         }
         $data['fields'] = $data['setting']['fields'];
         // Background image size from config
@@ -178,23 +173,14 @@ class ControllerExtensionModuleDSocialLogin extends Controller
         } else {
             $data['background_img'] = $data['setting']['background_img'];
         }
-
         if ($data['setting']['background_img'] && file_exists(DIR_IMAGE . $data['setting']['background_img']) && is_file(DIR_IMAGE . $data['setting']['background_img'])) {
             $data['background_img_thumb'] = $this->model_tool_image->resize($data['setting']['background_img'], $data['setting']['background_img_size']['width'], $data['setting']['background_img_size']['height']);
         } else {
             $data['background_img_thumb'] = $this->model_tool_image->resize('no_image.jpg', $data['setting']['background_img_size']['width'], $data['setting']['background_img_size']['height']);
         }
 
-        // Get stores
-        $data['stores'] = $this->model_extension_module_d_social_login->getStores();
-
-
         // Customer groups
-        if (VERSION >= '2.1.0.1') {
-            $data['customer_groups'] = $this->model_customer_customer_group->getCustomerGroups();
-        } else {
-            $data['customer_groups'] = $this->model_sale_customer_group->getCustomerGroups();
-        }
+        $data['customer_groups'] = $this->model_extension_d_opencart_patch_user->getCustomerGroups();
 
         // Debug
         $data['debug'] = $this->model_extension_module_d_social_login->getFileContents(DIR_LOGS . $data['setting']['debug_file']);
@@ -217,6 +203,37 @@ class ControllerExtensionModuleDSocialLogin extends Controller
             'href' => $this->model_extension_d_opencart_patch_url->link($this->route)
         );
 
+        //out put view
+        if (!$this->{'model_extension_module_' . $this->codename}->checkInstallModule()) {
+            $data['text_welcome_title'] = $this->language->get('text_welcome_title');
+            $data['text_welcome_description'] = $this->language->get('text_welcome_description');
+            $data['welcome_bottom_image'] = $this->model_tool_image->resize( 'catalog/'.$this->codename . '/Image_footer_Social_Login.svg',100,100);
+            $data['welcome_into_logo'] = $this->model_tool_image->resize( 'catalog/'.$this->codename . '/social_login_preview.svg',100,100);
+
+            $data['features'][] = array(
+                'text' => $this->language->get('text_welcome_step_by_step'),
+                'icon' => $this->model_tool_image->resize( 'catalog/'.$this->codename . '/step_by_step.svg',100,100)
+            );
+            $data['features'][] = array(
+                'text' => $this->language->get('text_welcome_soc_logins'),
+                'icon' => $this->model_tool_image->resize('catalog/'. $this->codename . '/soc_logins.svg',100,100)
+            );
+            $data['features'][] = array(
+                'text' => $this->language->get('text_welcome_full_customize'),
+                'icon' => $this->model_tool_image->resize('catalog/'. $this->codename . '/full_customize.svg',100,100)
+            );
+            $data['features'][] = array(
+                'text' => $this->language->get('text_welcome_gdpr_compilant'),
+                'icon' => $this->model_tool_image->resize('catalog/'. $this->codename . '/gdpr_compilant.svg',100,100)
+            );
+            $data['text_button_setup'] = $this->language->get('button_setup');
+            $data['button_setup'] = $this->model_extension_d_opencart_patch_url->ajax($this->route . '/setup');
+            $data['header'] = $this->load->controller('common/header');
+            $data['column_left'] = $this->load->controller('common/column_left');
+            $data['footer'] = $this->load->controller('common/footer');
+            $this->response->setOutput($this->model_extension_d_admin_style_style->getWelcomeView($this->route, $data));
+            return;
+        }
         $this->model_extension_d_admin_style_style->getStyles('light');
 
         $data['header'] = $this->load->controller('common/header');
@@ -225,6 +242,13 @@ class ControllerExtensionModuleDSocialLogin extends Controller
         $this->response->setOutput($this->model_extension_d_opencart_patch_load->view($this->route, $data));
     }
 
+    public  function setup(){
+        $this->load->model('extension/d_opencart_patch/url');
+        $this->{'model_extension_module_' . $this->codename}->installConfig();
+        $this->session->data['success'] = $this->language->get('text_success_setup');
+        $this->response->redirect($this->model_extension_d_opencart_patch_url->ajax($this->route));
+
+    }
     protected function validate()
     {
         if (!$this->user->hasPermission('modify', $this->route)) {
@@ -242,10 +266,6 @@ class ControllerExtensionModuleDSocialLogin extends Controller
         }
     }
 
-    /**
-     * @param $data
-     * @return mixed
-     */
     private function getTextFields()
     {
         // Tab

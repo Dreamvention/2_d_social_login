@@ -5,6 +5,8 @@
 
 class ModelExtensionModuleDSocialLogin extends Model
 {
+    private $codename = 'd_social_login';
+
     public function installDatabase()
     {
         $this->db->query("CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "customer_authentication` (
@@ -64,14 +66,48 @@ class ModelExtensionModuleDSocialLogin extends Model
         return $result;
     }
 
-    /*
-    *	Format the link to work with ajax requests
-    */
-    public function ajax($link)
+    public function checkInstallModule()
     {
-        return str_replace('&amp;', '&', $link);
+        $this->load->model('extension/d_opencart_patch/extension');
+        if (!$this->model_extension_d_opencart_patch_extension->isInstalled($this->codename)) {
+            return false;
+        }
+        $this->load->model('setting/setting');
+        $setting_module = $this->model_setting_setting->getSetting($this->codename);
+        if (!$setting_module) {
+            return false;
+        }
+        return true;
     }
 
+    public function installConfig()
+    {
+        $this->load->model('extension/d_opencart_patch/extension');
+        $this->load->model('extension/d_opencart_patch/setting');
+        $this->load->model('extension/d_opencart_patch/user');
+        if (!$this->model_extension_d_opencart_patch_extension->isInstalled($this->codename)) {
+            $this->model_extension_d_opencart_patch_extension->install('module', $this->codename);
+            $this->load->controller('extension/module/' . $this->codename . '/install');
+        }
+        $this->load->model('setting/setting');
+        $setting_module = $this->model_extension_d_opencart_patch_setting->getSetting($this->codename);
+        if (!empty($setting_module[$this->codename . '_setting'])) {
+            $setting_module[$this->codename . '_status'] = 1;
+            $setting_module = $this->config->get($this->codename);
+            $setting_module['providers'] = $this->model_extension_module_d_social_login->loadProviders($this->codename);
+
+            $this->model_extension_d_opencart_patch_setting->editSetting($this->codename, $setting_module);
+        } else {
+            $this->load->config($this->codename);
+            $setting = $this->config->get($this->codename);
+            $setting['providers'] = $this->model_extension_module_d_social_login->loadProviders($this->codename);
+
+            $this->model_extension_d_opencart_patch_setting->editSetting($this->codename, array(
+                $this->codename . '_setting' => $setting,
+                $this->codename . '_status'  => 1
+            ));
+        }
+    }
     public function getFileContents($file)
     {
         if (file_exists($file)) {
@@ -102,96 +138,8 @@ class ModelExtensionModuleDSocialLogin extends Model
             }
         }
     }
-
-
-    public function backup_files_by_mbooth($mbooth_xml, $action = 'install')
-    {
-
-        $zip = new ZipArchive();
-
-        if (!file_exists(DIR_SYSTEM . 'mbooth/backup/')) {
-            mkdir(DIR_SYSTEM . 'mbooth/backup/', 0777, true);
-        }
-
-        $mbooth = $this->get_files_by_mbooth(DIR_SYSTEM . 'mbooth/xml/' . $mbooth_xml);
-        $files = $mbooth['files'];
-
-        $zip->open(DIR_SYSTEM . 'mbooth/backup/' . date('Y-m-d.h-i-s') . '.' . $action . '.' . $mbooth_xml . '.v' . $mbooth['version'] . '.zip', ZipArchive::CREATE);
-
-
-        foreach ($files as $file) {
-
-            if (file_exists(DIR_ROOT . $file)) {
-
-                if (is_file(DIR_ROOT . $file)) {
-                    $zip->addFile(DIR_ROOT . $file, 'upload/' . $file);
-                    $result['success'][] = $file;
-                } else {
-                    $result['error'][] = $file;
-                }
-            } else {
-                $result['error'][] = $file;
-            }
-        }
-        $zip->close();
-        return $result;
-
-    }
-
-    public function move_dir($souce, $dest, &$result)
-    {
-
-        $files = scandir($souce);
-
-        foreach ($files as $file) {
-
-            if ($file == '.' || $file == '..' || $file == '.DS_Store') continue;
-
-            if (is_dir($souce . $file)) {
-                if (!file_exists($dest . $file . '/')) {
-                    mkdir($dest . $file . '/', 0777, true);
-                }
-                $this->move_dir($souce . $file . '/', $dest . $file . '/', $result);
-            } elseif (rename($souce . $file, $dest . $file)) {
-                $result['success'][] = str_replace(DIR_ROOT, '', $dest . $file);
-            } else {
-                $result['error'][] = str_replace(DIR_ROOT, '', $dest . $file);
-            }
-        }
-
-        $this->delete_dir($souce);
-    }
-
-    public function delete_dir($dir)
-    {
-        if (is_dir($dir)) {
-            $objects = scandir($dir);
-            foreach ($objects as $object) {
-                if ($object != "." && $object != "..") {
-                    if (filetype($dir . "/" . $object) == "dir") $this->delete_dir($dir . "/" . $object);
-                    else unlink($dir . "/" . $object);
-                }
-            }
-            reset($objects);
-            rmdir($dir);
-        }
-    }
-
-    public function array_merge_recursive_distinct(array &$array1, array &$array2)
-    {
-        $merged = $array1;
-        foreach ($array2 as $key => &$value) {
-            if (is_array($value) && isset ($merged [$key]) && is_array($merged [$key])) {
-                $merged [$key] = $this->array_merge_recursive_distinct($merged [$key], $value);
-            } else {
-                $merged [$key] = $value;
-            }
-        }
-
-        return $merged;
-    }
-
     public function loadProviders($id)
+
     {
         $providers = array();
         $dir_files = array();
