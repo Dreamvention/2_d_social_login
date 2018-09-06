@@ -129,6 +129,7 @@ $_['text_welcome_step_by_step']          = 'Step-by-step installation guide';
 $_['text_welcome_soc_logins']          = '19 social logins ';
 $_['text_welcome_full_customize']          = 'Full customization';
 $_['text_welcome_gdpr_compilant']          = 'GDPR compliant';
+$_['text_success_setup']          = 'You have succesfully setup module';
 $_['entry_debug_file']          = '';
 
 
