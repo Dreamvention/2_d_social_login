@@ -207,39 +207,35 @@ class ControllerExtensionModuleDSocialLogin extends Controller
             'href' => $this->model_extension_d_opencart_patch_url->link($this->route)
         );
 
+        $this->model_extension_d_admin_style_style->getStyles('light');
         //out put view
+        $data['setup'] = false;
         if (!$this->{'model_extension_module_' . $this->codename}->checkInstallModule()) {
-            $data['text_welcome_title'] = $this->language->get('text_welcome_title');
-            $data['text_welcome_description'] = $this->language->get('text_welcome_description');
-            $data['welcome_bottom_image'] = $this->model_tool_image->resize( 'catalog/'.$this->codename . '/Image_footer_Social_Login.svg',100,100);
-            $data['welcome_into_logo'] = $this->model_tool_image->resize( 'catalog/'.$this->codename . '/social_login_preview.svg',100,100);
+            $data['setup'] = true;
+            $data['text_setup_title'] = $this->language->get('text_setup_title');
+            $data['text_setup_description'] = $this->language->get('text_setup_description');
+            $data['setup_bottom_image'] = $this->model_tool_image->resize( 'catalog/'.$this->codename . '/Image_footer_Social_Login.svg',100,100);
+            $data['setup_into_logo'] = $this->model_tool_image->resize( 'catalog/'.$this->codename . '/social_login_preview.svg',100,100);
 
             $data['features'][] = array(
-                'text' => $this->language->get('text_welcome_step_by_step'),
+                'text' => $this->language->get('text_setup_step_by_step'),
                 'icon' => $this->model_tool_image->resize( 'catalog/'.$this->codename . '/step_by_step.svg',100,100)
             );
             $data['features'][] = array(
-                'text' => $this->language->get('text_welcome_soc_logins'),
+                'text' => $this->language->get('text_setup_soc_logins'),
                 'icon' => $this->model_tool_image->resize('catalog/'. $this->codename . '/soc_logins.svg',100,100)
             );
             $data['features'][] = array(
-                'text' => $this->language->get('text_welcome_full_customize'),
+                'text' => $this->language->get('text_setup_full_customize'),
                 'icon' => $this->model_tool_image->resize('catalog/'. $this->codename . '/full_customize.svg',100,100)
             );
             $data['features'][] = array(
-                'text' => $this->language->get('text_welcome_gdpr_compilant'),
+                'text' => $this->language->get('text_setup_gdpr_compilant'),
                 'icon' => $this->model_tool_image->resize('catalog/'. $this->codename . '/gdpr_compilant.svg',100,100)
             );
             $data['text_button_setup'] = $this->language->get('button_setup');
             $data['button_setup'] = $this->model_extension_d_opencart_patch_url->ajax($this->route . '/setup');
-            $data['header'] = $this->load->controller('common/header');
-            $data['column_left'] = $this->load->controller('common/column_left');
-            $data['footer'] = $this->load->controller('common/footer');
-            $this->response->setOutput($this->model_extension_d_admin_style_style->getWelcomeView($this->route, $data));
-            return;
         }
-        $this->model_extension_d_admin_style_style->getStyles('light');
-
         $data['header'] = $this->load->controller('common/header');
         $data['column_left'] = $this->load->controller('common/column_left');
         $data['footer'] = $this->load->controller('common/footer');

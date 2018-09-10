@@ -122,13 +122,13 @@ $_['text_not_found'] = '<div class="jumbotron">
           <p>Before you can use this module you will need to install Shopunity. Simply download the archive for your version of opencart and install it view Extension Installer or unzip the archive and upload all the files into your root folder from the UPLOAD folder.</p>
           <p><a class="btn btn-primary btn-lg" href="https://shopunity.net/download" target="_blank">Download</a></p>
         </div>';
-$_['text_welcome_title']          = 'Social Login';
-$_['text_welcome_description']          = '40% of customers prefer social login over creating a new account. Yet implementing Social login is not easy. Thanks to this module, you can setup and customize all your favorite social network logins and start converting visitors from Facebook into real customers. ';
+$_['text_setup_title']          = 'Social Login';
+$_['text_setup_description']          = '40% of customers prefer social login over creating a new account. Yet implementing Social login is not easy. Thanks to this module, you can setup and customize all your favorite social network logins and start converting visitors from Facebook into real customers. ';
 $_['button_setup']          = 'Setup';
-$_['text_welcome_step_by_step']          = 'Step-by-step installation guide';
-$_['text_welcome_soc_logins']          = '19 social logins ';
-$_['text_welcome_full_customize']          = 'Full customization';
-$_['text_welcome_gdpr_compilant']          = 'GDPR compliant';
+$_['text_setup_step_by_step']          = 'Step-by-step installation guide';
+$_['text_setup_soc_logins']          = '19 social logins ';
+$_['text_setup_full_customize']          = 'Full customization';
+$_['text_setup_gdpr_compilant']          = 'GDPR compliant';
 $_['text_success_setup']          = 'You have succesfully setup module';
 $_['entry_debug_file']          = '';
 

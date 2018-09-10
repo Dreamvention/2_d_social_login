@@ -5005,4 +5005,13 @@ php.ini
 .vscode/settings.json
 admin/model/extension/d_admin_style/style2.php
 system/library/d_shopunity/extension/d_admin_style.json
-system/library/d_shopunity/extension/d_admin_style.json
+admin/view/stylesheet/d_admin_style/
+system/storage/
+admin/view/javascript/d_admin_style/gulp/node_modules/
+admin/view/javascript/d_admin_style/gulp/package-lock.json
+admin/view/javascript/d_admin_style/gulp/gulpfile.js
+admin/view/javascript/d_admin_style/gulp/package.json
+admin/view/javascript/d_admin_style/d_admin_style.js
+system/storage/logs/ocmod.log
+.vscode/tasks.json
+admin/view/template/extension/d_admin_style/setup.twig

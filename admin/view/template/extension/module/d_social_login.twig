@@ -26,12 +26,13 @@
             </ul>
         </div>
     </div>
-
+    {% if not setup %}
+     <div class="page-container">
     <div class="container-fluid">
         {% if not pro %}
             <div class="notify alert alert-info">{{ text_get_pro }}</div>
         {% endif %}
-        {% if d_shopunity %}
+        {% if  d_shopunity %}
             <div class="d_shopunity_update"></div>
             <script src="view/javascript/d_shopunity/d_shopunity_widget.js" type="text/javascript"></script>
             <script type="text/javascript">
@@ -62,9 +63,9 @@
                     <h3 class="panel-title "><i class="fa fa-pencil"></i> {{ text_edit }}</h3>
                 </div>
 
-                <div class="panel-body">
-
-                    <ul class="nav nav-tabs">
+                <div class="panel-body ">
+                        <div class="row">
+                    <ul class="nav nav-tabs col-sm-12">
                         <li class="active"><a href="#setting_basic" data-toggle="tab">
                                 <i class="fa fa-cog"></i>
                                 {{ text_setting_basic }}
@@ -91,6 +92,7 @@
                                 {{ text_debug }}
                             </a></li>
                     </ul>
+                        </div>
 
                     <div class="tab-content">
 
@@ -205,7 +207,7 @@
                                     </div>
 
                                 </div>
-                                <div class="col-sm-3" {% if pro %} style="display: none"{% endif %}>
+                                 <div class="col-sm-3" {% if pro %} style="display: none"{% endif %}>
                                     <div class="d_shopunity_widget "></div>
                                     <script src="view/javascript/d_shopunity/d_shopunity_widget.js" type="text/javascript"></script>
                                     <script type="text/javascript">
@@ -216,7 +218,7 @@
 			                                extension_id: '{{ codename_pro }}'
 		                                })
                                     </script>
-                                </div>
+                                </div> 
                             </div>
 
                         </div>
@@ -469,7 +471,11 @@
             </div>
         </div>
     </div>
-
+    </div>
+    {% else %}
+         {% include 'extension/d_admin_style/setup.twig' %}
+   {% endif %}
+    
 </div>
 </div>
 <style>
