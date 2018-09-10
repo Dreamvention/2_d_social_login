@@ -24,6 +24,7 @@
     "gulp-sass": "^3.1.0"
   },
   "dependencies": {
+    "gulp-sourcemaps": "^2.6.4",
     "social-login": "^0.2.8"
   }
 }

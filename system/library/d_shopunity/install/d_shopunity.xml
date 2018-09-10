@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<modification>
+    <name>d_shopunity</name>
+    <code>d_shopunity</code>
+    <description>This is a modification file. You can use it to </description>
+    <version>3.1.0</version>
+    <author>Dreamvention</author>
+    <link>http://dreamvention.com</link>
+    <file path="admin/controller/common/header.php">
+        <operation error="skip">
+            <search><![CDATA[public function index() {]]></search>
+            <ignoreif><![CDATA[$data['d_shopunity'] = $this->url->link('extension/d_shopunity/extension', 'user_token='.$this->request->get['user_token'], 'SSL');]]></ignoreif>
+            <add position="after"><![CDATA[
+            if(!empty($this->request->get['user_token'])){
+                $data['d_shopunity'] = $this->url->link('extension/d_shopunity/extension', 'user_token='.$this->request->get['user_token'], 'SSL');
+            }
+            ]]></add>
+        </operation>
+    </file>
+    <file path="admin/view/template/common/header.twig">
+        <operation error="skip">
+            <search><![CDATA[<li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown"><img src="{{ image }}" alt="{{ firstname }} {{ lastname }}" title="{{ username }}" id="user-profile" class="img-circle" />{{ firstname }} {{ lastname }} <i class="fa fa-caret-down fa-fw"></i></a>]]></search>
+            <ignoreif><![CDATA[<li><a href="{{d_shopunity}}"><i class="fa fa-flask fa-lg"></i></a></li>]]></ignoreif>
+            <add position="before"><![CDATA[
+            <li><a href="{{ d_shopunity }}" title="Shopunity"><i class="fa fa-flask fa-lg"></i></a></li>
+            ]]></add>
+        </operation>
+    </file>
+</modification>

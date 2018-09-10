@@ -19,6 +19,7 @@ class ControllerExtensionModuleDSocialLogin extends Controller
         $this->load->model('extension/d_opencart_patch/load');
         $this->load->model('extension/d_opencart_patch/user');
         $this->load->model('extension/d_opencart_patch/cache');
+        $this->load->model('extension/d_opencart_patch/modification');
         $this->d_admin_style = (file_exists(DIR_SYSTEM.'library/d_shopunity/extension/d_admin_style.json'));
         if ($this->d_admin_style){
             $this->load->model('extension/d_admin_style/style');
@@ -38,6 +39,9 @@ class ControllerExtensionModuleDSocialLogin extends Controller
             $this->load->model('extension/d_shopunity/mbooth');
             $this->model_extension_d_shopunity_mbooth->validateDependencies($this->codename);
         }
+
+        $this->model_extension_d_opencart_patch_modification->setModification('d_opencart_patch.xml', 1);
+        $this->model_extension_d_opencart_patch_modification->refreshCache();
 
         if ($this->d_twig_manager) {
             $this->load->model('extension/module/d_twig_manager');

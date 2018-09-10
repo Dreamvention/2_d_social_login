@@ -105,8 +105,8 @@
                                     <div class="form-group ">
                                         <label class="col-sm-2 control-label" for="input_status">{{ entry_status }}</label>
                                         <div class="col-sm-10">
-                                            <input type="hidden" name="{{ id }}_status" value="0"/>
-                                            <input type="checkbox" name="{{ id }}_status" class="switcher"
+                                            <input type="hidden" name="{{ codename }}_status" value="0"/>
+                                            <input type="checkbox" name="{{ codename }}_status" class="switcher"
                                                    id="input_status" {{ d_social_login_status ? 'checked="checked"' : '' }}
                                                    value="1"/>
                                         </div>
@@ -114,7 +114,7 @@
                                     <div class="form-group">
                                         <label class="col-sm-2 control-label" for="select_size">{{ entry_size }}</label>
                                         <div class="col-sm-10">
-                                            <select name="{{ id }}_setting[size]" class="form-control">
+                                            <select name="{{ codename }}_setting[size]" class="form-control">
                                                 {% if (setting['size'] == 'icons') %}
                                                     <option value="icons" selected="selected">{{ text_icons }}</option>
                                                 {% else %}
@@ -147,7 +147,7 @@
                                         <label class="col-sm-2 control-label"
                                                for="select_customer_group">{{ entry_customer_group }}</label>
                                         <div class="col-sm-10">
-                                            <select id="select_customer_group" name="{{ id }}_setting[customer_group]"
+                                            <select id="select_customer_group" name="{{ codename }}_setting[customer_group]"
                                                     class="form-control">
                                                 {% for customer_group in customer_groups %}
                                                     <option value="{{ customer_group['customer_group_id'] }}" {{ customer_group['customer_group_id'] == setting['customer_group'] ? 'selected="selected"' : '' }}>{{ customer_group['name'] }}</option>
@@ -159,9 +159,9 @@
                                         <label class="col-sm-2 control-label"
                                                for="input_newsletter">{{ entry_newsletter }}</label>
                                         <div class="col-sm-10">
-                                            <input type="hidden" name="{{ id }}_setting[newsletter]" value="0"/>
+                                            <input type="hidden" name="{{ codename }}_setting[newsletter]" value="0"/>
                                             <input type="checkbox"
-                                                   name="{{ id }}_setting[newsletter]" {{ setting['newsletter']? 'checked="checked"' : '' }}
+                                                   name="{{ codename }}_setting[newsletter]" {{ setting['newsletter']? 'checked="checked"' : '' }}
                                                    value="1" id="input_newsletter"/>
                                         </div>
                                     </div>
@@ -170,16 +170,16 @@
                                                for="input_return_page_url">{{ entry_return_page_url }}</label>
                                         <div class="col-sm-10">
                                             <input type="text" id="input_return_page_url"
-                                                   name="{{ id }}_setting[return_page_url]"
+                                                   name="{{ codename }}_setting[return_page_url]"
                                                    value="{{ setting['return_page_url'] }}" class="form-control"/>
                                         </div>
                                     </div>
                                     <div class="form-group">
                                         <label class="col-sm-2 control-label" for="input_iframe">{{ entry_iframe }}</label>
                                         <div class="col-sm-10">
-                                            <input type="hidden" name="{{ id }}_setting[iframe]" value="0"/>
+                                            <input type="hidden" name="{{ codename }}_setting[iframe]" value="0"/>
                                             <input type="checkbox"
-                                                   name="{{ id }}_setting[iframe]" {{ setting['iframe'] ? 'checked="checked"' : '' }}
+                                                   name="{{ codename }}_setting[iframe]" {{ setting['iframe'] ? 'checked="checked"' : '' }}
                                                    value="1" id="input_iframe"/>
                                         </div>
                                     </div>
@@ -189,7 +189,7 @@
                                         <div class="col-sm-10">
                                             <a href="" id="thumb-image" data-toggle="image" class="img-thumbnail"><img
                                                         src="{{ background_img_thumb }}" alt="" title=""/></a>
-                                            <input type="hidden" name="{{ id }}_setting[background_img]"
+                                            <input type="hidden" name="{{ codename }}_setting[background_img]"
                                                    value="{{ setting['background_img'] }}" id="input-image"/>
                                         </div>
                                     </div>
@@ -197,9 +197,9 @@
                                         <label class="col-sm-2 control-label"
                                                for="input_debug_mode">{{ entry_debug_mode }}</label>
                                         <div class="col-sm-10">
-                                            <input type="hidden" name="{{ id }}_setting[debug_mode]" value="0"/>
+                                            <input type="hidden" name="{{ codename }}_setting[debug_mode]" value="0"/>
                                             <input type="checkbox"
-                                                   name="{{ id }}_setting[debug_mode]" {{ setting['debug_mode']? 'checked="checked"' : '' }}
+                                                   name="{{ codename }}_setting[debug_mode]" {{ setting['debug_mode']? 'checked="checked"' : '' }}
                                                    value="1" id="input_debug_mode"/>
                                         </div>
                                     </div>
@@ -234,18 +234,18 @@
                                                     <span for="d_social_login_modules_providers_{{ key }}_enabled">
                                                         <label><i class="{{ provider['icon'] }}"></i> {{ provider['id'] }}</label><br/>
                                                         <input type="hidden"
-                                                               name="{{ id }}_setting[providers][{{ key }}][id]"
+                                                               name="{{ codename }}_setting[providers][{{ key }}][id]"
                                                                value="{{ provider['id'] }}"/>
                                                         <input type="hidden"
-                                                               name="{{ id }}_setting[providers][{{ key }}][enabled]"
+                                                               name="{{ codename }}_setting[providers][{{ key }}][enabled]"
                                                                value="0"/>
                                                         <input type="checkbox"
-                                                               name="{{ id }}_setting[providers][{{ key }}][enabled]" {{ provider['enabled']? 'checked="checked"':'' }}
+                                                               name="{{ codename }}_setting[providers][{{ key }}][enabled]" {{ provider['enabled']? 'checked="checked"':'' }}
                                                                value="1"
-                                                               id="{{ id }}_setting_providers_{{ key }}_enabled"/>
+                                                               id="{{ codename }}_setting_providers_{{ key }}_enabled"/>
                                                     </span>
                                                         <input type="hidden"
-                                                               name="{{ id }}_setting[providers][{{ key }}][sort_order]"
+                                                               name="{{ codename }}_setting[providers][{{ key }}][sort_order]"
                                                                class="sort-value" value="{{ provider['sort_order'] }}"/><span
                                                                 class="dsl-icon-{{ provider['id'] }}"></span>
                                                     </div>
@@ -253,7 +253,7 @@
                                                         <label>{{ text_background_color }}</label>
                                                         <div class="input-group color-picker">
                                                             <input type="text"
-                                                                   name="{{ id }}_setting[providers][{{ key }}][background_color]"
+                                                                   name="{{ codename }}_setting[providers][{{ key }}][background_color]"
                                                                    class=" form-control"
                                                                    value="{{ provider['background_color'] }}"/>
                                                             <span class="input-group-addon"><i></i></span>
@@ -263,7 +263,7 @@
                                                         <label>{{ text_background_color_active }}</label>
                                                         <div class="input-group color-picker">
                                                             <input type="text"
-                                                                   name="{{ id }}_setting[providers][{{ key }}][background_color_active]"
+                                                                   name="{{ codename }}_setting[providers][{{ key }}][background_color_active]"
                                                                    class="form-control"
                                                                    value="{{ provider['background_color_active'] }}"/>
                                                             <span class="input-group-addon"><i></i></span>
@@ -273,7 +273,7 @@
                                                         <label>{{ text_background_color_hover }}</label>
                                                         <div class="input-group color-picker">
                                                             <input type="text"
-                                                                   name="{{ id }}_setting[providers][{{ key }}][background_color_hover]"
+                                                                   name="{{ codename }}_setting[providers][{{ key }}][background_color_hover]"
                                                                    class="form-control"
                                                                    value="{{ provider['background_color_hover'] }}"/>
                                                             <span class="input-group-addon"><i></i></span>
@@ -297,7 +297,7 @@
                                 {% for key,size in setting['sizes'] %}
                                     {% for keyattr,attrs in size %}
                                         <input type="hidden"
-                                               name="{{ id }}_setting[sizes][{{ key }}][{{ keyattr }}]"
+                                               name="{{ codename }}_setting[sizes][{{ key }}][{{ keyattr }}]"
                                                value="{{ attrs }}"/>
                                     {% endfor %}
                                 {% endfor %}
@@ -316,36 +316,36 @@
                                                     <div class="col-md-6 col-sm-7">
                                                         <div class="row">
                                                             <input type="hidden"
-                                                                   name="{{ id }}_setting[fields][{{ field['id'] }}][enabled]"
+                                                                   name="{{ codename }}_setting[fields][{{ field['id'] }}][enabled]"
                                                                    value="0"/>
                                                             <input type="hidden"
-                                                                   name="{{ id }}_setting[fields][{{ field['id'] }}][required]"
+                                                                   name="{{ codename }}_setting[fields][{{ field['id'] }}][required]"
                                                                    value="0"/>
                                                             <label class="col-sm-4"
-                                                                   for="{{ id }}_setting_fields_{{ field['id'] }}_enabled">{{ attribute(_context, 'text_' ~ field['id']) }}</label>
+                                                                   for="{{ codename }}_setting_fields_{{ field['id'] }}_enabled">{{ attribute(_context, 'text_' ~ field['id']) }}</label>
                                                             <div class="col-sm-8">
                                                                 <input type="checkbox"
                                                                        class="col-sm-3"
-                                                                       name="{{ id }}_setting[fields][{{ field['id'] }}][enabled]" {{ field['enabled']? 'checked="checked"':'' }}
+                                                                       name="{{ codename }}_setting[fields][{{ field['id'] }}][enabled]" {{ field['enabled']? 'checked="checked"':'' }}
                                                                        value="1" data-size="mini"
                                                                        data-label-text="{{ text_display }}"
-                                                                       id="{{ id }}_setting_fields_{{ field['id'] }}_enabled"/>
+                                                                       id="{{ codename }}_setting_fields_{{ field['id'] }}_enabled"/>
                                                                 <input type="checkbox"
                                                                        class="col-sm-3"
-                                                                       name="{{ id }}_setting[fields][{{ field['id'] }}][required]" {{ field['required']? 'checked="checked"':'' }}
+                                                                       name="{{ codename }}_setting[fields][{{ field['id'] }}][required]" {{ field['required']? 'checked="checked"':'' }}
                                                                        value="1" data-size="mini"
                                                                        data-label-text="{{ text_required }}"
-                                                                       id="{{ id }}_setting_fields_{{ field['id'] }}_required"/>
+                                                                       id="{{ codename }}_setting_fields_{{ field['id'] }}_required"/>
                                                             </div>
                                                             <input type="hidden"
-                                                                   name="{{ id }}_setting[fields][{{ field['id'] }}][sort_order]"
+                                                                   name="{{ codename }}_setting[fields][{{ field['id'] }}][sort_order]"
                                                                    class="sort-value"
                                                                    value="{{ field['sort_order'] }}"/>
                                                             <input type="hidden"
-                                                                   name="{{ id }}_setting[fields][{{ field['id'] }}][type]"
+                                                                   name="{{ codename }}_setting[fields][{{ field['id'] }}][type]"
                                                                    value="{{ field['type'] }}"/>
                                                             <input type="hidden"
-                                                                   name="{{ id }}_setting[fields][{{ field['id'] }}][id]"
+                                                                   name="{{ codename }}_setting[fields][{{ field['id'] }}][id]"
                                                                    value="{{ field['id'] }}"/>
                                                         </div>
                                                     </div>
@@ -357,7 +357,7 @@
                                                                 </label>
                                                                 <div class="col-sm-12 col-md-8">
                                                                     <input type="text"
-                                                                           name="{{ id }}_setting[fields][{{ field['id'] }}][mask]"
+                                                                           name="{{ codename }}_setting[fields][{{ field['id'] }}][mask]"
                                                                            value="{{ field['mask'] }}"
                                                                            class="form-control"></div>
                                                             {% endif %}</div>
@@ -383,7 +383,7 @@
 
                                     <h4 class="col-sm-6" for="select_return_url"><i
                                                 class="{{ provider['icon'] }}"></i> {{ provider['id'] ~ ' ' ~ text_app_settings }}
-                                        <input type="hidden" name="{{ id }}_setting[providers][{{ key }}][id]"
+                                        <input type="hidden" name="{{ codename }}_setting[providers][{{ key }}][id]"
                                                value="{{ provider['id'] }}"/></h4>
 
                                     <div class="col-sm-12">
@@ -395,7 +395,7 @@
                                                 </label>
                                                 <div class="col-sm-10">
                                                     <input type="text"
-                                                           name="{{ id }}_setting[providers][{{ key }}][keys][{{ k }}]"
+                                                           name="{{ codename }}_setting[providers][{{ key }}][keys][{{ k }}]"
                                                            value="{{ v }}" class="form-control"/>
                                                 </div>
                                             </div>
@@ -408,7 +408,7 @@
                                                 </label>
                                                 <div class="col-sm-10">
                                                     <input type="text"
-                                                           name="{{ id }}_setting[providers][{{ key }}][scope]"
+                                                           name="{{ codename }}_setting[providers][{{ key }}][scope]"
                                                            value="{{ provider['scope'] }}" class="form-control"/>
                                                 </div>
                                             </div>
@@ -443,7 +443,7 @@
                                     <label class="col-sm-2 control-label"
                                            for="input_debug_file">{{ entry_debug_file }}</label>
                                     <div class="col-sm-10">
-                                        <input type="text" id="input_debug_file" name="{{ id }}_setting[debug_file]"
+                                        <input type="text" id="input_debug_file" name="{{ codename }}_setting[debug_file]"
                                                value="{{ setting['debug_file'] }}" class="form-control"/>
                                     </div>
                                 </div>

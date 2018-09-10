@@ -1,34 +1,42 @@
-var gulp           = require('gulp'),
-    sass           = require('gulp-sass'),
-    browserSync    = require('browser-sync'),
-    cleanCSS       = require('gulp-clean-css'),
-    autoprefixer   = require('gulp-autoprefixer');
+var gulp = require('gulp');
+var sass = require('gulp-sass');
+var sourcemaps = require('gulp-sourcemaps');
+var autoprefixer = require('gulp-autoprefixer');
+var browserSync = require("browser-sync");
+var path = require("path");
+if (typeof process.env.HOST === "undefined") {
+	process.env.HOST = 'localhost';
+}
 
-var id_extension = 'd_social_login';
-// Обновление страниц сайта на локальном сервере
-gulp.task('browser-sync', function() {
-    browserSync({
-        proxy: "localhost",
-        notify: false
-    });
+var codename = 'd_social_login';
+var baseDir = path.resolve(__dirname, "../../../../../");
+var themeDir = baseDir + '/catalog/view/theme/default';
+var sassDest = themeDir + '/stylesheet/' + codename;
+gulp.task('sass', function () {
+	return gulp.src(sassDest + '/styles.scss')
+		.pipe(sourcemaps.init())
+		.pipe(sass({outputStyle: 'compressed'}).on('error', sass.logError))
+		.pipe(autoprefixer({
+			browsers: ['last 15 versions']
+		}))
+		.pipe(sourcemaps.write('./'))
+		.pipe(gulp.dest(sassDest))
+		.pipe(browserSync.reload({stream: true}));
 });
 
-// Компиляция stylesheet.css
-gulp.task('sass', function() {
-    return gulp.src('catalog/view/theme/default/stylesheet/d_social_login/form.scss')
-        .pipe(autoprefixer(['last 15 versions']))
-        .pipe(sass().on('error', sass.logError))
-        .pipe(cleanCSS())
-        .pipe(gulp.dest('catalog/view/theme/default/stylesheet/d_social_login'))
-        .pipe(browserSync.reload({stream: true}))
+gulp.task('sass:watch', function () {
+	gulp.watch([sassDest + '*.scss', sassDest + '**/*.scss'], ['sass']);
 });
-
-// Наблюдение за файлами
-gulp.task('watch', ['sass', 'browser-sync'], function() {
-    gulp.watch('catalog/view/theme/default/stylesheet/d_social_login/*.scss', ['sass']);
-    gulp.watch('catalog/view/theme/default/template/**/*.twig', browserSync.reload);
-    gulp.watch('catalog/view/theme/default/js/**/*.js', browserSync.reload);
-    gulp.watch('catalog/view/theme/default/libs/**/*', browserSync.reload);
+gulp.task("browser_sync_init", function () {
+	browserSync({
+		proxy: process.env.HOST
+	});
 });
-
-gulp.task('default', ['watch']);
+gulp.task('default', ["browser_sync_init"], function () {
+	gulp.watch([
+		baseDir + "/controller/extension/**/**/*.php",
+		themeDir + "/template/extension/**/**/*.vue",
+		themeDir + "/template/extension/**/**/*.twig"
+	], browserSync.reload);
+	gulp.start(["sass", "sass:watch"]);
+});
