@@ -145,7 +145,7 @@ class ControllerExtensionModuleDSocialLogin extends Controller
         $data['button_module_add'] = $this->language->get('button_module_add');
         $data['button_remove'] = $this->language->get('button_remove');
         $data['button_clear_debug_file'] = $this->language->get('button_clear_debug_file');
-
+        $data['text_get_pro'] = $this->language->get('text_get_pro');
         // Action
         $data['module_link'] = $this->model_extension_d_opencart_patch_url->link($this->route);
         $data['action'] = $this->model_extension_d_opencart_patch_url->link($this->route, $url);
