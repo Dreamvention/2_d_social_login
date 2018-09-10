@@ -5002,3 +5002,7 @@ catalog/view/javascript/d_social_login/gulp/node_modules
 config.php
 index.php
 php.ini
+.vscode/settings.json
+admin/model/extension/d_admin_style/style2.php
+system/library/d_shopunity/extension/d_admin_style.json
+system/library/d_shopunity/extension/d_admin_style.json
