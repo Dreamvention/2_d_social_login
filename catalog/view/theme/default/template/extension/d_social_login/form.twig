@@ -153,14 +153,21 @@
     </div>
     <script>
         $(document).ready(function () {
-            $('.d_social_login-modal').modal('show');
-            $('.d_social_login-modal').on('hidden.bs.modal', function (e) {
+            setTimeout(function(){
+                var s = $('#d_social_login .d_social_login-modal').detach();
+                console.log(s)
+                s.appendTo('body');
+                $('.d_social_login-modal').modal('show');
+                $('.d_social_login-modal').on('hidden.bs.modal', function (e) {
                 $.ajax({
                     url: 'index.php?route=extension/module/d_social_login/reset'
                 }).done(function (res) {
+                    $('.d_social_login-modal').detach();
                     $('#d_social_login').html(res);
                 })
             })
+            })
+            
         })
     </script>
     <script>

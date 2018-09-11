@@ -99,6 +99,7 @@ class ControllerExtensionModuleDSocialLogin extends Controller
     {
         // multistore fix
         $this->initializeSlRedirect();
+    
         $this->load->model('setting/store');
         $stores = $this->model_setting_store->getStores();
         $store_id = $this->config->get('config_store_id');
@@ -140,6 +141,7 @@ class ControllerExtensionModuleDSocialLogin extends Controller
             $remoteLoginResponce['scripts'] = $this->document->getScripts();
             $remoteLoginResponce['styles'] = $this->document->getStyles();
             $remoteLoginResponce['pre_loader'] = $this->model_extension_module_d_social_login->getPreloader();
+         
             $remoteLoginResponce['url'] = $this->sl_redirect;//fix
             if ($this->theme == 'BurnEngine') {
                 $remoteLoginResponce['url'] = $this->url->link($this->route . '/burn_engine');
@@ -337,6 +339,7 @@ class ControllerExtensionModuleDSocialLogin extends Controller
                 $_GET[str_replace('amp;', '', $key)] = $value;
             }
         }
+        
         $this->sl_redirect = isset($this->session->data['redirect_url'])?
             $this->session->data['redirect_url']:
             $this->session->data['redirect_url'] = $this->url->link('account/account');
