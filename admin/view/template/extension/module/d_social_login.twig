@@ -537,7 +537,7 @@
     $(function () {
 
         var tour = new Tour({
-            //storage : false
+            storage : false
         });
      
         tour.addSteps([
@@ -578,17 +578,17 @@
             title: "{{text_tour_title_4}}",
             content: "{{text_tour_content_4}}"
           },
-          // {
-          //   element: "#Google .provider-api",
-          //   placement: "top",
-          //   backdrop: true,
-          //   backdropPadding : 15,
-          //   title: "{{text_tour_title_5}}",
-          //   content: "{{text_tour_content_5}}",
-          //   onNext : function(tour){
-          //       $('.nav-tabs li:eq(1) a').tab('show')
-          //   }
-          // },
+          {
+            element: "#Google .provider-api",
+            placement: "top",
+            backdrop: true,
+            backdropPadding : 15,
+            title: "{{text_tour_title_5}}",
+            content: "{{text_tour_content_5}}",
+            onNext : function(tour){
+                $('.nav-tabs li:eq(1) a').tab('show')
+            }
+          },
           {
             element: "#tab_setting",
             placement: "top",
@@ -622,14 +622,14 @@
                 $('.nav-tabs li:eq(0) a').tab('show')
             }
           },
-          // {
-          //   element: "",
-          //   placement: "top",
-          //   orphan: true,
-          //   backdrop: true,
-          //   title: "{{text_tour_title_9}}",
-          //   content: "{{text_tour_content_9}}"
-          // }
+          {
+            element: "",
+            placement: "top",
+            orphan: true,
+            backdrop: true,
+            title: "{{text_tour_title_9}}",
+            content: "{{text_tour_content_9}}"
+          }
      
         ]);
      
