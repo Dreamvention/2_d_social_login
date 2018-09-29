@@ -20,6 +20,10 @@
                 <add position="after"><![CDATA[$this->db->query("DELETE FROM " . DB_PREFIX . "customer_authentication WHERE customer_id = '" . (int)$customer_id . "'");]]></add>
             </operation>
         </file>
-
-
+        <file path="catalog/controller/common/header.php">
+            <operation error="skip">
+                <search><![CDATA[public function index() {]]></search>
+                <add position="after"><![CDATA[$data['d_social_login'] = $this->load->controller('extension/module/d_social_login/header');]]></add>
+            </operation>
+        </file>
 </modification>

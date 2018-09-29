@@ -1,81 +1,45 @@
 {% if not islogged %}
-    <div class="dsl-wrap">
+    <div  id="d_social_login" class="d-social-login d-social-login--{{ size }}">
         <style>
             {% for provider in providers %}
-            .dsl_{{ provider['id'] }}_button {
+            .d-social-login__button--{{ provider['id'] }} {
                 background-color: {{ provider['background_color'] }}
             }
 
-            .{{ provider['id'] }}_icon {
-                background-image: url('catalog/view/theme/default/stylesheet/d_social_login/icons/{{ provider['id'] }}.svg');
-            }
-
-            .dsl_{{ provider['id'] }}_button:hover {
+            .d-social-login__button--{{ provider['id'] }}:hover {
                 background-color: {{ provider['background_color_hover'] }}
             }
 
-            .dsl_{{ provider['id'] }}_button:active {
+            .d-social-login__button--{{ provider['id'] }}:active {
                 background-color: {{ provider['background_color_active'] }}
             }
 
             {% endfor %}
-            /*//get values forom config*/
-            {% for class,size in sizes %}
-            .{{ class }} .r-side, .dsl-label.{{ class }} {
-                font-size: {{ size['font-size'] }};
-                padding: {{ size.padding }}{#{% for keyattr,attr_value in size %}{{ keyattr }}:{{ attr_value }};{% endfor %}#}
-            }
-            .{{ class }} .l-side {
-                padding:{{ size.padding }};
-                width: {{ size.width }};
-            }
-
-
-            {% if class=='icons' %}
-            .{{ class }} .l-side {
-                padding-top: {{ size.width/4 }}px;
-                padding-bottom: {{ size.width/4 }}px;
-                padding-right: {{ size.width/8 }}px;
-                padding-left: {{ size.width/8 }}px;
-                width: {{ size.width }};
-            }
-            .{{ class }} .r-side {
-                display: none;
-            }
-
-            .{{ class }} .l-side {
-                padding: {{ size.padding }};;
-                width: {{ size.width }};
-            }
-
-            {% if size['border-radius'] %}
-            #d_social_login .dsl-button {
-            / / border-radius: {{ size['border-radius'] }}
-            }
-
-            {% endif %}
-            {% endif %}
-            {% endfor %}
-            #d_social_login > * {
-                margin: 2px;
-                margin-bottom: 10px;
-            }
-
-
         </style>
+
         {% if (error) %}
             <div class="alert alert-warning">{{ error }}</div>
         {% endif %}
-        <div id="d_social_login">
-            <span class="dsl-label {{ size }}">{{ button_sign_in }}</span>
+
+        <div class="d-social-login__button-list">
+            <span class="d-social-login__label">{{ title }}</span>
             {% for key,provider in providers %}
                 {% if (provider['enabled']) %}
-                    <a class="dsl-button dsl_{{ provider['id'] }}_button {{ size }} "
+                    <a class="d-social-login__button d-social-login__button--{{ provider['id'] }}"
                        href="index.php?route=extension/module/d_social_login/login&provider={{ key }}">
-        <span class="l-side">   <span class="dsl-icon {{ provider['id'] }}_icon "></span>
-        </span> <span class="r-side">{{ provider['heading'] }}</span></a>
+                        <span class="d-social-login__button__icon">
+                            <img src="{{ provider['icon'] }}" />
+                            <div class="la-ball-clip-rotate d-social-login__button__icon__preloader"><div></div></div>
+                        </span> 
+                        <span class="d-social-login__button__label">{{ title }}</span>
+                    </a>
                 {% endif %}
             {% endfor %}
         </div>
     </div>
+    <script>
+    $('#d_social_login').on('click', '.d-social-login__button', function(){
+        $(this).addClass('d-social-login__button--loading');
+    });
+    </script>
 {% endif %}

@@ -30,7 +30,7 @@ class ControllerExtensionModuleDSocialLogin extends Controller
 
     public function index()
     {
-
+        $this->document->addStyle('catalog/view/theme/default/stylesheet/d_social_login/pre_loader/clip-rotate.css');
         $this->document->addStyle('catalog/view/theme/default/stylesheet/d_social_login/styles.css');
         $this->document->addScript('catalog/view/javascript/d_social_login/spin.min.js');
         $setting = $this->config->get($this->codename . '_setting');
@@ -56,12 +56,10 @@ class ControllerExtensionModuleDSocialLogin extends Controller
                 return $this->getForm($customer_data, $authentication_data);
             }
         }
-
-        $data['heading_title'] = $this->language->get('heading_title');
-        $data['button_sign_in'] = $this->language->get('button_sign_in');
+        $data['title'] = $setting['title'][$this->config->get('config_language_id')];
 
         $data['size'] = $setting['size'];
-        $data['sizes'] = $setting['sizes'];
+
         $data['islogged'] = ($this->customer->isLogged()) ? $this->customer->isLogged() : false;
 
         $providers = $setting['providers'];
@@ -74,8 +72,10 @@ class ControllerExtensionModuleDSocialLogin extends Controller
         }
         array_multisort($sort_order, SORT_ASC, $providers);
         $data['providers'] = $providers;
+        $this->load->model('tool/image');
         foreach ($providers as $key => $val) {
-            $data['providers'][$key]['heading'] = $this->language->get('text_sign_in_with_' . $val['id']);
+            $data['providers'][$key]['icon'] = $this->model_tool_image->resize('catalog/d_social_login/'.$val['icon'], 10,10);
+            
         }
 
         $data['error'] = false;
@@ -93,6 +93,12 @@ class ControllerExtensionModuleDSocialLogin extends Controller
         unset($this->session->data['HA::CONFIG']);
         unset($this->session->data['HA::STORE']);
         return $this->model_extension_d_opencart_patch_load->view($this->route, $data);
+    }
+
+    public function header(){
+        if(!empty($this->setting['header'])){
+            return $this->index();
+        }
     }
 
     public function login()

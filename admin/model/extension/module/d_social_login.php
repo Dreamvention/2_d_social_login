@@ -171,4 +171,21 @@ class ModelExtensionModuleDSocialLogin extends Model
             $arr_files[] = $dir;
         }
     }
+
+    public function addToLayoutFromSetup($module_id)
+    {
+        $this->db->query("INSERT INTO `" . DB_PREFIX . "layout_module` (
+                            `layout_id`, 
+                            `code`, 
+                            `position`, 
+                            `sort_order`)
+                          VALUES (
+                              (SELECT `layout_id` FROM `" . DB_PREFIX . "layout_route` WHERE `route` LIKE '%account%' LIMIT 1), 
+                              '" . $module_id. "', 
+                              'content_top', 
+                              0)
+                        ");
+        return true;
+    }
+
 }

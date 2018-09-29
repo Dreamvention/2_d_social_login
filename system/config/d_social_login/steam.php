@@ -2,13 +2,15 @@
 
 $_['d_social_login_steam'] = array(
     "Steam" => array (
-        "enabled" => true,
+        "enabled" => false,
+        "name" => "Steam",
         "keys"    => array ( "id" => "", "key" => "" ),
         "id"  => 'steam',
         "sort_order" => 15,
-        "icon" => 'dsl-steam',
+        "icon" => 'steam.svg',
         "background_color" => '#171a21',
         "background_color_active" => '#000000',
         "background_color_hover" => '#000000',
+        "documentation_url" => "https://doc.99logins.com/steam",
     ),
 );

@@ -2,32 +2,6 @@
 // Heading 
 $_['heading_title'] = 'Account';
 
-// Text
-$_['text_sign_in_with'] = 'Sign in';
-$_['text_sign_in_with_google'] = 'Sign in';
-$_['text_sign_in_with_facebook'] = 'Sign in';
-$_['text_sign_in_with_twitter'] = 'Sign in';
-$_['text_sign_in_with_live'] = 'Sign in';
-$_['text_sign_in_with_linkedin'] = 'Sign in';
-$_['text_sign_in_with_vkontakte'] = 'Sign in';
-$_['text_sign_in_with_yandex'] = 'Sign in';
-$_['text_sign_in_with_odnoklassniki'] = 'Sign in';
-$_['text_sign_in_with_mailru'] = 'Sign in';
-$_['text_sign_in_with_paypal'] = 'Sign in';
-$_['text_sign_in_with_instagram'] = 'Sign in';
-$_['text_sign_in_with_tumblr'] = 'Sign in';
-$_['text_sign_in_with_yahoo'] = 'Sign in';
-$_['text_sign_in_with_foursquare'] = 'Sign in';
-$_['text_sign_in_with_steam'] = 'Sign in';
-$_['text_sign_in_with_github'] = 'Sign in';
-$_['text_sign_in_with_dribbble'] = 'Sign in';
-$_['text_sign_in_with_px500'] = 'Sign in';
-$_['text_sign_in_with_lastfm'] = 'Sign in';
-$_['text_sign_in_with_amazon'] = 'Sign in';
-
-//button
-$_['button_sign_in'] = 'Sign in with';
-$_['button_sign_in_mail'] = 'Sign up';
 //placeholder
 $_['text_email'] = 'Enter your email';
 $_['text_firstname'] = 'Enter your firstname';
