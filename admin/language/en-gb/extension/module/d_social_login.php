@@ -82,11 +82,11 @@ $_['button_clear_debug_file']       = 'Clear';
 $_['text_instruction_social_login'] = 'How to set up Social Logins:';
 
 $_['text_tour_title_1']             = 'Welcome to Social login!';
-$_['text_tour_content_1']           = 'This tour will guide you through the admin panel. Click start.';
+$_['text_tour_content_1']           = 'This tour will guide you through the Social Login admin panel. Click start.';
 $_['text_end']                      = 'End';
 $_['text_start']                    = 'Start';
 $_['text_tour_title_2']             = 'Activate Status';
-$_['text_tour_content_2']           = 'We have activated Social login for you and displyed it on the customer account page. To edit this, go to Design / Layouts and edit the Account layout.';
+$_['text_tour_content_2']           = 'We have activated Social Login for you and displyed it on the customer account page. To edit this, go to Design / Layouts and edit the Account layout.';
 $_['text_tour_title_3']             = 'Activate Social login provider';
 $_['text_tour_content_3']           = 'Before you can activate a Social Provider, you need to add API key and secret. Expend to see what is inside a Social Provider.';
 $_['text_tour_title_4']             = 'Edit design';
