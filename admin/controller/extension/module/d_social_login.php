@@ -372,12 +372,14 @@ class ControllerExtensionModuleDSocialLogin extends Controller
             $setting = array();
         }
 
-        $setting = array_replace_recursive($config, $setting);
         foreach($setting['providers'] as $provider_id => $provider){
             if(!isset($config['providers'][$provider_id])){
                 unset($setting['providers'][$provider_id]);
             }
         }
+
+        $setting = array_replace_recursive($config, $setting);
+
         $setting['sizes'] = $config['sizes'];
         return $setting;
     }
