@@ -2,6 +2,10 @@
 // Heading 
 $_['heading_title'] = 'Account';
 
+//button
+$_['button_sign_in'] = 'Sign in with';
+$_['button_sign_in_mail'] = 'Sign up';
+
 //placeholder
 $_['text_email'] = 'Enter your email';
 $_['text_firstname'] = 'Enter your firstname';
