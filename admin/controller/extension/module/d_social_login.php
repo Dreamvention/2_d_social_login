@@ -80,7 +80,7 @@ class ControllerExtensionModuleDSocialLogin extends Controller
         $this->document->addStyle('view/javascript/jquery/magnific/magnific-popup.css');
         $this->document->addScript('view/javascript/d_tinysort/tinysort.js');
         $this->document->addScript('view/javascript/d_tinysort/jquery.tinysort.min.js');
-        $this->document->addScript('view/javascript/d_bootstrap_sortable/bootstrap-sortable.js');
+        $this->document->addScript('view/javascript/d_social_login/bootstrap-sortable.js');
         $this->document->addStyle('view/stylesheet/d_social_login.css');
 
         // Breadcrumbs
