@@ -113,8 +113,7 @@
     "system/library/d_social_login/hybrid/resources",
     "system/library/d_social_login/hybrid/thirdparty/oauth",
     "system/library/d_social_login/hybrid/thirdparty/linkedin",
-    "system/library/d_social_login/hybrid/thirdparty/openid",
-    "system/library/d_social_login/hybrid/thirdparty/src"
+    "system/library/d_social_login/hybrid/thirdparty/openid"
   ],
   "changelog": [
     {
