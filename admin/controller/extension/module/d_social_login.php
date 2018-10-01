@@ -284,7 +284,7 @@ class ControllerExtensionModuleDSocialLogin extends Controller
         if ($data['setting']['background_img'] && file_exists(DIR_IMAGE . $data['setting']['background_img']) && is_file(DIR_IMAGE . $data['setting']['background_img'])) {
             $data['background_img_thumb'] = $this->model_tool_image->resize($data['setting']['background_img'], $data['setting']['background_img_size']['width'], $data['setting']['background_img_size']['height']);
         } else {
-            $data['background_img_thumb'] = $this->model_tool_image->resize('no_image.jpg', $data['setting']['background_img_size']['width'], $data['setting']['background_img_size']['height']);
+            $data['background_img_thumb'] = $this->model_tool_image->resize('no_image.png', $data['setting']['background_img_size']['width'], $data['setting']['background_img_size']['height']);
         }
 
         // Customer groups
@@ -368,15 +368,16 @@ class ControllerExtensionModuleDSocialLogin extends Controller
         if ($this->model_setting_setting->getSetting($this->codename, $this->store_id)) {
             $setting = $this->model_setting_setting->getSetting($this->codename, $this->store_id);
             $setting = ($setting) ? $setting[$this->codename . '_setting'] : array();
+            foreach($setting['providers'] as $provider_id => $provider){
+                if(!isset($config['providers'][$provider_id])){
+                    unset($setting['providers'][$provider_id]);
+                }
+            }
         } else {
             $setting = array();
         }
 
-        foreach($setting['providers'] as $provider_id => $provider){
-            if(!isset($config['providers'][$provider_id])){
-                unset($setting['providers'][$provider_id]);
-            }
-        }
+        
 
         $setting = array_replace_recursive($config, $setting);
 

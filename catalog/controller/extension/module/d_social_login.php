@@ -45,7 +45,12 @@ class ControllerExtensionModuleDSocialLogin extends Controller
             }
         } else {
             if (!(isset($this->session->data['reset']) && $this->session->data['reset'])) {
-                $this->session->data['redirect_url'] = $this->model_extension_module_d_social_login->getCurrentUrl();
+                if($this->request->get['route'] == 'account/logout'){
+                    $redirect_url = $this->url->link('account/account');
+                }else{
+                    $redirect_url = $this->model_extension_module_d_social_login->getCurrentUrl();
+                }
+                $this->session->data['redirect_url'] = $redirect_url;
             }
         }
         //load data from provider into form popup
@@ -87,6 +92,7 @@ class ControllerExtensionModuleDSocialLogin extends Controller
         if (!isset($this->session->data['sl_redirect'])) {
             $this->session->data['sl_redirect'] = ($setting['return_page_url']) ? $setting['return_page_url'] : $this->model_extension_module_d_social_login->getCurrentUrl();
         }
+
         $data['url'] = $this->model_extension_module_d_social_login->getCurrentUrl(1, 1);
 
         // facebook fix
@@ -140,14 +146,13 @@ class ControllerExtensionModuleDSocialLogin extends Controller
         try {
             $remoteLoginResponce = $this->model_extension_module_d_social_login->remoteLogin($this->setting, $this->sl_redirect);// result from hybrid
             if ($remoteLoginResponce == 'redirect') {
-                $this->response->redirect($this->model_extension_module_d_social_login->getCurrentUrl(1, 1));
+                $this->response->redirect($this->sl_redirect);
             }
             $this->document->addScript('catalog/view/javascript/jquery/jquery-2.1.1.min.js');
-            $this->document->addStyle('catalog/view/theme/default/stylesheet/d_social_login/pre_loader/' . 'clip-rotate' . '.css');
+            $this->document->addStyle('catalog/view/theme/default/stylesheet/d_social_login/pre_loader/clip-rotate.css');
             $remoteLoginResponce['scripts'] = $this->document->getScripts();
             $remoteLoginResponce['styles'] = $this->document->getStyles();
             $remoteLoginResponce['pre_loader'] = $this->model_extension_module_d_social_login->getPreloader();
-         
             $remoteLoginResponce['url'] = $this->sl_redirect;//fix
             if ($this->theme == 'BurnEngine') {
                 $remoteLoginResponce['url'] = $this->url->link($this->route . '/burn_engine');
@@ -242,8 +247,7 @@ class ControllerExtensionModuleDSocialLogin extends Controller
 
     private function getForm($customer_data, $authentication_data)
     {
-        $this->document->addStyle('catalog/view/theme/default/stylesheet/d_social_login/pre_loader/' . 'clip-rotate' . '.css');
-        $this->document->addStyle('catalog/view/theme/default/stylesheet/d_social_login/form.css' . '?' . rand());
+        $this->document->addStyle('catalog/view/theme/default/stylesheet/d_social_login/pre_loader/clip-rotate.css');
         $this->document->addScript('catalog/view/javascript/d_social_login/jquery.validate.js');
         $this->document->addScript('catalog/view/javascript/d_social_login/jquery.maskedinput.min.js');
 
@@ -293,7 +297,7 @@ class ControllerExtensionModuleDSocialLogin extends Controller
         array_multisort($sort_order, SORT_ASC, $this->setting['fields']);
         $data['fields'] = $this->setting['fields'];
         $provider = $this->setting['providers'][$this->session->data['provider']];
-        $data['log_style'] = ' background-image: url(\'catalog/view/theme/default/stylesheet/d_social_login/icons/' . $provider['id'] . '.svg\');background-color:' . $provider['background_color'];
+        $data['log_style'] = ' background-image: url(\'image/catalog/d_social_login/' . $provider['id'] . '.svg\');background-color:' . $provider['background_color'];
         $this->load->model('localisation/country');
         $data['countries'] = $this->model_localisation_country->getCountries();
         return $this->model_extension_d_opencart_patch_load->view('extension/'.$this->codename . '/form', $data);

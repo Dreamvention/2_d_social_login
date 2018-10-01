@@ -30,7 +30,7 @@
                 $('.error').removeClass('error');
                 if (!json['error']) {
                     if (json['success']) {
-                        $("#d_social_login .popup").html(json['success']);
+                        $(".d_social_login .popup").html(json['success']);
                         setTimeout(function () {
                             location.reload();
                         }, 1000)

@@ -22,7 +22,9 @@
         {% endif %}
 
         <div class="d-social-login__button-list">
-            <span class="d-social-login__label">{{ title }}</span>
+            {% if title%}
+                <span class="d-social-login__label">{{ title }}</span>
+            {% endif %}
             {% for key,provider in providers %}
                 {% if (provider['enabled']) %}
                     <a class="d-social-login__button d-social-login__button--{{ provider['id'] }}"

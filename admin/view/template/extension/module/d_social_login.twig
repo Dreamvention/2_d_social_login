@@ -112,6 +112,19 @@
                                       <div 
                                       class="panel panel-default sort-item" 
                                       data-sort="{{ provider['sort_order'] }}">
+                                        <input type="hidden"
+                                               name="{{ codename }}_setting[providers][{{ key }}][id]"
+                                               value="{{ provider['id'] }}"/>
+                                        <input type="hidden"
+                                               name="{{ codename }}_setting[providers][{{ key }}][sort_order]"
+                                               class="sort-value"
+                                               value="{{ provider['sort_order'] }}"/>
+                                        <input type="hidden"
+                                               name="{{ codename }}_setting[providers][{{ key }}][enabled]"
+                                               value="0"/>
+                                        <input type="hidden"
+                                               name="{{ codename }}_setting[providers][{{ key }}][icon]"
+                                               value="{{ provider['icon'] }}"/>
                                         <div 
                                         class="panel-heading collapse" 
                                         role="tab" 
@@ -137,19 +150,6 @@
                                                     aria-expanded="true"
                                                     ><i class="fa fa-caret-down"></i> {{ text_expend_to_edit }}</strong>
                                                 <span for="d_social_login_modules_providers_{{ key }}_enabled">
-                                                    <input type="hidden"
-                                                           name="{{ codename }}_setting[providers][{{ key }}][id]"
-                                                           value="{{ provider['id'] }}"/>
-                                                    <input type="hidden"
-                                                           name="{{ codename }}_setting[providers][{{ key }}][sort_order]"
-                                                           class="sort-value"
-                                                           value="{{ provider['sort_order'] }}"/>
-                                                    <input type="hidden"
-                                                           name="{{ codename }}_setting[providers][{{ key }}][enabled]"
-                                                           value="0"/>
-                                                    <input type="hidden"
-                                                           name="{{ codename }}_setting[providers][{{ key }}][icon]"
-                                                           value="{{ provider['icon'] }}"/>
                                                     <input type="checkbox"
                                                            name="{{ codename }}_setting[providers][{{ key }}][enabled]" {{ provider['enabled']? 'checked="checked"':'' }}
                                                            value="1"
@@ -274,7 +274,11 @@
                                                 </label>
                                                 <input type="text" id="input_title"
                                                    name="{{ codename }}_setting[title][{{language.language_id}}]"
-                                                   value="{% if (setting['title'][language.language_id]) %}{{setting['title'][language.language_id]}}{% else %}{{ text_sign_in }}{% endif %}" class="form-control"/>
+                                                   {% if (setting['title'][language.language_id]) %}
+                                                        value="{{setting['title'][language.language_id]}}"
+                                                   {% else %}
+                                                        value="{{ text_sign_in }}"
+                                                   {% endif %} class="form-control"/>
                                                 
                                             </div>
                                         {% endfor %}
@@ -688,8 +692,8 @@
                 });
             },
             onDrop: function (item, container, _super) {
-                item.closest('.sortable').find('.row').each(function (i, row) {
-                    //    console.log(i);
+                item.closest('.sortable').find('.sort-item').each(function (i, row) {
+                    console.log( $(row).find('.sort-value'));
                     $(row).find('.sort-value').val(i);
 
                 });
