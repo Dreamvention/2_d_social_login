@@ -4,7 +4,7 @@ $_['d_social_login_steam'] = array(
     "Steam" => array (
         "enabled" => false,
         "name" => "Steam",
-        "keys"    => array ( "id" => "", "key" => "" ),
+        "keys"    => false,
         "id"  => 'steam',
         "sort_order" => 15,
         "icon" => 'steam.svg',
