@@ -45,7 +45,7 @@ class ControllerExtensionModuleDSocialLogin extends Controller
             }
         } else {
             if (!(isset($this->session->data['reset']) && $this->session->data['reset'])) {
-                if($this->request->get['route'] == 'account/logout'){
+                if(isset($this->request->get['route']) && $this->request->get['route'] == 'account/logout'){
                     $redirect_url = $this->url->link('account/account');
                 }else{
                     $redirect_url = $this->model_extension_module_d_social_login->getCurrentUrl();
