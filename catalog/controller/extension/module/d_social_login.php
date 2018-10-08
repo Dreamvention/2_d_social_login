@@ -35,6 +35,7 @@ class ControllerExtensionModuleDSocialLogin extends Controller
         $this->document->addScript('catalog/view/javascript/d_social_login/spin.min.js');
         $setting = $this->config->get($this->codename . '_setting');
         $method = $_SERVER['REQUEST_METHOD'];
+        
         if ('PUT' === $method) {
             parse_str(file_get_contents('php://input'), $_PUT);
             //fix for burn engine
