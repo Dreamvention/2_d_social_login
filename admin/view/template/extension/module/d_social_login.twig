@@ -540,6 +540,8 @@
 
     $(function () {
 
+        {% if setup %}
+
         var tour = new Tour({
             //storage : false
         });
@@ -642,7 +644,8 @@
      
         // Start the tour
         tour.start();
-
+        
+        {% endif %}
 
         // sorting fields
         $('#social_login .sortable > .sort-item').tsort({attr: 'data-sort'});
