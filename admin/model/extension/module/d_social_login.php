@@ -106,6 +106,11 @@ class ModelExtensionModuleDSocialLogin extends Model
                 $this->codename . '_setting' => $setting,
                 $this->codename . '_status'  => 1
             ));
+
+            $this->model_extension_d_opencart_patch_setting->editSetting('module_'.$this->codename, array(
+                'module_'. $this->codename . '_setting' => $setting,
+                'module_'. $this->codename . '_status'  => 1
+            ));
         }
     }
     public function getFileContents($file)
