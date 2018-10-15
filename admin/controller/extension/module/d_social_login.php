@@ -339,6 +339,7 @@ class ControllerExtensionModuleDSocialLogin extends Controller
 
     protected function validate()
     {
+        $this->load->language($this->route);
         if (!$this->user->hasPermission('modify', $this->route)) {
             $this->error['warning'] = $this->language->get('error_permission');
         }
@@ -419,6 +420,7 @@ class ControllerExtensionModuleDSocialLogin extends Controller
 
     public function clearDebugFile()
     {
+        $this->load->language($this->route);
         $json = array();
 
         if (!$this->user->hasPermission('modify', $this->route)) {
