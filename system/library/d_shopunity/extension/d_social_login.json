@@ -1,6 +1,6 @@
 {
   "codename": "d_social_login",
-  "version": "6.2.2",
+  "version": "6.2.3",
   "name": "Social Login",
   "description": "Social login is a module that addes the ability to create an account in the webshop with a social network account and then login in by simply clicking a button. No need to remeber the password. It has Facebook, Paypal, Google+, Twitter, Linkeding, Vknontakte, Windows live, Tumblr and more",
   "index": "extension/module/d_social_login",
@@ -12,8 +12,8 @@
   "opencart_version": "2.0.1.0-4",
   "type": "module",
   "license": {
-    "type": "commercial",
-    "url": "https://shopunity.net/licenses/commercial"
+    "type": "free",
+    "url": "https://shopunity.net/licenses/free"
   },
   "install": {
     "url": "extension/extension/module/install&extension=d_social_login"
@@ -33,7 +33,8 @@
     "d_bootstrap_colorpicker": ">= 2.5.1",
     "d_tinysort": ">= 2.3.7",
     "d_admin_style": ">= 1.0.4",
-    "d_bootstrap_tour": ">= 1.0.1"
+    "d_bootstrap_tour": ">= 1.0.1",
+    "d_validator": ">=1.0.2"
   },
   "files": [
     "system/library/d_shopunity/extension/d_social_login.json",
@@ -94,6 +95,10 @@
     "system/library/d_social_login/hybrid/thirdparty/openid"
   ],
   "changelog": [
+    {
+      "version": "6.2.3",
+      "change": "Validator dependency"
+    },
     {
       "version": "6.2.2",
       "change": "Sem var"
