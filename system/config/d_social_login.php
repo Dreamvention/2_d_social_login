@@ -19,8 +19,6 @@ $_["d_social_login"] = array(
         "country_id" => array("id" => "country_id", "enabled" => true, "required" => false, "sort_order" => 8, "type" => "select"),
         "zone_id"    => array("id" => "zone_id", "enabled" => true, "required" => false, "sort_order" => 9, "type" => "select"),
         "company"    => array("id" => "company", "enabled" => true, "required" => false, "sort_order" => 10, "type" => "text"),
-        // "company_id" => array("id" => "company_id", "enabled" => true, "sort_order" => 11, "type" => "text"),
-        // "tax_id" => array("id" => "tax_id", "enabled" => true, "sort_order" => 12, "type" => "text"),
         "password"   => array("id" => "password", "enabled" => true, "required" => false, "sort_order" => 13, "type" => "password"),
         "confirm"    => array("id" => "confirm", "enabled" => true, "required" => false, "sort_order" => 14, "type" => "password")
     ),
