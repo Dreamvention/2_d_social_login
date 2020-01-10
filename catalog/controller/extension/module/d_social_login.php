@@ -116,8 +116,15 @@ class ControllerExtensionModuleDSocialLogin extends Controller
 
     public function login()
     {
-        // multistore fix
+        if ($this->setting['debug_mode'] === true){
+            $this->model_extension_module_d_social_login->setLog($this->setting['debug_file'], 'Start Login');
+        }
+
         $this->initializeSlRedirect();
+
+        if ($this->setting['debug_mode'] === true){
+            $this->model_extension_module_d_social_login->setLog($this->setting['debug_file'], 'initializeSlRedirect to ' . $this->sl_redirect);
+        }
 
         $this->setting = $this->config->get('d_social_login_setting');
 
@@ -142,31 +149,26 @@ class ControllerExtensionModuleDSocialLogin extends Controller
         }
 
         $this->setting['debug_mode'] = true;
-        $this->setting['debug_file'] = DIR_LOGS . "login.txt";
+        $this->setting['debug_file'] = "login.txt";
 
 
         $this->setting['base_url'] = $this->config->get('config_secure') ? $httpsServer : $httpServer;
         $this->setting['callback'] = $this->config->get('config_secure') ? $httpsServer : $httpServer;
 
+        if ($this->setting['debug_mode'] === true){
+            $this->model_extension_module_d_social_login->setLog($this->setting['debug_file'], 'initialize callback to ' . $this->setting['callback']);
+        }
+
         try {
-            $fd = fopen("hello_controller_1.txt", 'a+') or die("не удалось создать файл");
-            $str = "Start Login" . PHP_EOL;
-            $prokek = $this->setting['callback'];
-            $str = "Callback to $prokek" . PHP_EOL;
-
-            fputs($fd, $str);
-
             $remoteLoginResponce = $this->model_extension_module_d_social_login->remoteLogin($this->setting, $this->sl_redirect); // result from hybrid
 
-            if ($remoteLoginResponce == 'redirect') {
-                fputs($fd, "remoteLoginResponce = redirect");
-                fclose($fd);
-
-                $this->response->redirect($this->sl_redirect);
+            if ($this->setting['debug_mode'] === true){
+                $this->model_extension_module_d_social_login->setLog($this->setting['debug_file'], 'remote responce  = ' . json_encode($remoteLoginResponce));
             }
 
-            fputs($fd, "remoteLoginResponce != redirect ". json_encode($remoteLoginResponce));
-
+            if ($remoteLoginResponce == 'redirect') {
+                $this->response->redirect($this->sl_redirect);
+            }
 
             $this->document->addScript('catalog/view/javascript/jquery/jquery-2.1.1.min.js');
             $this->document->addStyle('catalog/view/theme/default/stylesheet/d_social_login/pre_loader/clip-rotate.css');
@@ -182,9 +184,6 @@ class ControllerExtensionModuleDSocialLogin extends Controller
             }
 
             $view = $this->model_extension_d_opencart_patch_load->view('extension/'.$this->codename . '/auth', $remoteLoginResponce);
-
-            fputs($fd, "Redirect to ". json_encode($remoteLoginResponce));
-
 
             $this->response->setOutput($view);
 
@@ -223,14 +222,15 @@ class ControllerExtensionModuleDSocialLogin extends Controller
                     break;
             }
 
-            fputs($fd, "Redirect to ". json_encode($this->sl_redirect));
-            fclose($fd);
-
-
             $this->session->data['d_social_login_error'] = $error;
             $error .= "\n\nHybridAuth Error: " . $e->getMessage();
             $error .= "\n\nTrace:\n " . $e->getTraceAsString();
             $this->log->write($error);
+
+            if ($this->setting['debug_mode'] === true){
+                $this->model_extension_module_d_social_login->setLog($this->setting['debug_file'], $error);
+            }
+
             $this->response->redirect($this->sl_redirect);
         }
     }
