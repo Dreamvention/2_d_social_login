@@ -49,8 +49,6 @@
     "admin/language/en-gb/extension/module/d_social_login.php",
     "admin/view/stylesheet/d_social_login.css",
     "admin/view/template/extension/module/d_social_login.twig",
-    "catalog/controller/extension/d_social_login/callback_live.php",
-    "catalog/controller/extension/d_social_login/callback.php",
     "catalog/controller/extension/module/d_social_login.php",
     "catalog/model/extension/module/d_social_login.php",
     "catalog/language/en-gb/extension/module/d_social_login.php",
