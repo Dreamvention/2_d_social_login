@@ -21,9 +21,6 @@ class ControllerExtensionModuleDSocialLogin extends Controller
         $this->config->set($this->codename . '_setting' ,$config_settings[$this->codename . '_setting']);
         $this->setting = $this->config->get($this->codename . '_setting');
 
-        $this->setting['debug_mode'] = true;
-        $this->setting['debug_file'] = DIR_LOGS . "login.txt";
-
         $this->language->load($this->route);
         $this->load->model($this->route);
         $this->load->model('extension/module/d_social_login');
@@ -116,13 +113,13 @@ class ControllerExtensionModuleDSocialLogin extends Controller
 
     public function login()
     {
-        if ($this->setting['debug_mode'] === true){
+        if ( boolval($this->setting['debug_mode']) === true){
             $this->model_extension_module_d_social_login->setLog($this->setting['debug_file'], 'Start Login');
         }
 
         $this->initializeSlRedirect();
 
-        if ($this->setting['debug_mode'] === true){
+        if ( boolval($this->setting['debug_mode']) === true){
             $this->model_extension_module_d_social_login->setLog($this->setting['debug_file'], 'initializeSlRedirect to ' . $this->sl_redirect);
         }
 
@@ -148,21 +145,17 @@ class ControllerExtensionModuleDSocialLogin extends Controller
             $this->session->data['provider'] = $this->setting['provider'] = $this->request->get['provider'];
         }
 
-        $this->setting['debug_mode'] = true;
-        $this->setting['debug_file'] = "login.txt";
-
-
         $this->setting['base_url'] = $this->config->get('config_secure') ? $httpsServer : $httpServer;
         $this->setting['callback'] = $this->config->get('config_secure') ? $httpsServer : $httpServer;
 
-        if ($this->setting['debug_mode'] === true){
+        if ( boolval($this->setting['debug_mode']) === true){
             $this->model_extension_module_d_social_login->setLog($this->setting['debug_file'], 'initialize callback to ' . $this->setting['callback']);
         }
 
         try {
             $remoteLoginResponce = $this->model_extension_module_d_social_login->remoteLogin($this->setting, $this->sl_redirect); // result from hybrid
 
-            if ($this->setting['debug_mode'] === true){
+            if ( boolval($this->setting['debug_mode']) === true){
                 $this->model_extension_module_d_social_login->setLog($this->setting['debug_file'], 'remote responce  = ' . json_encode($remoteLoginResponce));
             }
 
@@ -227,7 +220,7 @@ class ControllerExtensionModuleDSocialLogin extends Controller
             $error .= "\n\nTrace:\n " . $e->getTraceAsString();
             $this->log->write($error);
 
-            if ($this->setting['debug_mode'] === true){
+            if ( boolval($this->setting['debug_mode']) === true){
                 $this->model_extension_module_d_social_login->setLog($this->setting['debug_file'], $error);
             }
 

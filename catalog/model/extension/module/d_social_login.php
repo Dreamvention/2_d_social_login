@@ -9,7 +9,6 @@ use Hybridauth\Exception\Exception;
 
 class ModelExtensionModuleDSocialLogin extends Model
 {
-
     public function checkAuthentication($customer_id, $provider)
     {
         $result = $this->db->query("SELECT * FROM " . DB_PREFIX . "customer_authentication  WHERE  customer_id = '" . (int)$customer_id . "' AND  provider = '" . $this->db->escape($provider) . "'");
@@ -23,7 +22,6 @@ class ModelExtensionModuleDSocialLogin extends Model
 
     public function addAuthentication($data)
     {
-
         $this->db->query("INSERT INTO " . DB_PREFIX . "customer_authentication SET " .
             "customer_id = '" . (int)$data['customer_id'] . "', " .
             "provider = '" . $this->db->escape($data['provider']) . "', " .
@@ -171,8 +169,8 @@ class ModelExtensionModuleDSocialLogin extends Model
 
     public function remoteLogin($setting)
     {
-        if ($setting['debug_mode'] === true) {
-            $this->setLog($this->setting['debug_file'], "Init Hybrid and Session");
+        if ( boolval($setting['debug_mode']) === true) {
+            $this->setLog($setting['debug_file'], "Init Hybrid and Session");
         }
 
         require_once(DIR_SYSTEM . 'library/d_social_login/hybrid/autoload.php');
@@ -187,8 +185,8 @@ class ModelExtensionModuleDSocialLogin extends Model
 
         if (isset($_GET['provider'])) {
 
-            if ($setting['debug_mode'] === true) {
-                $this->setLog($this->setting['debug_file'], "Get Provider" . $_GET['provider'] . " and set session");
+            if ( boolval($setting['debug_mode']) === true) {
+                $this->setLog($setting['debug_file'], "Get Provider" . $_GET['provider'] . " and set session");
             }
 
             $storage->set('provider', $_GET['provider']);
@@ -201,8 +199,8 @@ class ModelExtensionModuleDSocialLogin extends Model
 
         if (isset($_GET['logout'])) {
 
-            if ($setting['debug_mode'] === true) {
-                $this->setLog($this->setting['debug_file'], "Provider logout" . $_GET['logout']);
+            if ( boolval($setting['debug_mode']) === true) {
+                $this->setLog($setting['debug_file'], "Provider logout" . $_GET['logout']);
             }
 
             if (in_array($_GET['logout'], $hybridauth->getProviders())) {
@@ -223,8 +221,8 @@ class ModelExtensionModuleDSocialLogin extends Model
          * the users back to Authorization callback URL (i.e., this script).
          */
         if ($provider = $storage->get('provider')) {
-            if ($setting['debug_mode'] === true) {
-                $this->setLog($this->setting['debug_file'], "Authenticate " . $provider);
+            if ( boolval($setting['debug_mode']) === true) {
+                $this->setLog($setting['debug_file'], "Authenticate " . $provider);
             }
 
             $hybridauth->authenticate($provider);
@@ -233,22 +231,22 @@ class ModelExtensionModuleDSocialLogin extends Model
 
             $adapter = $hybridauth->getAdapter($provider);
 
-            if ($setting['debug_mode'] === true) {
-                $this->setLog($this->setting['debug_file'], "Remove Session provider" . $provider);
+            if ( boolval($setting['debug_mode']) === true) {
+                $this->setLog($setting['debug_file'], "Remove Session provider" . $provider);
             }
 
             $profile = $adapter->getUserProfile();
             unset($this->session->data['d_social_login']);
 
-            if ($setting['debug_mode'] === true) {
-                $this->setLog($this->setting['debug_file'], "get user profile and unset session");
-                $this->setLog($this->setting['debug_file'], "User profile:" . json_encode((array)$profile));
+            if ( boolval($setting['debug_mode']) === true) {
+                $this->setLog($setting['debug_file'], "get user profile and unset session");
+                $this->setLog($setting['debug_file'], "User profile:" . json_encode((array)$profile));
             }
 
             $accessToken = $adapter->getAccessToken();
 
-            if ($setting['debug_mode'] === true) {
-                $this->setLog($this->setting['debug_file'], "get user AccessToken " . json_encode($accessToken));
+            if ( boolval($setting['debug_mode']) === true) {
+                $this->setLog($setting['debug_file'], "get user AccessToken " . json_encode($accessToken));
             }
 
             $setting['profile'] = (array)$profile;
@@ -282,14 +280,14 @@ class ModelExtensionModuleDSocialLogin extends Model
             // check by identifier
             $customer_id = $this->getCustomerByIdentifier($provider, $setting['profile']['identifier']);
 
-            if ($setting['debug_mode'] === true) {
-                $this->setLog($this->setting['debug_file'], "check customer by identifier " . json_encode($setting['profile']['identifier']));
-                $this->setLog($this->setting['debug_file'], "result customer by identifier - " . json_encode($customer_id));
+            if ( boolval($setting['debug_mode']) === true) {
+                $this->setLog($setting['debug_file'], "check customer by identifier " . json_encode($setting['profile']['identifier']));
+                $this->setLog($setting['debug_file'], "result customer by identifier - " . json_encode($customer_id));
             }
 
             if ($customer_id) {
-                if ($setting['debug_mode'] === true) {
-                    $this->setLog($this->setting['debug_file'], "login customer");
+                if ( boolval($setting['debug_mode']) === true) {
+                    $this->setLog($setting['debug_file'], "login customer");
                 }
 
                 $this->login($customer_id);
@@ -299,22 +297,21 @@ class ModelExtensionModuleDSocialLogin extends Model
 
             $customer_id = $this->getCustomerByIdentifierOld($provider, $setting['profile']['identifier']);
 
-            if ($setting['debug_mode'] === true) {
-                $this->setLog($this->setting['debug_file'], "check customer by old identifier - " . json_encode($setting['profile']['identifier']));
-                $this->setLog($this->setting['debug_file'], "result customer by old identifier - " . json_encode($customer_id));
+            if ( boolval($setting['debug_mode']) === true) {
+                $this->setLog($setting['debug_file'], "check customer by old identifier - " . json_encode($setting['profile']['identifier']));
+                $this->setLog($setting['debug_file'], "result customer by old identifier - " . json_encode($customer_id));
             }
 
             // check by email
             if ($setting['profile']['email']) {
                 $customer_id = $this->getCustomerByEmail($setting['profile']['email']);
                 if ($customer_id) {
-                    // fclose($fd);
-                    // Hybrid_Auth::$logger->info('d_social_login: getCustomerByEmail success.');
+
                 }
             }
 
-            if ($setting['debug_mode'] === true) {
-                $this->setLog($this->setting['debug_file'], "Customer not isset");
+            if ( boolval($setting['debug_mode']) === true) {
+                $this->setLog($setting['debug_file'], "Customer not isset");
             }
 
             if (!$customer_id) {
@@ -583,7 +580,9 @@ class ModelExtensionModuleDSocialLogin extends Model
     public function setLog($path, $data)
     {
         if (!$path) {
-            $path = 'login.txt';
+            $path = DIR_LOGS . 'd_social_login.txt';
+        }else{
+            $path = DIR_LOGS . $path;
         }
 
         try {
