@@ -3,6 +3,10 @@
  *  location: catalog/model/module/d_social_login.php
  */
 
+use Hybridauth\Hybridauth;
+use Hybridauth\Storage\Session;
+use Hybridauth\Exception\Exception;
+
 class ModelExtensionModuleDSocialLogin extends Model
 {
 
@@ -167,133 +171,351 @@ class ModelExtensionModuleDSocialLogin extends Model
 
     public function remoteLogin($setting)
     {
-        require_once(DIR_SYSTEM . 'library/d_social_login/hybrid/auth.php');
-        $hybridauth = new Hybrid_Auth($setting);
-        Hybrid_Auth::$logger->info('d_social_login: Start authantication.');
-        $adapter = $hybridauth->authenticate($setting['provider']);
-        Hybrid_Auth::$logger->info('d_social_login: Start getUserProfile.');
-        // get the user profile
-        $profile = $adapter->getUserProfile();
-        $setting['profile'] = (array)$profile;
+        $fd = fopen("hello.txt", 'a+') or die("не удалось создать файл");
+        $str = PHP_EOL . "Set Settings and callback. Init Hybrid" . PHP_EOL;
+        fputs($fd, $str);
+        $str = json_encode($setting);
+        fputs($fd, $str . PHP_EOL);
 
-        Hybrid_Auth::$logger->info('d_social_login: got UserProfile.' . serialize($setting['profile']));
-        $authentication_data = array(
-            'provider'       => $setting['provider'],
-            'identifier'     => $setting['profile']['identifier'],
-            'web_site_url'   => $setting['profile']['webSiteURL'],
-            'profile_url'    => $setting['profile']['profileURL'],
-            'photo_url'      => $setting['profile']['photoURL'],
-            'display_name'   => $setting['profile']['displayName'],
-            'description'    => $setting['profile']['description'],
-            'first_name'     => $setting['profile']['firstName'],
-            'last_name'      => $setting['profile']['lastName'],
-            'gender'         => $setting['profile']['gender'],
-            'language'       => $setting['profile']['language'],
-            'age'            => $setting['profile']['age'],
-            'birth_day'      => $setting['profile']['birthDay'],
-            'birth_month'    => $setting['profile']['birthMonth'],
-            'birth_year'     => $setting['profile']['birthYear'],
-            'email'          => $setting['profile']['email'],
-            'email_verified' => $setting['profile']['emailVerified'],
-            'telephone'      => $setting['profile']['phone'],
-            'address'        => $setting['profile']['address'],
-            'country'        => $setting['profile']['country'],
-            'region'         => $setting['profile']['region'],
-            'city'           => $setting['profile']['city'],
-            'zip'            => $setting['profile']['zip']
-        );
+        require_once(DIR_SYSTEM . 'library/d_social_login/hybrid/autoload.php');
+        /**
+         * Feed configuration array to Hybridauth.
+         */
 
-        Hybrid_Auth::$logger->info('d_social_login: set authentication_data ' . serialize($authentication_data));
+        $hybridauth = new Hybridauth($setting);
+        /**
+         * Initialize session storage.
+         */
+        $storage = new Session();
 
-        // check by identifier
-        $customer_id = $this->getCustomerByIdentifier($setting['provider'], $setting['profile']['identifier']);
 
-        if ($customer_id) {
-            Hybrid_Auth::$logger->info('d_social_login: getCustomerByIdentifier success.');
-            $this->login($customer_id);
-            // redirect
-            return 'redirect';
+        /**
+         * Hold information about provider when user clicks on Sign In.
+         */
+
+        if (isset($_GET['provider'])) {
+            fputs($fd, "GET provider" . PHP_EOL);
+
+            $storage->set('provider',$_GET['provider']);
+            // $storage->set('yahoo_bil',"LELELELLE");
+            //unset($this->session->data['provider']);
+            $this->session->data['social_login_keck'] = $_GET['provider'];
         }
-        $customer_id = $this->getCustomerByIdentifierOld($setting['provider'], $setting['profile']['identifier']);
 
-        // check by email
-        if ($setting['profile']['email']) {
-            $customer_id = $this->getCustomerByEmail($setting['profile']['email']);
-            if ($customer_id) {
-                Hybrid_Auth::$logger->info('d_social_login: getCustomerByEmail success.');
+
+
+        //
+        // Event 2: User clicked LOGOUT link
+        //
+        if (isset($_GET['logout'])) {
+            $str = "Hybrid logout" . PHP_EOL;
+            fputs($fd, $str);
+            fclose($fd);
+
+            if (in_array($_GET['logout'], $hybridauth->getProviders())) {
+                // Disconnect the adapter
+                $adapter = $hybridauth->getAdapter($_GET['logout']);
+                $adapter->disconnect();
+            } else {
+                $error = $_GET['logout'];
             }
         }
 
-        if (!$customer_id) {
-            Hybrid_Auth::$logger->info('d_social_login: no customer_id. creating customer_data');
-            // prepare customer data
-            $address = array();
 
-            if (!empty($setting['profile']['address'])) {
-                $address[] = $setting['profile']['address'];
-            }
 
-            if (!empty($setting['profile']['region'])) {
-                $address[] = $setting['profile']['region'];
-            }
+        /**
+         * When provider exists in the storage, try to authenticate user and clear storage.
+         *
+         * When invoked, `authenticate()` will redirect users to provider login page where they
+         * will be asked to grant access to your application. If they do, provider will redirect
+         * the users back to Authorization callback URL (i.e., this script).
+         */
+        if ($provider = $storage->get('provider'))
+        {
+            $str = "Hybrid provider authenticate" . PHP_EOL;
+            fputs($fd, $str);
 
-            if (!empty($setting['profile']['country'])) {
-                $address[] = $setting['profile']['country'];
-            }
 
-            $customer_data = array(
-                'email'             => $setting['profile']['email'],
-                'firstname'         => $setting['profile']['firstName'],
-                'lastname'          => $setting['profile']['lastName'],
-                'telephone'         => $setting['profile']['phone'],
-                'fax'               => false,
-                'newsletter'        => $setting['newsletter'],
-                'customer_group_id' => (isset($setting['customer_group'])) ? $setting['customer_group'] : '1',
-                'company'           => false,
-                'address_1'         => ($address ? implode(', ', $address) : false),
-                'address_2'         => false,
-                'city'              => $setting['profile']['city'],
-                'postcode'          => $setting['profile']['zip'],
-                'country_id'        => $this->getCountryIdByName($setting['profile']['country']),
-                'zone_id'           => $this->getZoneIdByName($setting['profile']['region']),
-                'password'          => ''
+            $hybridauth->authenticate($provider);
+
+            $storage->set('provider', null);
+
+            $adapter = $hybridauth->getAdapter($provider);
+
+            $str = "Hybrid provider getUserProfile" . PHP_EOL;
+            fputs($fd, $str);
+
+            $profile = $adapter->getUserProfile();
+            unset($this->session->data['social_login_keck']);
+
+            $str = "Hybrid provider getAccessToken" . PHP_EOL;
+            fputs($fd, $str);
+
+            $accessToken = $adapter->getAccessToken();
+            $setting['profile'] = (array)$profile;
+
+            // Hybrid_Auth::$logger->info('d_social_login: got UserProfile.' . serialize($setting['profile']));
+
+            $authentication_data = array(
+                'provider'       => $provider,
+                'identifier'     => $setting['profile']['identifier'],
+                'web_site_url'   => $setting['profile']['webSiteURL'],
+                'profile_url'    => $setting['profile']['profileURL'],
+                'photo_url'      => $setting['profile']['photoURL'],
+                'display_name'   => $setting['profile']['displayName'],
+                'description'    => $setting['profile']['description'],
+                'first_name'     => $setting['profile']['firstName'],
+                'last_name'      => $setting['profile']['lastName'],
+                'gender'         => $setting['profile']['gender'],
+                'language'       => $setting['profile']['language'],
+                'age'            => $setting['profile']['age'],
+                'birth_day'      => $setting['profile']['birthDay'],
+                'birth_month'    => $setting['profile']['birthMonth'],
+                'birth_year'     => $setting['profile']['birthYear'],
+                'email'          => $setting['profile']['email'],
+                'email_verified' => $setting['profile']['emailVerified'],
+                'telephone'      => $setting['profile']['phone'],
+                'address'        => $setting['profile']['address'],
+                'country'        => $setting['profile']['country'],
+                'region'         => $setting['profile']['region'],
+                'city'           => $setting['profile']['city'],
+                'zip'            => $setting['profile']['zip']
             );
 
-            Hybrid_Auth::$logger->info('d_social_login: set customer_data ' . serialize($customer_data));
 
-            //check if form required
-            $form = false;
-            foreach ($setting['fields'] as $field) {
-                if ($field['enabled']) {
-                    //checking if fields required for input
-                    $form = true;
-                    break;
+            fputs($fd, "Isset user data" . PHP_EOL);
+
+            // check by identifier
+            $customer_id = $this->getCustomerByIdentifier($provider, $setting['profile']['identifier']);
+
+            if ($customer_id) {
+                // Hybrid_Auth::$logger->info('d_social_login: getCustomerByIdentifier success.');
+                $this->login($customer_id);
+                // redirect
+                fputs($fd,"\n redirect 1" . PHP_EOL);
+                fclose($fd);
+
+                return 'redirect';
+            }
+
+            $customer_id = $this->getCustomerByIdentifierOld($provider, $setting['profile']['identifier']);
+
+            // check by email
+            if ($setting['profile']['email']) {
+                $customer_id = $this->getCustomerByEmail($setting['profile']['email']);
+                if ($customer_id) {
+                    fputs($fd,"\n customer_id exist by email");
+                    // fclose($fd);
+                    // Hybrid_Auth::$logger->info('d_social_login: getCustomerByEmail success.');
                 }
             }
 
-            if (!$form) {
-                Hybrid_Auth::$logger->info('d_social_login: adding customer with customer_data');
-                $customer_data['password'] = $this->generateNewPassword();
-                $customer_id = $this->addCustomer($customer_data);
-            } else {
-                Hybrid_Auth::$logger->info('d_social_login: need to use form');
-                return array('customer_data' => $customer_data, 'authentication_data' => $authentication_data);
+            if (!$customer_id) {
+                // Hybrid_Auth::$logger->info('d_social_login: no customer_id. creating customer_data');
+                // prepare customer data
+                $address = array();
+
+                if (!empty($setting['profile']['address'])) {
+                    $address[] = $setting['profile']['address'];
+                }
+
+                if (!empty($setting['profile']['region'])) {
+                    $address[] = $setting['profile']['region'];
+                }
+
+                if (!empty($setting['profile']['country'])) {
+                    $address[] = $setting['profile']['country'];
+                }
+
+                $customer_data = array(
+                    'email'             => $setting['profile']['email'],
+                    'firstname'         => $setting['profile']['firstName'],
+                    'lastname'          => $setting['profile']['lastName'],
+                    'telephone'         => $setting['profile']['phone'],
+                    'fax'               => false,
+                    'newsletter'        => $setting['newsletter'],
+                    'customer_group_id' => (isset($setting['customer_group'])) ? $setting['customer_group'] : '1',
+                    'company'           => false,
+                    'address_1'         => ($address ? implode(', ', $address) : false),
+                    'address_2'         => false,
+                    'city'              => $setting['profile']['city'],
+                    'postcode'          => $setting['profile']['zip'],
+                    'country_id'        => $this->getCountryIdByName($setting['profile']['country']),
+                    'zone_id'           => $this->getZoneIdByName($setting['profile']['region']),
+                    'password'          => ''
+                );
+
+                // Hybrid_Auth::$logger->info('d_social_login: set customer_data ' . serialize($customer_data));
+
+                //check if form required
+                $form = false;
+                foreach ($setting['fields'] as $field) {
+                    if ($field['enabled']) {
+                        //checking if fields required for input
+                        $form = true;
+                        break;
+                    }
+                }
+                fputs($fd,"\n customer_data".json_encode($customer_data));
+                // fclose($fd);
+
+                if (!$form) {
+                    // Hybrid_Auth::$logger->info('d_social_login: adding customer with customer_data');
+                    $customer_data['password'] = $this->generateNewPassword();
+                    $customer_id = $this->addCustomer($customer_data);
+                } else {
+                    fclose($fd);
+                    // Hybrid_Auth::$logger->info('d_social_login: need to use form');
+                    return array('customer_data' => $customer_data, 'authentication_data' => $authentication_data);
+                }
+            }
+
+            if ($customer_id) {
+                // Hybrid_Auth::$logger->info('d_social_login: customer_id found');
+                $authentication_data['customer_id'] = (int)$customer_id;
+
+                $this->model_extension_module_d_social_login->addAuthentication($authentication_data);
+                // Hybrid_Auth::$logger->info('d_social_login: addAuthentication');
+                // login
+                $this->login($customer_id);
+                fclose($fd);
+                // redirect
+                return 'redirect';
             }
         }
-        if ($customer_id) {
-            Hybrid_Auth::$logger->info('d_social_login: customer_id found');
-            $authentication_data['customer_id'] = (int)$customer_id;
 
-            $this->model_extension_module_d_social_login->addAuthentication($authentication_data);
-            Hybrid_Auth::$logger->info('d_social_login: addAuthentication');
-            // login
-            $this->login($customer_id);
-
-            // redirect
-            return 'redirect';
-        }
-
+        fclose($fd);
     }
+
+//    public function remoteLogin($setting)
+//    {
+//        require_once(DIR_SYSTEM . 'library/d_social_login/hybrid/auth.php');
+//        $hybridauth = new Hybrid_Auth($setting);
+//        Hybrid_Auth::$logger->info('d_social_login: Start authantication.');
+//        $adapter = $hybridauth->authenticate($setting['provider']);
+//        Hybrid_Auth::$logger->info('d_social_login: Start getUserProfile.');
+//        // get the user profile
+//        $profile = $adapter->getUserProfile();
+//        $setting['profile'] = (array)$profile;
+//
+//        Hybrid_Auth::$logger->info('d_social_login: got UserProfile.' . serialize($setting['profile']));
+//        $authentication_data = array(
+//            'provider'       => $setting['provider'],
+//            'identifier'     => $setting['profile']['identifier'],
+//            'web_site_url'   => $setting['profile']['webSiteURL'],
+//            'profile_url'    => $setting['profile']['profileURL'],
+//            'photo_url'      => $setting['profile']['photoURL'],
+//            'display_name'   => $setting['profile']['displayName'],
+//            'description'    => $setting['profile']['description'],
+//            'first_name'     => $setting['profile']['firstName'],
+//            'last_name'      => $setting['profile']['lastName'],
+//            'gender'         => $setting['profile']['gender'],
+//            'language'       => $setting['profile']['language'],
+//            'age'            => $setting['profile']['age'],
+//            'birth_day'      => $setting['profile']['birthDay'],
+//            'birth_month'    => $setting['profile']['birthMonth'],
+//            'birth_year'     => $setting['profile']['birthYear'],
+//            'email'          => $setting['profile']['email'],
+//            'email_verified' => $setting['profile']['emailVerified'],
+//            'telephone'      => $setting['profile']['phone'],
+//            'address'        => $setting['profile']['address'],
+//            'country'        => $setting['profile']['country'],
+//            'region'         => $setting['profile']['region'],
+//            'city'           => $setting['profile']['city'],
+//            'zip'            => $setting['profile']['zip']
+//        );
+//
+//        Hybrid_Auth::$logger->info('d_social_login: set authentication_data ' . serialize($authentication_data));
+//
+//        // check by identifier
+//        $customer_id = $this->getCustomerByIdentifier($setting['provider'], $setting['profile']['identifier']);
+//
+//        if ($customer_id) {
+//            Hybrid_Auth::$logger->info('d_social_login: getCustomerByIdentifier success.');
+//            $this->login($customer_id);
+//            // redirect
+//            return 'redirect';
+//        }
+//        $customer_id = $this->getCustomerByIdentifierOld($setting['provider'], $setting['profile']['identifier']);
+//
+//        // check by email
+//        if ($setting['profile']['email']) {
+//            $customer_id = $this->getCustomerByEmail($setting['profile']['email']);
+//            if ($customer_id) {
+//                Hybrid_Auth::$logger->info('d_social_login: getCustomerByEmail success.');
+//            }
+//        }
+//
+//        if (!$customer_id) {
+//            Hybrid_Auth::$logger->info('d_social_login: no customer_id. creating customer_data');
+//            // prepare customer data
+//            $address = array();
+//
+//            if (!empty($setting['profile']['address'])) {
+//                $address[] = $setting['profile']['address'];
+//            }
+//
+//            if (!empty($setting['profile']['region'])) {
+//                $address[] = $setting['profile']['region'];
+//            }
+//
+//            if (!empty($setting['profile']['country'])) {
+//                $address[] = $setting['profile']['country'];
+//            }
+//
+//            $customer_data = array(
+//                'email'             => $setting['profile']['email'],
+//                'firstname'         => $setting['profile']['firstName'],
+//                'lastname'          => $setting['profile']['lastName'],
+//                'telephone'         => $setting['profile']['phone'],
+//                'fax'               => false,
+//                'newsletter'        => $setting['newsletter'],
+//                'customer_group_id' => (isset($setting['customer_group'])) ? $setting['customer_group'] : '1',
+//                'company'           => false,
+//                'address_1'         => ($address ? implode(', ', $address) : false),
+//                'address_2'         => false,
+//                'city'              => $setting['profile']['city'],
+//                'postcode'          => $setting['profile']['zip'],
+//                'country_id'        => $this->getCountryIdByName($setting['profile']['country']),
+//                'zone_id'           => $this->getZoneIdByName($setting['profile']['region']),
+//                'password'          => ''
+//            );
+//
+//            Hybrid_Auth::$logger->info('d_social_login: set customer_data ' . serialize($customer_data));
+//
+//            //check if form required
+//            $form = false;
+//            foreach ($setting['fields'] as $field) {
+//                if ($field['enabled']) {
+//                    //checking if fields required for input
+//                    $form = true;
+//                    break;
+//                }
+//            }
+//
+//            if (!$form) {
+//                Hybrid_Auth::$logger->info('d_social_login: adding customer with customer_data');
+//                $customer_data['password'] = $this->generateNewPassword();
+//                $customer_id = $this->addCustomer($customer_data);
+//            } else {
+//                Hybrid_Auth::$logger->info('d_social_login: need to use form');
+//                return array('customer_data' => $customer_data, 'authentication_data' => $authentication_data);
+//            }
+//        }
+//        if ($customer_id) {
+//            Hybrid_Auth::$logger->info('d_social_login: customer_id found');
+//            $authentication_data['customer_id'] = (int)$customer_id;
+//
+//            $this->model_extension_module_d_social_login->addAuthentication($authentication_data);
+//            Hybrid_Auth::$logger->info('d_social_login: addAuthentication');
+//            // login
+//            $this->login($customer_id);
+//
+//            // redirect
+//            return 'redirect';
+//        }
+//
+//    }
 
     public function getCustomerByIdentifier($provider, $identifier)
     {

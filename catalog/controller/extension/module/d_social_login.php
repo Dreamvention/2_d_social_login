@@ -5,7 +5,6 @@
 
 class ControllerExtensionModuleDSocialLogin extends Controller
 {
-
     private $route = 'extension/module/d_social_login';
     private $codename = 'd_social_login';
     private $setting = array();
@@ -16,7 +15,15 @@ class ControllerExtensionModuleDSocialLogin extends Controller
     public function __construct($registry)
     {
         parent::__construct($registry);
+
+        $this->load->model('setting/setting');
+        $config_settings=$this->model_setting_setting->getSetting($this->codename);
+        $this->config->set($this->codename . '_setting' ,$config_settings[$this->codename . '_setting']);
         $this->setting = $this->config->get($this->codename . '_setting');
+
+        $this->setting['debug_mode'] = true;
+        $this->setting['debug_file'] = DIR_LOGS . "login.txt";
+
         $this->language->load($this->route);
         $this->load->model($this->route);
         $this->load->model('extension/module/d_social_login');
@@ -35,7 +42,7 @@ class ControllerExtensionModuleDSocialLogin extends Controller
         $this->document->addScript('catalog/view/javascript/d_social_login/spin.min.js');
         $setting = $this->config->get($this->codename . '_setting');
         $method = $_SERVER['REQUEST_METHOD'];
-        
+
         if ('PUT' === $method) {
             parse_str(file_get_contents('php://input'), $_PUT);
             //fix for burn engine
@@ -81,7 +88,6 @@ class ControllerExtensionModuleDSocialLogin extends Controller
         $this->load->model('tool/image');
         foreach ($providers as $key => $val) {
             $data['providers'][$key]['icon'] = $this->model_tool_image->resize('catalog/d_social_login/'.$val['icon'], 10,10);
-            
         }
 
         $data['error'] = false;
@@ -112,7 +118,9 @@ class ControllerExtensionModuleDSocialLogin extends Controller
     {
         // multistore fix
         $this->initializeSlRedirect();
-    
+
+        $this->setting = $this->config->get('d_social_login_setting');
+
         $this->load->model('setting/store');
         $stores = $this->model_setting_store->getStores();
         $store_id = $this->config->get('config_store_id');
@@ -123,44 +131,63 @@ class ControllerExtensionModuleDSocialLogin extends Controller
                 break;
             }
         }
+
         if (empty($httpServer) || empty($httpsServer)) {
             $httpsServer = HTTPS_SERVER;
             $httpServer = HTTP_SERVER;
         }
-        $this->setting['debug_file'] = DIR_LOGS . $this->setting['debug_file'];
 
-        $this->setting['base_url'] = $this->config->get('config_secure') ? $httpsServer . 'index.php?route=extension/d_social_login/callback' : $httpServer . 'index.php?route=extension/d_social_login/callback';
         if (isset($this->request->get['provider'])) {
             $this->session->data['provider'] = $this->setting['provider'] = $this->request->get['provider'];
-        } else {
-            // Save error to the System Log
-            $this->log->write('Missing application provider.');
-            // Set Message
-            $this->session->data['error'] = sprintf("An error occurred, please <a href=\"%s\">notify</a> the administrator.", $this->url->link('information/contact'));
-            // Redirect to the Login Page
-            $this->response->redirect($this->sl_redirect);
         }
 
-        if ($this->setting['provider'] == 'Live') {
-            $this->setting['base_url'] = $this->config->get('config_secure') ? $httpsServer . 'd_social_login_live.php' : $httpServer . 'index.php?route=extension/d_social_login/callback_live';
-        }
+        $this->setting['debug_mode'] = true;
+        $this->setting['debug_file'] = DIR_LOGS . "login.txt";
+
+
+        $this->setting['base_url'] = $this->config->get('config_secure') ? $httpsServer : $httpServer;
+        $this->setting['callback'] = $this->config->get('config_secure') ? $httpsServer : $httpServer;
+
         try {
-            $remoteLoginResponce = $this->model_extension_module_d_social_login->remoteLogin($this->setting, $this->sl_redirect);// result from hybrid
+            $fd = fopen("hello_controller_1.txt", 'a+') or die("не удалось создать файл");
+            $str = "Start Login" . PHP_EOL;
+            $prokek = $this->setting['callback'];
+            $str = "Callback to $prokek" . PHP_EOL;
+
+            fputs($fd, $str);
+
+            $remoteLoginResponce = $this->model_extension_module_d_social_login->remoteLogin($this->setting, $this->sl_redirect); // result from hybrid
+
             if ($remoteLoginResponce == 'redirect') {
+                fputs($fd, "remoteLoginResponce = redirect");
+                fclose($fd);
+
                 $this->response->redirect($this->sl_redirect);
             }
+
+            fputs($fd, "remoteLoginResponce != redirect ". json_encode($remoteLoginResponce));
+
+
             $this->document->addScript('catalog/view/javascript/jquery/jquery-2.1.1.min.js');
             $this->document->addStyle('catalog/view/theme/default/stylesheet/d_social_login/pre_loader/clip-rotate.css');
+
             $remoteLoginResponce['scripts'] = $this->document->getScripts();
             $remoteLoginResponce['styles'] = $this->document->getStyles();
             $remoteLoginResponce['pre_loader'] = $this->model_extension_module_d_social_login->getPreloader();
             $remoteLoginResponce['url'] = $this->sl_redirect;//fix
+
             if ($this->theme == 'BurnEngine') {
                 $remoteLoginResponce['url'] = $this->url->link($this->route . '/burn_engine');
                 $remoteLoginResponce['url_burn_engine'] = $this->sl_redirect;
             }
+
             $view = $this->model_extension_d_opencart_patch_load->view('extension/'.$this->codename . '/auth', $remoteLoginResponce);
+
+            fputs($fd, "Redirect to ". json_encode($remoteLoginResponce));
+
+
             $this->response->setOutput($view);
+
         } catch (Exception $e) {
             unset($this->session->data['provider']);
             switch ($e->getCode()) {
@@ -196,9 +223,10 @@ class ControllerExtensionModuleDSocialLogin extends Controller
                     break;
             }
 
-            if (isset($adapter)) {
-                $adapter->logout();
-            }
+            fputs($fd, "Redirect to ". json_encode($this->sl_redirect));
+            fclose($fd);
+
+
             $this->session->data['d_social_login_error'] = $error;
             $error .= "\n\nHybridAuth Error: " . $e->getMessage();
             $error .= "\n\nTrace:\n " . $e->getTraceAsString();
@@ -350,7 +378,7 @@ class ControllerExtensionModuleDSocialLogin extends Controller
                 $_GET[str_replace('amp;', '', $key)] = $value;
             }
         }
-        
+
         $this->sl_redirect = isset($this->session->data['redirect_url'])?
             $this->session->data['redirect_url']:
             $this->session->data['redirect_url'] = $this->url->link('account/account');

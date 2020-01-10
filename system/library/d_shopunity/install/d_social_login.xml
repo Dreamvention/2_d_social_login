@@ -6,14 +6,12 @@
     <version>6.0.0</version>
     <author>Dreamvention</author>
     <link>http://www.dreamvention.ee/</link>
-
         <file path="admin/model/customer/customer.php">
             <operation error="skip">
                 <search><![CDATA[$this->db->query("DELETE FROM " . DB_PREFIX . "customer WHERE customer_id = '" . (int)$customer_id . "'");]]></search>
                 <add position="after"><![CDATA[$this->db->query("DELETE FROM " . DB_PREFIX . "customer_authentication WHERE customer_id = '" . (int)$customer_id . "'");]]></add>
             </operation>
         </file>
-
         <file path="admin/model/sale/customer.php">
             <operation error="skip">
                 <search><![CDATA[$this->db->query("DELETE FROM " . DB_PREFIX . "customer WHERE customer_id = '" . (int)$customer_id . "'");]]></search>
@@ -24,6 +22,12 @@
             <operation error="skip">
                 <search><![CDATA[public function index() {]]></search>
                 <add position="after"><![CDATA[$data['d_social_login'] = $this->load->controller('extension/module/d_social_login/header');]]></add>
+            </operation>
+        </file>
+        <file path="catalog/controller/startup/seo_url.php">
+            <operation error="skip">
+                <search><![CDATA[public function index() {]]></search>
+                <add position="after"><![CDATA[if(isset($this->session->data['d_social_login'])){ unset($this->session->data['d_social_login']); return new Action('extension/module/d_social_login/login'); }]]></add>
             </operation>
         </file>
 </modification>

@@ -1,6 +1,6 @@
 {
   "codename": "d_social_login",
-  "version": "6.2.3",
+  "version": "7.0.0",
   "name": "Social Login",
   "description": "Social login is a module that addes the ability to create an account in the webshop with a social network account and then login in by simply clicking a button. No need to remeber the password. It has Facebook, Paypal, Google+, Twitter, Linkeding, Vknontakte, Windows live, Tumblr and more",
   "index": "extension/module/d_social_login",
@@ -44,27 +44,6 @@
     "system/config/d_social_login/linkedin.php",
     "system/config/d_social_login/steam.php",
     "system/config/d_social_login/yahoo.php",
-    "system/library/d_social_login/hybrid/providers/google.php",
-    "system/library/d_social_login/hybrid/providers/linkedin.php",
-    "system/library/d_social_login/hybrid/providers/steam.php",
-    "system/library/d_social_login/hybrid/providers/yahoo.php",
-    "system/library/d_social_login/hybrid/auth.php",
-    "system/library/d_social_login/hybrid/endpoint.php",
-    "system/library/d_social_login/hybrid/error.php",
-    "system/library/d_social_login/hybrid/exception.php",
-    "system/library/d_social_login/hybrid/index.html",
-    "system/library/d_social_login/hybrid/logger.php",
-    "system/library/d_social_login/hybrid/provider_adapter.php",
-    "system/library/d_social_login/hybrid/provider_model.php",
-    "system/library/d_social_login/hybrid/provider_model_oauth1.php",
-    "system/library/d_social_login/hybrid/provider_model_oauth2.php",
-    "system/library/d_social_login/hybrid/provider_model_openid.php",
-    "system/library/d_social_login/hybrid/storage.php",
-    "system/library/d_social_login/hybrid/storageinterface.php",
-    "system/library/d_social_login/hybrid/user.php",
-    "system/library/d_social_login/hybrid/user_activity.php",
-    "system/library/d_social_login/hybrid/user_contact.php",
-    "system/library/d_social_login/hybrid/user_profile.php",
     "admin/controller/extension/module/d_social_login.php",
     "admin/model/extension/module/d_social_login.php",
     "admin/language/en-gb/extension/module/d_social_login.php",
@@ -89,12 +68,13 @@
     "admin/view/javascript/d_social_login",
     "catalog/view/javascript/d_social_login",
     "catalog/view/theme/default/stylesheet/d_social_login",
-    "system/library/d_social_login/hybrid/resources",
-    "system/library/d_social_login/hybrid/thirdparty/oauth",
-    "system/library/d_social_login/hybrid/thirdparty/linkedin",
-    "system/library/d_social_login/hybrid/thirdparty/openid"
+    "system/library/d_social_login/hybrid"
   ],
   "changelog": [
+    {
+      "version": "7.0.0",
+      "change": "Update Hybrid Auth Library"
+    },
     {
       "version": "6.2.3",
       "change": "Validator dependency"
