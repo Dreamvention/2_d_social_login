@@ -114,14 +114,15 @@ class ControllerExtensionModuleDSocialLogin extends Controller
     public function login()
     {
         if ( boolval($this->setting['debug_mode']) === true){
-            $this->model_extension_module_d_social_login->setLog($this->setting['debug_file'], 'Start Login');
+
+            if (isset($this->request->get['provider'])) {
+                $this->model_extension_module_d_social_login->setLog($this->setting['debug_file'], 'Start Login via ' . $this->request->get['provider']);
+            }else{
+                $this->model_extension_module_d_social_login->setLog($this->setting['debug_file'], 'Start Login');
+            }
         }
 
         $this->initializeSlRedirect();
-
-        if ( boolval($this->setting['debug_mode']) === true){
-            $this->model_extension_module_d_social_login->setLog($this->setting['debug_file'], 'initializeSlRedirect to ' . $this->sl_redirect);
-        }
 
         $this->setting = $this->config->get('d_social_login_setting');
 
@@ -149,14 +150,14 @@ class ControllerExtensionModuleDSocialLogin extends Controller
         $this->setting['callback'] = $this->config->get('config_secure') ? $httpsServer : $httpServer;
 
         if ( boolval($this->setting['debug_mode']) === true){
-            $this->model_extension_module_d_social_login->setLog($this->setting['debug_file'], 'initialize callback to ' . $this->setting['callback']);
+            $this->model_extension_module_d_social_login->setLog($this->setting['debug_file'], 'Set SlRedirect to ' . $this->sl_redirect . ', get module settings, set APP callback to ' . $this->setting['callback'] . ', save provider into Session.');
         }
 
         try {
             $remoteLoginResponce = $this->model_extension_module_d_social_login->remoteLogin($this->setting, $this->sl_redirect); // result from hybrid
 
             if ( boolval($this->setting['debug_mode']) === true){
-                $this->model_extension_module_d_social_login->setLog($this->setting['debug_file'], 'remote responce  = ' . json_encode($remoteLoginResponce));
+                $this->model_extension_module_d_social_login->setLog($this->setting['debug_file'], 'Remote responce  = ' . json_encode($remoteLoginResponce));
             }
 
             if ($remoteLoginResponce == 'redirect') {

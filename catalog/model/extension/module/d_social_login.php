@@ -170,7 +170,7 @@ class ModelExtensionModuleDSocialLogin extends Model
     public function remoteLogin($setting)
     {
         if ( boolval($setting['debug_mode']) === true) {
-            $this->setLog($setting['debug_file'], "Init Hybrid and Session");
+            $this->setLog($setting['debug_file'], "Init Library and Session in model.");
         }
 
         require_once(DIR_SYSTEM . 'library/d_social_login/hybrid/autoload.php');
@@ -186,7 +186,7 @@ class ModelExtensionModuleDSocialLogin extends Model
         if (isset($_GET['provider'])) {
 
             if ( boolval($setting['debug_mode']) === true) {
-                $this->setLog($setting['debug_file'], "Get Provider" . $_GET['provider'] . " and set session");
+                $this->setLog($setting['debug_file'], "Get Provider " . $_GET['provider'] . " and save session to storage!");
             }
 
             $storage->set('provider', $_GET['provider']);
@@ -208,7 +208,7 @@ class ModelExtensionModuleDSocialLogin extends Model
                 $adapter = $hybridauth->getAdapter($_GET['logout']);
                 $adapter->disconnect();
             } else {
-                $error = $_GET['logout'];
+                $this->session->data['d_social_login_error'] = $_GET['logout'];
             }
         }
 
@@ -232,20 +232,20 @@ class ModelExtensionModuleDSocialLogin extends Model
             $adapter = $hybridauth->getAdapter($provider);
 
             if ( boolval($setting['debug_mode']) === true) {
-                $this->setLog($setting['debug_file'], "Remove Session provider" . $provider);
+                $this->setLog($setting['debug_file'], "Remove Session provider " . $provider);
             }
 
             $profile = $adapter->getUserProfile();
             unset($this->session->data['d_social_login']);
 
             if ( boolval($setting['debug_mode']) === true) {
-                $this->setLog($setting['debug_file'], "get user profile and unset session");
-                $this->setLog($setting['debug_file'], "User profile:" . json_encode((array)$profile));
+                $this->setLog($setting['debug_file'], "Get user profile and unset session");
+                $this->setLog($setting['debug_file'], "User profile: " . json_encode((array)$profile));
             }
 
             $accessToken = $adapter->getAccessToken();
 
-            if ( boolval($setting['debug_mode']) === true) {
+            if ($accessToken && boolval($setting['debug_mode']) === true) {
                 $this->setLog($setting['debug_file'], "get user AccessToken " . json_encode($accessToken));
             }
 
@@ -305,9 +305,6 @@ class ModelExtensionModuleDSocialLogin extends Model
             // check by email
             if ($setting['profile']['email']) {
                 $customer_id = $this->getCustomerByEmail($setting['profile']['email']);
-                if ($customer_id) {
-
-                }
             }
 
             if ( boolval($setting['debug_mode']) === true) {
@@ -349,8 +346,6 @@ class ModelExtensionModuleDSocialLogin extends Model
                     'password' => ''
                 );
 
-                // Hybrid_Auth::$logger->info('d_social_login: set customer_data ' . serialize($customer_data));
-
                 //check if form required
                 $form = false;
                 foreach ($setting['fields'] as $field) {
@@ -362,23 +357,18 @@ class ModelExtensionModuleDSocialLogin extends Model
                 }
 
                 if (!$form) {
-                    // Hybrid_Auth::$logger->info('d_social_login: adding customer with customer_data');
                     $customer_data['password'] = $this->generateNewPassword();
                     $customer_id = $this->addCustomer($customer_data);
                 } else {
-                    // Hybrid_Auth::$logger->info('d_social_login: need to use form');
                     return array('customer_data' => $customer_data, 'authentication_data' => $authentication_data);
                 }
             }
 
             if ($customer_id) {
-                // Hybrid_Auth::$logger->info('d_social_login: customer_id found');
                 $authentication_data['customer_id'] = (int)$customer_id;
 
                 $this->model_extension_module_d_social_login->addAuthentication($authentication_data);
-                // Hybrid_Auth::$logger->info('d_social_login: addAuthentication');
-                // login
-                // redirect
+
                 return 'redirect';
             }
         }
