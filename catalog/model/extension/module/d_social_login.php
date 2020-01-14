@@ -236,18 +236,13 @@ class ModelExtensionModuleDSocialLogin extends Model
             }
 
             $profile = $adapter->getUserProfile();
-            unset($this->session->data['d_social_login']);
 
             if ( boolval($setting['debug_mode']) === true) {
                 $this->setLog($setting['debug_file'], "Get user profile and unset session");
                 $this->setLog($setting['debug_file'], "User profile: " . json_encode((array)$profile));
             }
 
-            $accessToken = $adapter->getAccessToken();
-
-            if ($accessToken && boolval($setting['debug_mode']) === true) {
-                $this->setLog($setting['debug_file'], "get user AccessToken " . json_encode($accessToken));
-            }
+            unset($this->session->data['d_social_login']);
 
             $setting['profile'] = (array)$profile;
 
@@ -368,6 +363,8 @@ class ModelExtensionModuleDSocialLogin extends Model
                 $authentication_data['customer_id'] = (int)$customer_id;
 
                 $this->model_extension_module_d_social_login->addAuthentication($authentication_data);
+
+                $this->login($customer_id);
 
                 return 'redirect';
             }
