@@ -1,6 +1,6 @@
 {
   "codename": "d_social_login",
-  "version": "7.0.3",
+  "version": "7.0.4",
   "name": "Social Login",
   "description": "Social login is a module that addes the ability to create an account in the webshop with a social network account and then login in by simply clicking a button. No need to remeber the password. It has Facebook, Paypal, Google+, Twitter, Linkeding, Vknontakte, Windows live, Tumblr and more",
   "index": "extension/module/d_social_login",
@@ -69,6 +69,10 @@
     "system/library/d_social_login/hybrid"
   ],
   "changelog": [
+    {
+      "version": "7.0.4",
+      "change": "Instruction tabs: some edits, "
+    },
     {
       "version": "7.0.3",
       "change": "Fix problem with providers configs. Show only available providers"
