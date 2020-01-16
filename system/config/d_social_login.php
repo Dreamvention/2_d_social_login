@@ -31,5 +31,12 @@ $_["d_social_login"] = array(
     //image/catalog/d_social_login/bg.png
     "background_img"      => "catalog/d_social_login/bg.png",
     "background_img_size" => array("width" => 100, "height" => 100),
+
+    "available_providers" => [
+        'google',
+        'linkedin',
+        'steam',
+        'yahoo',
+    ]
 );
 ?>

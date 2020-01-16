@@ -143,20 +143,41 @@ class ModelExtensionModuleDSocialLogin extends Model
             }
         }
     }
-    public function loadProviders($id)
 
+    public function loadProviders($id)
     {
         $providers = array();
         $dir_files = array();
+
+        $config_free = $this->config->get($this->codename);
+        $config_free_available_providers = array();
+
+        $this->config->load($this->codename_pro);
+        $config_pro  = $this->config->get($this->codename_pro);
+        $config_pro_available_providers = array();
+
+        if ($config_free && isset($config_free['available_providers'])){
+            $config_free_available_providers = $config_free['available_providers'];
+        }
+
+        if ($config_pro && isset($config_pro['available_providers'])){
+            $config_pro_available_providers = $config_pro['available_providers'];
+        }
+
+        $config_all_available_providers = array_merge($config_free_available_providers, $config_pro_available_providers);
+
         $this->scan_dir(DIR_CONFIG . $id, $dir_files);
         foreach ($dir_files as $file) {
             $provider_name = basename($file, ".php");
-            $this->config->load($id . '/' . $provider_name);
-            $provider = $this->config->get($id . "_" . $provider_name);
-            if ($provider) {
-                $providers = array_merge($providers, $provider);
-            }
 
+            if (in_array($provider_name, $config_all_available_providers)) {
+                $this->config->load($id . '/' . $provider_name);
+                $provider = $this->config->get($id . "_" . $provider_name);
+                if ($provider) {
+                    $providers = array_merge($providers, $provider);
+                }
+
+            }
         }
         return $providers;
     }

@@ -104,7 +104,7 @@ class ControllerExtensionModuleDSocialLogin extends Controller
             'text' => $this->language->get('heading_title_main'),
             'href' => $this->model_extension_d_opencart_patch_url->link($this->route)
         );
-        
+
         if(isset($this->session->data['success'])){
             $data['success'] = $this->session->data['success'];
             unset($this->session->data['success']);
@@ -152,7 +152,7 @@ class ControllerExtensionModuleDSocialLogin extends Controller
         $data['entry_support'] = $this->language->get('entry_support');
         $data['text_support'] = $this->language->get('text_support');
         $data['text_expend_to_edit'] = $this->language->get('text_expend_to_edit');
-        
+
         $data['text_api'] = $this->language->get('text_api');
         $data['text_no_api'] = $this->language->get('text_no_api');
         $data['text_icons'] = $this->language->get('text_icons');
@@ -198,7 +198,7 @@ class ControllerExtensionModuleDSocialLogin extends Controller
         $data['help_return_page_url'] = $this->language->get('help_return_page_url');
         $data['entry_debug_mode'] = $this->language->get('entry_debug_mode');
         $data['entry_header'] = $this->language->get('entry_header');
-        
+
         if(VERSION < '3.0.0.0'){
             $data['text_header_placeholder'] = $this->language->get('text_header_placeholder_2');
             $data['text_header_value'] = '<?php echo $d_social_login; ?>';
@@ -206,7 +206,7 @@ class ControllerExtensionModuleDSocialLogin extends Controller
             $data['text_header_placeholder'] = $this->language->get('text_header_placeholder_3');
             $data['text_header_value'] = '{{ d_social_login }}';
         }
-        
+
 
         $data['entry_background_img'] = $this->language->get('entry_background_img');
         $data['text_background_color'] = $this->language->get('text_background_color');
@@ -266,7 +266,7 @@ class ControllerExtensionModuleDSocialLogin extends Controller
         $data['clear_debug_file'] = $this->model_extension_d_opencart_patch_url->link($this->route . '/clearDebugFile');
         $data['setup_link'] = $this->model_extension_d_opencart_patch_url->ajax($this->route . '/setup');
         $data['setup'] = $this->isSetup();
-        
+
         // Status
         if (isset($this->request->post[$this->codename . '_status'])) {
             $data[$this->codename . '_status'] = $this->request->post[$this->codename . '_status'];
@@ -317,7 +317,7 @@ class ControllerExtensionModuleDSocialLogin extends Controller
         $data['debug'] = $this->model_extension_module_d_social_login->getFileContents(DIR_LOGS . $data['setting']['debug_file']);
         $data['debug_file'] = $data['setting']['debug_file'];
 
-        
+
 
         $data['header'] = $this->load->controller('common/header');
         $data['column_left'] = $this->load->controller('common/column_left');
@@ -369,7 +369,6 @@ class ControllerExtensionModuleDSocialLogin extends Controller
         $this->config->load($this->codename);
         $config = $this->config->get($this->codename);
 
-        
         $config['providers'] = $this->model_extension_module_d_social_login->loadProviders($this->codename);
 
         if ($this->model_setting_setting->getSetting($this->codename, $this->store_id)) {
@@ -384,7 +383,7 @@ class ControllerExtensionModuleDSocialLogin extends Controller
             $setting = array();
         }
 
-        
+
 
         $setting = array_replace_recursive($config, $setting);
 
