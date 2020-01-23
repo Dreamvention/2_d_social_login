@@ -113,18 +113,11 @@ class ControllerExtensionModuleDSocialLogin extends Controller
 
     public function login()
     {
-        if ( boolval($this->setting['debug_mode']) === true){
-
-            if (isset($this->request->get['provider'])) {
-                $this->model_extension_module_d_social_login->setLog($this->setting['debug_file'], 'Start Login via ' . $this->request->get['provider']);
-            }else{
-                $this->model_extension_module_d_social_login->setLog($this->setting['debug_file'], 'Start Login');
-            }
-        }
-
         $this->initializeSlRedirect();
 
         $this->setting = $this->config->get('d_social_login_setting');
+
+        $this->initializeDebugMode();
 
         $this->load->model('setting/store');
         $stores = $this->model_setting_store->getStores();
@@ -355,6 +348,21 @@ class ControllerExtensionModuleDSocialLogin extends Controller
         }
         return !$this->error;
 
+    }
+
+    public function initializeDebugMode()
+    {
+        if ( $this->setting['debug_mode']){
+            if (!file_exists(DIR_LOGS . $this->setting['debug_file'])) {
+                $filename = DIR_LOGS . "d_social_login.txt";
+                $handle = fopen($filename, 'w');
+            } else {
+                $filename = DIR_LOGS . $this->setting['debug_file'];
+            }
+
+            $this->setting['debug_mode'] = 'debug';
+            $this->setting['debug_file'] = $filename;
+        }
     }
 
     private function initializeSlRedirect()

@@ -10,6 +10,7 @@ namespace Hybridauth\Provider;
 use Hybridauth\Adapter\OpenID;
 use Hybridauth\Exception\UnexpectedApiResponseException;
 use Hybridauth\Data;
+use Hybridauth\Thirdparty\OpenID\LightOpenID;
 use Hybridauth\User;
 
 /**
@@ -33,7 +34,23 @@ class Steam extends OpenID
     /**
     * {@inheritdoc}
     */
-    protected $openidIdentifier = 'http://steamcommunity.com/openid';
+    protected $openidIdentifier = 'https://steamcommunity.com/openid';
+
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function initialize()
+    {
+        $hostPort = parse_url($this->callback, PHP_URL_PORT);
+        $hostUrl  = $this->callback;
+
+        if ($hostPort) {
+            $hostUrl .= ':' . $hostPort;
+        }
+
+        $this->openIdClient = new LightOpenID($hostUrl, null);
+    }
 
     /**
     * {@inheritdoc}
@@ -43,6 +60,8 @@ class Steam extends OpenID
         parent::authenticateFinish();
 
         $userProfile = $this->storage->get($this->providerId . '.user');
+
+
 
         $userProfile->identifier = str_ireplace(array('http://steamcommunity.com/openid/id/', 'https://steamcommunity.com/openid/id/'), '', $userProfile->identifier);
 
