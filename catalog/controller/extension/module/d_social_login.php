@@ -142,16 +142,8 @@ class ControllerExtensionModuleDSocialLogin extends Controller
         $this->setting['base_url'] = $this->config->get('config_secure') ? $httpsServer : $httpServer;
         $this->setting['callback'] = $this->config->get('config_secure') ? $httpsServer : $httpServer;
 
-        if ( boolval($this->setting['debug_mode']) === true){
-            $this->model_extension_module_d_social_login->setLog($this->setting['debug_file'], 'Set SlRedirect to ' . $this->sl_redirect . ', get module settings, set APP callback to ' . $this->setting['callback'] . ', save provider into Session.');
-        }
-
         try {
             $remoteLoginResponce = $this->model_extension_module_d_social_login->remoteLogin($this->setting, $this->sl_redirect); // result from hybrid
-
-            if ( boolval($this->setting['debug_mode']) === true){
-                $this->model_extension_module_d_social_login->setLog($this->setting['debug_file'], 'Remote responce  = ' . json_encode($remoteLoginResponce));
-            }
 
             if ($remoteLoginResponce == 'redirect') {
                 $this->response->redirect($this->sl_redirect);
@@ -213,10 +205,6 @@ class ControllerExtensionModuleDSocialLogin extends Controller
             $error .= "\n\nHybridAuth Error: " . $e->getMessage();
             $error .= "\n\nTrace:\n " . $e->getTraceAsString();
             $this->log->write($error);
-
-            if ( boolval($this->setting['debug_mode']) === true){
-                $this->model_extension_module_d_social_login->setLog($this->setting['debug_file'], $error);
-            }
 
             $this->response->redirect($this->sl_redirect);
         }
