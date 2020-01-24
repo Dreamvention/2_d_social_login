@@ -1,6 +1,6 @@
 {
   "codename": "d_social_login",
-  "version": "7.1.0",
+  "version": "7.1.1",
   "name": "Social Login",
   "description": "Social login is a module that addes the ability to create an account in the webshop with a social network account and then login in by simply clicking a button. No need to remeber the password. It has Facebook, Paypal, Google+, Twitter, Linkeding, Vknontakte, Windows live, Tumblr and more",
   "index": "extension/module/d_social_login",
@@ -59,7 +59,66 @@
     "image/catalog/d_social_login/google.svg",
     "image/catalog/d_social_login/linkedin.svg",
     "image/catalog/d_social_login/yahoo.svg",
-    "image/catalog/d_social_login/steam.svg"
+    "image/catalog/d_social_login/steam.svg",
+
+    "system/library/d_social_login/hybrid/Adapter/AbstractAdapter.php",
+    "system/library/d_social_login/hybrid/Adapter/AdapterInterface.php",
+    "system/library/d_social_login/hybrid/Adapter/DataStoreTrait.php",
+    "system/library/d_social_login/hybrid/Adapter/OAuth1.php",
+    "system/library/d_social_login/hybrid/Adapter/OAuth2.php",
+    "system/library/d_social_login/hybrid/Adapter/OpenID.php",
+
+    "system/library/d_social_login/hybrid/Data/Collection.php",
+    "system/library/d_social_login/hybrid/Data/Parser.php",
+
+    "system/library/d_social_login/hybrid/Exception/AuthorizationDeniedException.php",
+    "system/library/d_social_login/hybrid/Exception/BadMethodCallException.php",
+    "system/library/d_social_login/hybrid/Exception/Exception.php",
+    "system/library/d_social_login/hybrid/Exception/ExceptionInterface.php",
+    "system/library/d_social_login/hybrid/Exception/HttpClientFailureException.php",
+    "system/library/d_social_login/hybrid/Exception/HttpRequestFailedException.php",
+    "system/library/d_social_login/hybrid/Exception/InvalidAccessTokenException.php",
+    "system/library/d_social_login/hybrid/Exception/InvalidApplicationCredentialsException.php",
+    "system/library/d_social_login/hybrid/Exception/InvalidArgumentException.php",
+    "system/library/d_social_login/hybrid/Exception/InvalidAuthorizationCodeException.php",
+    "system/library/d_social_login/hybrid/Exception/InvalidAuthorizationStateException.php",
+    "system/library/d_social_login/hybrid/Exception/InvalidOauthTokenException.php",
+    "system/library/d_social_login/hybrid/Exception/InvalidOpenidIdentifierException.php",
+    "system/library/d_social_login/hybrid/Exception/NotImplementedException.php",
+    "system/library/d_social_login/hybrid/Exception/RuntimeException.php",
+    "system/library/d_social_login/hybrid/Exception/UnexpectedApiResponseException.php",
+    "system/library/d_social_login/hybrid/Exception/UnexpectedValueException.php",
+
+    "system/library/d_social_login/hybrid/HttpClient/Curl.php",
+    "system/library/d_social_login/hybrid/HttpClient/Guzzle.php",
+    "system/library/d_social_login/hybrid/HttpClient/HttpClientInterface.php",
+    "system/library/d_social_login/hybrid/HttpClient/Util.php",
+
+    "system/library/d_social_login/hybrid/Logger/Logger.php",
+    "system/library/d_social_login/hybrid/Logger/LoggerInterface.php",
+    "system/library/d_social_login/hybrid/Logger/Psr3LoggerWrapper.php",
+
+    "system/library/d_social_login/hybrid/Provider/Google.php",
+    "system/library/d_social_login/hybrid/Provider/LinkedIn.php",
+    "system/library/d_social_login/hybrid/Provider/Steam.php",
+    "system/library/d_social_login/hybrid/Provider/Yahoo.php",
+
+    "system/library/d_social_login/hybrid/Storage/Session.php",
+    "system/library/d_social_login/hybrid/Storage/StorageInterface.php",
+
+    "system/library/d_social_login/hybrid/Thirdparty/OAuth/OAuthConsumer.php",
+    "system/library/d_social_login/hybrid/Thirdparty/OAuth/OAuthRequest.php",
+    "system/library/d_social_login/hybrid/Thirdparty/OAuth/OAuthSignatureMethod.php",
+    "system/library/d_social_login/hybrid/Thirdparty/OAuth/OAuthSignatureMethodHMACSHA1.php",
+    "system/library/d_social_login/hybrid/Thirdparty/OAuth/OAuthUtil.php",
+    "system/library/d_social_login/hybrid/Thirdparty/OpenID/LightOpenID.php",
+
+    "system/library/d_social_login/hybrid/User/Activity.php",
+    "system/library/d_social_login/hybrid/User/Contact.php",
+    "system/library/d_social_login/hybrid/User/Profile.php",
+
+    "system/library/d_social_login/hybrid/autoload.php",
+    "system/library/d_social_login/hybrid/Hybridauth.php"
   ],
   "dirs": [
     "admin/view/image/d_social_login",
@@ -69,6 +128,10 @@
     "system/library/d_social_login/hybrid"
   ],
   "changelog": [
+    {
+      "version": "7.1.1",
+      "change": "Remove unnecessary files"
+    },
     {
       "version": "7.1.0",
       "change": "Refactoring debug system, fix steam provider"
