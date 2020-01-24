@@ -125,7 +125,15 @@
     "admin/view/javascript/d_social_login",
     "catalog/view/javascript/d_social_login",
     "catalog/view/theme/default/stylesheet/d_social_login",
-    "system/library/d_social_login/hybrid"
+    "system/library/d_social_login/hybrid/Adapter",
+    "system/library/d_social_login/hybrid/Data",
+    "system/library/d_social_login/hybrid/Exception",
+    "system/library/d_social_login/hybrid/HttpClient",
+    "system/library/d_social_login/hybrid/Logger",
+    "system/library/d_social_login/hybrid/Provider",
+    "system/library/d_social_login/hybrid/Storage",
+    "system/library/d_social_login/hybrid/Thirdparty",
+    "system/library/d_social_login/hybrid/User"
   ],
   "changelog": [
     {
