@@ -261,7 +261,6 @@ class ModelExtensionModuleDSocialLogin extends Model
             }
 
             if (!$customer_id) {
-                // Hybrid_Auth::$logger->info('d_social_login: no customer_id. creating customer_data');
                 // prepare customer data
                 $address = array();
 

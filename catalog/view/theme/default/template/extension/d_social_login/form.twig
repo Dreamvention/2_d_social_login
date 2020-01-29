@@ -45,7 +45,7 @@
             error: function (xhr, ajaxOptions, thrownError) {
                 // $("#d_social_login .popup").html(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
                 console.log(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
-                location.relooad();
+                location.reload();
             }
         });
     }
@@ -119,13 +119,20 @@
                                                        });
                                                    </script>
                                                 {% else %}
-                                                    <input class="form-control"
-                                                           type="{{ field['type'] }}" id="{{ field['id'] }}"
-                                                           name="{{ field['id'] }}"
-                                                           value="{{ customer_data[field['id']]!='false' ? customer_data[field['id']] }}"
-                                                            {{ field['required'] ? 'required' }}
-                                                           placeholder=" {{ not mobile ? attribute(_context, 'text_' ~ field['id']) }}"
-                                                           autocomplete="off"/>
+                                                <input class="form-control"
+                                                       type="{{ field['type'] }}" id="{{ field['id'] }}"
+                                                       name="{{ field['id'] }}"
+
+                                                        {% if field['type'] == 'email' and customer_data[field['id']] !='false' %}
+                                                            readonly="readonly"
+                                                        {% endif %}
+
+                                                       value="{{ customer_data[field['id']]!='false' ? customer_data[field['id']] }}"
+
+                                                        {{ field['required'] and field['type'] != 'email' and not customer_data[field['id']] ? 'required' }}
+
+                                                       placeholder=" {{ not mobile ? attribute(_context, 'text_' ~ field['id']) }}"
+                                                       autocomplete="off"/>
                                                 {% endif %}
 
                                             </div>
@@ -167,7 +174,7 @@
                 })
             })
             })
-            
+
         })
     </script>
     <script>
