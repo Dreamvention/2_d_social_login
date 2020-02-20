@@ -118,14 +118,12 @@
                                                            }
                                                        });
                                                    </script>
+
+
                                                 {% else %}
                                                 <input class="form-control"
                                                        type="{{ field['type'] }}" id="{{ field['id'] }}"
                                                        name="{{ field['id'] }}"
-
-                                                        {% if field['type'] == 'email' and customer_data[field['id']] !='false' %}
-                                                            readonly="readonly"
-                                                        {% endif %}
 
                                                        value="{{ customer_data[field['id']]!='false' ? customer_data[field['id']] }}"
 
