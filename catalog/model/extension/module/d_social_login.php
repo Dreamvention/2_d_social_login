@@ -50,6 +50,19 @@ class ModelExtensionModuleDSocialLogin extends Model
             "date_added = NOW()");
     }
 
+    public function checkAuthenticationByIdentifier($data){
+
+        $sql = "SELECT * FROM " . DB_PREFIX . "customer_authentication WHERE identifier = MD5('" . $this->db->escape($data['identifier']) . "') LIMIT 1";
+
+        $result = $this->db->query($sql);
+
+        if ($result->num_rows) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     public function addCustomer($data)
     {
         //todo test 2
@@ -206,6 +219,7 @@ class ModelExtensionModuleDSocialLogin extends Model
          * will be asked to grant access to your application. If they do, provider will redirect
          * the users back to Authorization callback URL (i.e., this script).
          */
+
         if ($provider = $storage->get('provider')) {
             $hybridauth->authenticate($provider);
 
@@ -245,18 +259,41 @@ class ModelExtensionModuleDSocialLogin extends Model
                 'zip' => $setting['profile']['zip']
             );
 
-            // check by identifier
+            $customer_id_old = $this->getCustomerByIdentifierOld($provider, $setting['profile']['identifier']);
+
+            // check by identifier temporary table
             $customer_id = $this->getCustomerByIdentifier($provider, $setting['profile']['identifier']);
 
-            if ($customer_id) {
-                $this->login($customer_id);
-                return 'redirect';
-            }
+            if ($customer_id || $customer_id_old) {
 
-            $customer_id = $this->getCustomerByIdentifierOld($provider, $setting['profile']['identifier']);
+                $customer_id_or = $customer_id ? $customer_id : null;
+                $customer = $this->getCustomerById($customer_id_or);
 
-            // check by email
-            if ($setting['profile']['email']) {
+                if($customer){
+                    if ($setting['profile']['email']) {
+                        $customer_id = $this->getCustomerByEmail($setting['profile']['email']);
+
+                        if ($customer_id == $customer) {
+                            $this->login($customer_id);
+                            return 'redirect';
+                        }else{
+                            $customer_id = null;
+                        }
+                    }
+                }
+
+                if ($setting['profile']['email']) {
+                    $customer_id = $this->getCustomerByEmail($setting['profile']['email']);
+                }else{
+                    $customer_id = null;
+                }
+
+                if ($customer_id) {
+                    $this->login($customer_id);
+                    return 'redirect';
+                }
+
+            }else{
                 $customer_id = $this->getCustomerByEmail($setting['profile']['email']);
             }
 
@@ -308,6 +345,9 @@ class ModelExtensionModuleDSocialLogin extends Model
                     $customer_data['password'] = $this->generateNewPassword();
                     $customer_id = $this->addCustomer($customer_data);
                 } else {
+                    $this->session->data['d_social_login_data']['customer_data'] = $customer_data;
+                    $this->session->data['d_social_login_data']['authentication_data'] = $authentication_data;
+
                     return array('customer_data' => $customer_data, 'authentication_data' => $authentication_data);
                 }
             }
@@ -315,7 +355,7 @@ class ModelExtensionModuleDSocialLogin extends Model
             if ($customer_id) {
                 $authentication_data['customer_id'] = (int)$customer_id;
 
-                $this->model_extension_module_d_social_login->addAuthentication($authentication_data);
+                $this->addAuthentication($authentication_data);
 
                 $this->login($customer_id);
 
@@ -327,6 +367,17 @@ class ModelExtensionModuleDSocialLogin extends Model
     public function getCustomerByIdentifier($provider, $identifier)
     {
         $result = $this->db->query("SELECT customer_id FROM " . DB_PREFIX . "customer_authentication WHERE provider = '" . $this->db->escape($provider) . "' AND identifier = MD5('" . $this->db->escape($identifier) . "') LIMIT 1");
+
+        if ($result->num_rows) {
+            return (int)$result->row['customer_id'];
+        } else {
+            return false;
+        }
+    }
+
+    public function getCustomerById($customer_id)
+    {
+        $result = $this->db->query("SELECT * FROM " . DB_PREFIX . "customer WHERE customer_id = '" . (int)$customer_id . "' LIMIT 1");
 
         if ($result->num_rows) {
             return (int)$result->row['customer_id'];

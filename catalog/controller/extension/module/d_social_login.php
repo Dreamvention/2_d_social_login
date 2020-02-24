@@ -212,21 +212,30 @@ class ControllerExtensionModuleDSocialLogin extends Controller
 
     public function register()
     {
-        $customer_data = array_merge(($this->session->data['customer_data'] != '') ? $this->session->data['customer_data'] : array(), $this->request->post);
-        $authentication_data = $this->session->data['authentication_data'];
-        if (($this->request->server['REQUEST_METHOD'] == 'POST')
-            && $this->validateRegistration($customer_data)) { //all have to be fine after validation
+        $customer_data = array_merge(($this->session->data['d_social_login_data']['customer_data'] != '') ? $this->session->data['d_social_login_data']['customer_data'] : array(), $this->request->post);
+        $authentication_data = $this->session->data['d_social_login_data']['authentication_data'];
 
+        if (($this->request->server['REQUEST_METHOD'] == 'POST')
+            && $this->validateRegistration($customer_data)) {
+
+            $this->load->model('extension/module/d_social_login');
             $customer_data = $this->model_extension_module_d_social_login->prepareDataRegistrationFields($customer_data, $this->setting['fields']);
             $customer_id = $this->model_extension_module_d_social_login->addCustomer($customer_data);
 
             $authentication_data['customer_id'] = (int)$customer_id;
 
-            $this->model_extension_module_d_social_login->addAuthentication($authentication_data);//login
+            $checkAuthenticationByIdentifier = $this->model_extension_module_d_social_login->checkAuthenticationByIdentifier($authentication_data);
+
+            if (!$checkAuthenticationByIdentifier) {
+                $this->model_extension_module_d_social_login->addAuthentication($authentication_data);
+            }
+
             $this->model_extension_module_d_social_login->login($customer_id);
 
             $json['success'] = $this->getConfirmMessageView();
-            unset($this->session->data['provider']);//($this->url->link('account/success'));
+
+            unset($this->session->data['provider']);
+            unset($this->session->data['d_social_login_data']);
         }
 
         if (count($this->error)) {
@@ -321,6 +330,7 @@ class ControllerExtensionModuleDSocialLogin extends Controller
                 }
             }
         }
+
         if (isset($customer_data['email']) && isset($this->setting['fields']['email']['required']) && $this->setting['fields']['email']['required']) {
             if ($this->model_extension_module_d_social_login->validateEmail($customer_data['email'])) {
                 $customer_id = $this->model_extension_module_d_social_login->getCustomerByEmail($customer_data['email']);

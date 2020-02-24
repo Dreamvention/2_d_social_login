@@ -43,6 +43,7 @@ class ControllerExtensionModuleDSocialLogin extends Controller
         }
 
         $this->load->language($this->route);
+
         $this->load->language($this->route . '_instruction');
         $this->load->model($this->route);
         $this->load->model('design/layout');
@@ -160,6 +161,12 @@ class ControllerExtensionModuleDSocialLogin extends Controller
         $data['text_medium'] = $this->language->get('text_medium');
         $data['text_large'] = $this->language->get('text_large');
         $data['text_huge'] = $this->language->get('text_huge');
+
+        $data['entry_title'] = $this->language->get('entry_title');
+        $data['help_title'] = $this->language->get('help_title');
+
+        $data['text_display'] = $this->language->get('text_display');
+        $data['text_required'] = $this->language->get('text_required');
 
         $data['entry_size'] = $this->language->get('entry_size');
         $data['entry_customer_group'] = $this->language->get('entry_customer_group');
