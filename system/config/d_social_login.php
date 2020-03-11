@@ -11,7 +11,7 @@ $_["d_social_login"] = array(
         "email"      => array("id" => "email", "enabled" => true, "required" => true, "sort_order" => 0, "type" => "email"),
         "firstname"  => array("id" => "firstname", "enabled" => true, "required" => true, "sort_order" => 1, "type" => "text"),
         "lastname"   => array("id" => "lastname", "enabled" => true, "required" => true, "sort_order" => 2, "type" => "text"),
-        "telephone"  => array("id" => "telephone", "enabled" => true, "required" => true, "sort_order" => 3, "type" => "number", "mask" => "9(999) 9999-9999?9"),
+        "telephone"  => array("id" => "telephone", "enabled" => true, "required" => true, "sort_order" => 3, "type" => "tel", "mask" => "9(999) 9999-9999?9"),
         "address_1"  => array("id" => "address_1", "enabled" => true, "required" => false, "sort_order" => 4, "type" => "text"),
         "address_2"  => array("id" => "address_2", "enabled" => true, "required" => false, "sort_order" => 5, "type" => "text"),
         "city"       => array("id" => "city", "enabled" => true, "required" => false, "sort_order" => 6, "type" => "text"),
