@@ -1,0 +1,597 @@
+<?php
+namespace Opencart\Catalog\Model\Extension\SocialLogin\Module;
+
+use Hybridauth\Hybridauth;
+use Hybridauth\Storage\Session;
+use Hybridauth\Exception\Exception;
+
+class SocialLogin extends \Opencart\System\Engine\Model
+{
+    public function checkAuthentication($customer_id, $provider)
+    {
+        $result = $this->db->query("SELECT * FROM " . DB_PREFIX . "customer_authentication  WHERE  customer_id = '" . (int)$customer_id . "' AND  provider = '" . $this->db->escape((string)$provider) . "'");
+
+        if ($result->num_rows) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public function addAuthentication($data)
+    {
+        $this->db->query("INSERT INTO " . DB_PREFIX . "customer_authentication SET " .
+            "customer_id = '" . (int)$data['customer_id'] . "', " .
+            "provider = '" . $this->db->escape((string)$data['provider']) . "', " .
+            "identifier = MD5('" . $this->db->escape((string)$data['identifier']) . "'), " .
+            "web_site_url = '" . $this->db->escape((string)$data['web_site_url']) . "', " .
+            "profile_url = '" . $this->db->escape((string)$data['profile_url']) . "', " .
+            "photo_url = '" . $this->db->escape((string)$data['photo_url']) . "', " .
+            "display_name = '" . $this->db->escape((string)$data['display_name']) . "', " .
+            "description = '" . $this->db->escape((string)$data['description']) . "', " .
+            "first_name = '" . $this->db->escape((string)$data['first_name']) . "', " .
+            "last_name = '" . $this->db->escape((string)$data['last_name']) . "', " .
+            "gender = '" . $this->db->escape((string)$data['gender']) . "', " .
+            "language = '" . $this->db->escape((string)$data['language']) . "', " .
+            "age = '" . $this->db->escape((string)$data['age']) . "', " .
+            "birth_day = '" . $this->db->escape((string)$data['birth_day']) . "', " .
+            "birth_month = '" . $this->db->escape((string)$data['birth_month']) . "', " .
+            "birth_year = '" . $this->db->escape((string)$data['birth_year']) . "', " .
+            "email = '" . $this->db->escape((string)$data['email']) . "', " .
+            "email_verified = '" . $this->db->escape((string)$data['email_verified']) . "', " .
+            "telephone = '" . $this->db->escape((string)$data['telephone']) . "', " .
+            "address = '" . $this->db->escape((string)$data['address']) . "', " .
+            "country = '" . $this->db->escape((string)$data['country']) . "', " .
+            "region = '" . $this->db->escape((string)$data['region']) . "', " .
+            "city = '" . $this->db->escape((string)$data['city']) . "', " .
+            "zip = '" . $this->db->escape((string)$data['zip']) . "', " .
+            "date_added = NOW()");
+    }
+
+    public function checkAuthenticationByIdentifier($data){
+
+        $sql = "SELECT * FROM " . DB_PREFIX . "customer_authentication WHERE identifier = MD5('" . $this->db->escape((string)$data['identifier']) . "') LIMIT 1";
+
+        $result = $this->db->query($sql);
+
+        if ($result->num_rows) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public function addCustomer($data)
+    {
+        //todo test 2
+        $this->load->model('account/customer');
+        if ($this->model_account_customer->getTotalCustomersByEmail($data['email'])) {
+            return $this->model_account_customer->getCustomerByEmail($data['email'])['customer_id'];
+        } else{
+            $this->db->query("INSERT INTO `" . DB_PREFIX . "customer` 
+                SET `customer_group_id` = '" . (int)$this->config->get('config_customer_group_id') . "', 
+                `store_id` = '" . (int)$this->config->get('config_store_id') . "', 
+                `language_id` = '" . (int)$this->config->get('config_language_id') . "', 
+                `firstname` = '" . $this->db->escape((string)$data['firstname']) . "', 
+                `lastname` = '" . $this->db->escape((string)$data['lastname']) . "', 
+                `email` = '" . $this->db->escape((string)$data['email']) . "', 
+                `telephone` = '" . $this->db->escape((string)$data['telephone']) . "', 
+                `custom_field` = '" . $this->db->escape(isset($data['custom_field']) ? json_encode($data['custom_field']) : '') . "', 
+                `password` = '" . $this->db->escape(password_hash(html_entity_decode($data['password'], ENT_QUOTES, 'UTF-8'), PASSWORD_DEFAULT)) . "', 
+                `newsletter` = '" . (isset($data['newsletter']) ? (int)$data['newsletter'] : 0) . "', 
+                `ip` = '" . $this->db->escape($this->request->server['REMOTE_ADDR']) . "', 
+                `status` = '1', 
+                `date_added` = NOW()");
+        }
+
+        $customer_id = $this->db->getLastId();
+        if ($this->existAddressFields($data)) {
+            $this->db->query("INSERT INTO " . DB_PREFIX . "address SET
+            customer_id = '" . (int)$customer_id . "',
+            firstname = '" . $this->db->escape((string)$data['firstname']) . "',
+            lastname = '" . $this->db->escape((string)$data['lastname']) . "',
+            company = '" . $this->db->escape((string)$data['company']) . "',
+            address_1 = '" . $this->db->escape((string)$data['address_1']) . "',
+            address_2 = '" . $this->db->escape((string)$data['address_2']) . "',
+            city = '" . $this->db->escape((string)$data['city']) . "',
+            postcode = '" . $this->db->escape((string)$data['postcode']) . "',
+            country_id = '" . (int)$data['country_id'] . "',
+            zone_id = '" . (int)$data['zone_id'] . "'");
+
+            $address_id = $this->db->getLastId();
+
+            $this->db->query("UPDATE " . DB_PREFIX . "customer SET
+            address_id = '" . (int)$address_id . "'
+            WHERE customer_id = '" . (int)$customer_id . "'");
+        }
+
+
+        if (VERSION < '3.0.0.0') {
+            $this->language->load('mail/customer');
+            if (!$this->config->get('config_customer_approval')) {
+                $this->db->query("UPDATE " . DB_PREFIX . "customer SET
+                    approved = '1'
+                    WHERE customer_id = '" . (int)$customer_id . "'");
+            }
+        }
+        $this->language->load('mail/register');
+
+        $subject = sprintf($this->language->get('text_subject'), $this->config->get('config_name'));
+
+        $message = sprintf($this->language->get('text_welcome'), $this->config->get('config_name')) . "\n\n";
+
+        if (!$this->config->get('config_customer_approval')) {
+            $message .= $this->language->get('text_login') . "\n";
+        } else {
+            $message .= $this->language->get('text_approval') . "\n";
+        }
+
+        $message .= $this->url->link('account/login', '', 'SSL') . "\n\n";
+        $message .= $this->language->get('text_services') . "\n\n";
+        $message .= $this->language->get('text_thanks') . "\n";
+        $message .= $this->config->get('config_name');
+
+        $mail = new \Opencart\System\Library\Mail();
+        $mail->protocol = $this->config->get('config_mail_protocol');
+        $mail->parameter = $this->config->get('config_mail_parameter');
+        $mail->smtp_hostname = $this->config->get('config_mail_smtp_hostname');
+        $mail->smtp_username = $this->config->get('config_mail_smtp_username');
+        $mail->smtp_password = html_entity_decode($this->config->get('config_mail_smtp_password'), ENT_QUOTES, 'UTF-8');
+        $mail->smtp_port = $this->config->get('config_mail_smtp_port');
+        $mail->smtp_timeout = $this->config->get('config_mail_smtp_timeout');
+        $mail->hostname = $this->config->get('config_smtp_host');
+        $mail->username = $this->config->get('config_smtp_username');
+        $mail->password = $this->config->get('config_smtp_password');
+        $mail->port = $this->config->get('config_smtp_port');
+        $mail->timeout = $this->config->get('config_smtp_timeout');
+
+        $mail->setFrom($this->config->get('config_email'));
+        $mail->setSender($this->config->get('config_name'));
+        $mail->setSubject($subject);
+        $mail->setText($message);
+
+        if ($data['email']) {
+            $mail->setTo($data['email']);
+            $mail->send();
+        }
+
+        // Send to main admin email if new account email is enabled
+        if ($this->config->get('config_account_mail')) {
+            $mail->setTo($this->config->get('config_email'));
+            $mail->send();
+
+            // Send to additional alert emails if new account email is enabled
+            $emails = explode(',', $this->config->get('config_alert_emails'));
+
+            foreach ($emails as $email) {
+                if (strlen($email) > 0 && preg_match('/^[^\@]+@.*\.[a-z]{2,6}$/i', $email)) {
+                    $mail->setTo($email);
+                    $mail->send();
+                }
+            }
+        }
+
+        return $customer_id;
+    }
+
+    public function getCustomer($customer_id)
+    {
+        $result = $this->db->query("SELECT * FROM " . DB_PREFIX . "customer_authentication WHERE customer_id = '" . (int)$customer_id . "' LIMIT 1");
+
+        return $result->row;
+    }
+
+    public function remoteLogin($setting)
+    {
+        require_once(DIR_OPENCART . 'extension/social_login/system/library/social_login/hybrid/autoload.php');
+
+        $hybridauth = new Hybridauth($setting);
+
+        $storage = new Session();
+
+        /**
+         * Hold information about provider when user clicks on Sign In.
+         */
+
+        if (isset($_GET['provider'])) {
+            $storage->set('provider', $_GET['provider']);
+            $this->session->data['d_social_login'] = $_GET['provider'];
+        }
+
+         /**
+         * Event 2: User clicked LOGOUT link
+         */
+
+        if (isset($_GET['logout'])) {
+            if (in_array($_GET['logout'], $hybridauth->getProviders())) {
+                // Disconnect the adapter
+                $adapter = $hybridauth->getAdapter($_GET['logout']);
+                $adapter->disconnect();
+            } else {
+                $this->session->data['d_social_login_error'] = $_GET['logout'];
+            }
+        }
+
+
+        /**
+         * When provider exists in the storage, try to authenticate user and clear storage.
+         *
+         * When invoked, `authenticate()` will redirect users to provider login page where they
+         * will be asked to grant access to your application. If they do, provider will redirect
+         * the users back to Authorization callback URL (i.e., this script).
+         */
+
+        if ($provider = $storage->get('provider')) {
+            try {
+                $hybridauth->authenticate($provider);
+            } catch (\Throwable $th) {
+                return "error";
+            }
+            $hybridauth->authenticate($provider);
+
+            $storage->set('provider', null);
+
+            $adapter = $hybridauth->getAdapter($provider);
+
+            $profile = $adapter->getUserProfile();
+
+            unset($this->session->data['d_social_login']);
+
+            $setting['profile'] = (array)$profile;
+
+            $authentication_data = array(
+                'provider' => $provider,
+                'identifier' => $setting['profile']['identifier'],
+                'web_site_url' => $setting['profile']['webSiteURL'],
+                'profile_url' => $setting['profile']['profileURL'],
+                'photo_url' => $setting['profile']['photoURL'],
+                'display_name' => $setting['profile']['displayName'],
+                'description' => $setting['profile']['description'],
+                'first_name' => $setting['profile']['firstName'],
+                'last_name' => $setting['profile']['lastName'],
+                'gender' => $setting['profile']['gender'],
+                'language' => $setting['profile']['language'],
+                'age' => $setting['profile']['age'],
+                'birth_day' => $setting['profile']['birthDay'],
+                'birth_month' => $setting['profile']['birthMonth'],
+                'birth_year' => $setting['profile']['birthYear'],
+                'email' => $setting['profile']['email'],
+                'email_verified' => $setting['profile']['emailVerified'],
+                'telephone' => $setting['profile']['phone'],
+                'address' => $setting['profile']['address'],
+                'country' => $setting['profile']['country'],
+                'region' => $setting['profile']['region'],
+                'city' => $setting['profile']['city'],
+                'zip' => $setting['profile']['zip']
+            );
+
+            $customer_id_old = $this->getCustomerByIdentifierOld($provider, $setting['profile']['identifier']);
+
+            // check by identifier temporary table
+            $customer_id = $this->getCustomerByIdentifier($provider, $setting['profile']['identifier']);
+
+            if ($customer_id || $customer_id_old) {
+
+                $customer_id_or = $customer_id ? $customer_id : null;
+                $customer = $this->getCustomerById($customer_id_or);
+
+                if($customer){
+                    if ($setting['profile']['email']) {
+                        $customer_id = $this->getCustomerByEmail($setting['profile']['email']);
+
+                        if ($customer_id == $customer) {
+                            $this->login($customer_id);
+                            return 'redirect';
+                        }else{
+                            $customer_id = null;
+                        }
+                    }
+                }
+
+                if ($setting['profile']['email']) {
+                    $customer_id = $this->getCustomerByEmail($setting['profile']['email']);
+                }else{
+                    $customer_id = null;
+                }
+
+                if ($customer_id) {
+                    $this->login($customer_id);
+                    return 'redirect';
+                }
+
+            }else{
+                $customer_id = $this->getCustomerByEmail($setting['profile']['email']);
+            }
+
+            if (!$customer_id) {
+                // prepare customer data
+                $address = array();
+
+                if (!empty($setting['profile']['address'])) {
+                    $address[] = $setting['profile']['address'];
+                }
+
+                if (!empty($setting['profile']['region'])) {
+                    $address[] = $setting['profile']['region'];
+                }
+
+                if (!empty($setting['profile']['country'])) {
+                    $address[] = $setting['profile']['country'];
+                }
+
+                $customer_data = array(
+                    'email' => $setting['profile']['email'],
+                    'firstname' => $setting['profile']['firstName'],
+                    'lastname' => $setting['profile']['lastName'],
+                    'telephone' => $setting['profile']['phone'],
+                    'fax' => '',
+                    'newsletter' => $setting['newsletter'],
+                    'customer_group_id' => (isset($setting['customer_group'])) ? $setting['customer_group'] : '1',
+                    'company' => '',
+                    'address_1' => ($address ? implode(', ', $address) : ''),
+                    'address_2' => '',
+                    'city' => $setting['profile']['city'],
+                    'postcode' => $setting['profile']['zip'],
+                    'country_id' => $this->getCountryIdByName($setting['profile']['country']),
+                    'zone_id' => $this->getZoneIdByName($setting['profile']['region']),
+                    'password' => ''
+                );
+
+                //check if form required
+                $form = false;
+                foreach ($setting['fields'] as $field) {
+                    if ($field['enabled']) {
+                        //checking if fields required for input
+                        $form = true;
+                        break;
+                    }
+                }
+
+                if (!$form) {
+                    $customer_data['password'] = $this->generateNewPassword();
+                    $customer_id = $this->addCustomer($customer_data);
+                } else {
+                    $this->session->data['d_social_login_data']['customer_data'] = $customer_data;
+                    $this->session->data['d_social_login_data']['authentication_data'] = $authentication_data;
+
+                    return array('customer_data' => $customer_data, 'authentication_data' => $authentication_data);
+                }
+            }
+
+            if ($customer_id) {
+                $authentication_data['customer_id'] = (int)$customer_id;
+
+                $this->addAuthentication($authentication_data);
+
+                $this->login($customer_id);
+
+                return 'redirect';
+            }
+        }
+    }
+
+    public function getCustomerByIdentifier($provider, $identifier)
+    {
+        $result = $this->db->query("SELECT customer_id FROM " . DB_PREFIX . "customer_authentication WHERE provider = '" . $this->db->escape((string)$provider) . "' AND identifier = MD5('" . $this->db->escape((string)$identifier) . "') LIMIT 1");
+
+        if ($result->num_rows) {
+            return (int)$result->row['customer_id'];
+        } else {
+            return false;
+        }
+    }
+
+    public function getCustomerById($customer_id)
+    {
+        $result = $this->db->query("SELECT * FROM " . DB_PREFIX . "customer WHERE customer_id = '" . (int)$customer_id . "' LIMIT 1");
+
+        if ($result->num_rows) {
+            return (int)$result->row['customer_id'];
+        } else {
+            return false;
+        }
+    }
+
+    public function login($customer_id)
+    {
+
+        $result = $this->db->query("SELECT * FROM " . DB_PREFIX . "customer WHERE customer_id = '" . (int)$customer_id . "' LIMIT 1");
+
+        if (!$result->num_rows) {
+            return false;
+        }
+
+        $this->session->data['customer_id'] = $result->row['customer_id'];	
+        
+        // Create customer token
+        $this->session->data['customer_token'] = token(26);
+
+        if ($result->row['cart'] && is_string($result->row['cart'])) {
+            $cart = unserialize($result->row['cart']);
+
+            foreach ($cart as $key => $value) {
+                if (!array_key_exists($key, $this->session->data['cart'])) {
+                    $this->session->data['cart'][$key] = $value;
+                } else {
+                    $this->session->data['cart'][$key] += $value;
+                }
+            }
+        }
+
+        if ($result->row['wishlist'] && is_string($result->row['wishlist'])) {
+            if (!isset($this->session->data['wishlist'])) {
+                $this->session->data['wishlist'] = array();
+            }
+
+            $wishlist = unserialize($result->row['wishlist']);
+
+            foreach ($wishlist as $product_id) {
+                if (!in_array($product_id, $this->session->data['wishlist'])) {
+                    $this->session->data['wishlist'][] = $product_id;
+                }
+            }
+        }
+
+        $this->db->query("UPDATE " . DB_PREFIX . "customer SET ip = '" . $this->db->escape((string)$this->request->server['REMOTE_ADDR']) . "' WHERE customer_id = '" . (int)$result->row['customer_id'] . "'");
+
+        return true;
+    }
+
+    public function getCustomerByIdentifierOld($provider, $identifier)
+    {
+        $query = $this->db->query("SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = '" . DB_DATABASE . "' AND TABLE_NAME = '" . DB_PREFIX . "customer' ORDER BY ORDINAL_POSITION");
+        $result = $query->rows;
+        $columns = array();
+        foreach ($result as $column) {
+            $columns[] = $column['COLUMN_NAME'];
+        }
+
+        if (in_array(strtolower($provider) . '_id', $columns)) {
+            $result = $this->db->query("SELECT * FROM " . DB_PREFIX . "customer WHERE `" . strtolower($provider) . "_id` = '" . $this->db->escape((string)$identifier) . "'");
+
+            if ($result->num_rows) {
+                return (int)$result->row['customer_id'];
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    public function getCustomerByEmail($email)
+    {
+        $result = $this->db->query("SELECT customer_id FROM " . DB_PREFIX . "customer WHERE LOWER(email) = '" . $this->db->escape((string)utf8_strtolower($email)) . "' LIMIT 1");
+
+        if ($result->num_rows) {
+            return (int)$result->row['customer_id'];
+        } else {
+            return false;
+        }
+    }
+
+    public function getCountryIdByName($country)
+    {
+        $query = $this->db->query("SELECT * FROM " . DB_PREFIX . "country WHERE LOWER(name) LIKE '" . $this->db->escape((string)utf8_strtolower($country)) . "' OR iso_code_2 LIKE '" . $this->db->escape((string)$country) . "' OR iso_code_3 LIKE '" . $this->db->escape((string)$country) . "' LIMIT 1");
+
+        if ($query->num_rows) {
+            return $query->row['country_id'];
+        } else {
+            return false;
+        }
+    }
+
+    public function getZoneIdByName($zone)
+    {
+        $query = $this->db->query("SELECT zone_id FROM " . DB_PREFIX . "zone WHERE LOWER(name) LIKE '" . $this->db->escape((string)utf8_strtolower($zone)) . "' OR code LIKE '" . $this->db->escape((string)$zone) . "' LIMIT 1");
+
+        if ($query->num_rows) {
+            return $query->row['zone_id'];
+        } else {
+            return false;
+        }
+    }
+
+    public function generateNewPassword($length = 8)
+    {
+        $chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        $count = strlen($chars);
+
+        for ($i = 0, $result = ''; $i < $length; $i++) {
+            $index = rand(0, $count - 1);
+            $result .= substr($chars, $index, 1);
+        }
+
+        return $result;
+    }
+
+
+    public function existAddressFields($data)
+    {
+        // for some reasons auth give false for field
+        //for aqc 6.6.3 if only one will not be input all address is wrong
+        $condition = $this->db->escape((string)$data['address_1']) != ''
+            && $this->db->escape((string)$data['address_1'])
+            && ($this->db->escape((string)$data['address_2']) != ''
+                && $this->db->escape((string)$data['address_2']))
+            && ($this->db->escape((string)$data['city']) != ''
+                && $this->db->escape((string)$data['city']))
+            && ($data['country_id'] != '' && $data['country_id'])
+            && ($data['zone_id'] != '' && $data['zone_id']);
+        return ($condition) ? true : false;
+
+    }
+
+    public function getPreloader($pre_loader_code = 'clip-rotate')
+    {
+        return '<div class="la-ball-clip-rotate"><div></div></div>';
+    }
+
+    public function validateEmail($email)
+    {
+        if (preg_match('/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,3})$/', $email)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public function getCurrentUrl($request_uri = true, $reset_uri = false)
+    {
+        if (
+            isset($_SERVER['HTTPS']) && ($_SERVER['HTTPS'] == 'on' || $_SERVER['HTTPS'] == 1) || isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https'
+        ) {
+            $protocol = 'https://';
+        } else {
+            $protocol = 'http://';
+        }
+
+        $url = $protocol . $_SERVER['HTTP_HOST'];
+
+        if (isset($_SERVER['SERVER_PORT']) && strpos($url, ':' . $_SERVER['SERVER_PORT']) === FALSE) {
+            $url .= ($protocol === 'http://' && $_SERVER['SERVER_PORT'] != 80 && !isset($_SERVER['HTTP_X_FORWARDED_PROTO'])) || ($protocol === 'https://' && $_SERVER['SERVER_PORT'] != 443 && !isset($_SERVER['HTTP_X_FORWARDED_PROTO'])) ? ':' . $_SERVER['SERVER_PORT'] : '';
+        }
+
+        if ($request_uri) {
+            if ($reset_uri) {
+                $url = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : $_SERVER['REQUEST_URI'];
+            } else {
+                $url .= $_SERVER['REQUEST_URI'];
+            }
+        } else {
+            $url .= $_SERVER['PHP_SELF'];
+        }
+
+        // return current url
+        return $url;
+    }
+
+    public function prepareDataRegistrationFields($data, $fields)
+    {
+        $keys = array_keys($data);
+        foreach ($fields as $field) {
+            if (!in_array($field['id'], $keys)) {
+                $data[$field['id']] = '';
+            }
+        }
+        return $data;
+    }
+
+    public function setLog($path, $data)
+    {
+        if (!$path) {
+            $path = DIR_LOGS . 'd_social_login.txt';
+        }else{
+            $path = DIR_LOGS . $path;
+        }
+
+        try {
+            $fd = fopen($path, 'a+');
+            $str = json_encode($data) . PHP_EOL;
+            fputs($fd, $str);
+            fclose($fd);
+        } catch (Exception $e) {
+            $this->log->write("setLog Error");
+        }
+    }
+}

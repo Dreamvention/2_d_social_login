@@ -1,16 +1,19 @@
-.api-title.label-success{
+.api-title.bg-success {
     display: none
 }
-.api-active .api-title.label-success{
+
+.api-active .api-title.bg-success {
     display: inline-block;
 }
-.api-active .api-title.label-default{
+
+.api-active .api-title.bg-secondary {
     display: none;
 }
 
-.input-group{
+.input-group {
     margin-bottom: 5px;
 }
+
 .sortable {
     position: relative;
 }
@@ -31,3 +34,47 @@
     margin-bottom: 15px;
     margin-top: 15px;
 }
+
+.registration-field {
+    border: 1px solid rgb(189, 188, 188);
+    padding: 10px;
+    border-radius: 3px;
+    display: block;
+    margin-bottom: 15px;    
+    background-color: #f1f1f1;
+}
+
+.registration-field label {
+    font-weight: 600;
+}
+.registration-field .panel-heading {
+    display: flex;
+    align-items: center;
+}
+
+.provider-section{
+    background-color: #e9ebf4;
+}
+
+.accordion-item {
+    margin-top: 20px;
+}
+.name{
+    font-size: 15px;
+}
+.api-title{
+    padding: 0.2em 0.6em 0.3em;
+    font-size: 75%;
+    font-weight: bold;
+    line-height: 1;
+    color: #fff;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: 0.25em;
+}
+
+.accordion-item:not(:first-of-type) {
+    border-top: 1px solid rgba(0, 0, 0, 0.125);
+}
+

@@ -1,0 +1,9 @@
+{
+    "name": "Social login",
+    "codename": "social_login",
+    "license": "GPL",
+    "version": "1.0.1",
+    "author": "Dreamvention",
+    "link": "https://dreamvention.com/",
+    "code": "social-login"
+}

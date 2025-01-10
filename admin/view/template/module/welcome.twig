@@ -1,0 +1,119 @@
+{{ header }}{{ column_left }}
+<div id="content">
+    <div class="page-header">
+        <div class="container-fluid">
+
+            <h1>{{ heading_title }} {{ version }}</h1>
+            <ul class="breadcrumb">
+                {% for breadcrumb in breadcrumbs %}
+                    <li class="breadcrumb-item"><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <div class="container-fluid">
+        '<style>
+            .welcome {
+                background: url("view/image/d_social_login/bg.svg");
+                background-position: bottom;
+                background-repeat: repeat-x;
+                background-size: 50%;
+                min-height: 700px;
+                padding-top: 50px;
+                padding-bottom: 200px;
+            }
+
+            .welcome-into {
+                text-align: center;
+                max-width: 500px;
+                margin: auto;
+            }
+
+            .welcome-into-logo {
+                padding-bottom: 15px;
+            }
+
+            .welcome-into-heading {
+                font-size: 30px;
+                font-weight: bold;
+                padding-bottom: 15px;
+            }
+
+            .welcome-into-text {
+                font-size: 18px;
+                padding-bottom: 30px;
+            }
+
+            .welcome-into-start {
+                padding-bottom: 30px;
+            }
+
+            .welcome-features {
+                padding: 30px;
+            }
+
+            .welcome-features-icon{
+                padding: 20px;
+                height: 130px;
+                text-align: center;
+            }
+
+            .welcome-features-icon img{
+                height: 90px;
+            }
+
+
+            .welcome-features-text {
+                text-align: center;
+                font-weight: bold;
+                font-size: 16px;
+            }
+
+            .panel .panel-body {
+                padding: 0px;
+            }
+        </style>
+        <div class="welcome" style="
+padding-bottom: 250px;
+">
+            <div class="welcome-into">
+                <div class="welcome-into-logo"><img src="view/image/d_social_login/logo.svg"/></div>
+                <div class="welcome-into-heading">Social Login</div>
+                <div class="welcome-into-text">40% of customers prefer social login over creating a new account. Yet implementing Social login is not easy. Thanks to this module, you can setup and customize all your favorite social network logins and start converting visitors from Facebook into real customers. 
+                </div>
+
+                <div class="welcome-into-start">
+                    <a class="btn btn-primary btn-lg setup">Setup</a>
+                </div>
+            </div>
+            <div class="welcome-features">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="welcome-features-icon"><img src="view/image/d_social_login/icons/install.svg" /></div>
+                        <div class="welcome-features-text">Step by step<br/> documentation</div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="welcome-features-icon"><img src="view/image/d_social_login/icons/login.svg" /></div>
+                        <div class="welcome-features-text">Complete <br/>Social login</div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="welcome-features-icon"><img src="view/image/d_social_login/icons/register_field.svg" /></div>
+                        <div class="welcome-features-text">Customizable <br/>registation pages</div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="welcome-features-icon"><img src="view/image/d_social_login/icons/gdpr_compilant.svg" /></div>
+                        <div class="welcome-features-text">GDPR <br/>compilant</div>
+                    </div>
+                    
+                </div>
+            </div>
+            
+        </div>'
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).on('click', '.setup', function () {
+        window.location.href = '{{ setup_link }}';
+    });
+    </script>
+{{ footer }}
